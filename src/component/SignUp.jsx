@@ -7,16 +7,24 @@ import axios from 'axios';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
+    const [role, setRole] = useState("")
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
     };
     const {register,handleSubmit, watch,formState: { errors },} = useForm();
+    
+    const getRoleId = async (role) => {
+        console.log(role);
+        const res = await axios.get("/role/getrolebyname/" + role);
+        console.log(res.data.data);
+        setRole(res.data.data);
+    }
 
     const onSubmit = async(data) => {
         try{
             // console.log("ridhdhi");
 
-            data.roleId= '67d12c30f12f78c11f5c9d34';
+            data.roleId= role._id;
             const res = await axios.post("user/signup", data);
             console.log("ridhhdi")
             console.log(res.data)
@@ -89,7 +97,7 @@ export default function SignUp() {
                     />
                     <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
                         <InputLabel sx={{ mt: -0.8 }} >Role</InputLabel>
-                        <Select {...register("role", { required: "Role is required" })} defaultValue="customer">
+                        <Select {...register("role", { required: "Role is required" })} defaultValue="customer" onChange={(event) => getRoleId(event.target.value)}>
                             <MenuItem value="customer">Customer</MenuItem>
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>

@@ -21,7 +21,7 @@ export default function SignIn() {
             const res = await axios.post("/user/login", data);
             console.log(res.status)
             if (res.status === 200) {
-              
+              console.log(res.data.data);
               localStorage.setItem("id", res.data.data._id);
               localStorage.setItem("role", res.data.data.roleId.name);
               alert("Login Success");

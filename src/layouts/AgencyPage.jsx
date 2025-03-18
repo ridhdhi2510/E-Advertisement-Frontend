@@ -1,7 +1,31 @@
 import * as React from "react";
-import { Avatar, Link, Box, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, AppBar as MuiAppBar, Drawer as MuiDrawer } from "@mui/material";
+import {
+  Avatar,
+  Link,
+  Box,
+  Toolbar,
+  List,
+  CssBaseline,
+  Typography,
+  Divider,
+  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  AppBar as MuiAppBar,
+  Drawer as MuiDrawer,
+} from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
-import { Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, MoveToInbox as InboxIcon, Mail as MailIcon, AddIcCallSharp as AddIcCallSharpIcon, SpaceDashboardRounded as SpaceDashboardRoundedIcon } from "@mui/icons-material";
+import {
+  Menu as MenuIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  MoveToInbox as InboxIcon,
+  Mail as MailIcon,
+  AddIcCallSharp as AddIcCallSharpIcon,
+  SpaceDashboardRounded as SpaceDashboardRoundedIcon,
+} from "@mui/icons-material";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -129,10 +153,11 @@ export default function AgencyPage() {
         }}
       >
         <DrawerHeader>
-          <IconButton onClick={() => {
-               setOpen(!open)
-
-          }}>
+          <IconButton
+            onClick={() => {
+              setOpen(!open);
+            }}
+          >
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
@@ -194,7 +219,7 @@ export default function AgencyPage() {
               >
                 <SpaceDashboardRoundedIcon />
               </ListItemIcon>
-              <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0}}/>
+              <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
 
@@ -226,7 +251,10 @@ export default function AgencyPage() {
               >
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Screen" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText
+                primary="Add Screen"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
             </ListItemButton>
           </ListItem>
 
@@ -258,14 +286,14 @@ export default function AgencyPage() {
               >
                 <AddIcCallSharpIcon />
               </ListItemIcon>
-              <ListItemText primary="View My Screens" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText
+                primary="View My Screens"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
             </ListItemButton>
           </ListItem>
         </List>
         <Divider />
-
-
-
 
         <List>
           {/* for Home navigation */}
@@ -297,7 +325,10 @@ export default function AgencyPage() {
               >
                 <SpaceDashboardRoundedIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Screen"  sx={{ opacity: open ? 1 : 0}}/>
+              <ListItemText
+                primary="Add Screen"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
             </ListItemButton>
           </ListItem>
 
@@ -334,7 +365,42 @@ export default function AgencyPage() {
           </ListItem>
 
           {/* contact page navigation */}
+
+          {/* Contact page navigation with Logout functionality */}
           <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => {
+              // Remove user ID and role from localStorage
+              localStorage.removeItem("id");
+              localStorage.removeItem("role");
+
+              // Navigate to login page
+              navigate("/login");
+            }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  
+                }}
+              >
+                <AddIcCallSharpIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+
+          {/* <ListItem
             disablePadding
             sx={{ display: "block" }}
             onClick={() => {
@@ -363,12 +429,12 @@ export default function AgencyPage() {
               </ListItemIcon>
               <ListItemText primary="Contact" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Outlet/>
-        </Box>
+        <Outlet />
+      </Box>
     </Box>
   );
 }

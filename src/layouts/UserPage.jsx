@@ -182,7 +182,7 @@ export default function UserPage() {
             sx={{ width: 64, height: 64, mb: 1 }}
           />
           <Typography variant="body1" fontWeight="bold">
-            John Doe
+            Ridhdi Bhojani
           </Typography>
           <Link href="/profile" variant="body2" underline="hover">
             Update Profile
@@ -369,6 +369,44 @@ export default function UserPage() {
             disablePadding
             sx={{ display: "block" }}
             onClick={() => {
+              localStorage.removeItem("id");
+              localStorage.removeItem("role");
+              navigate("/signin");
+            }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+                bgcolor: "red", // Red background
+                color: "white", // White text
+                "&:hover": {
+                  bgcolor: "darkred", // Darker red on hover
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  color: "white", // Make icon white
+                }}
+              >
+                <AddIcCallSharpIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Logout"
+                sx={{ opacity: open ? 1 : 0, color: "white" }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          {/* <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => {
               navigate("/contact");
             }}
           >
@@ -394,7 +432,7 @@ export default function UserPage() {
               </ListItemIcon>
               <ListItemText primary="Contact" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

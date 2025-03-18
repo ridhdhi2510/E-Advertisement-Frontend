@@ -8,6 +8,7 @@ import AgencyPage from "./layouts/AgencyPage";
 import { AddScreen } from "./agency/AddScreen";
 import DefaultPage from "./agency/DefaultPage";
 import ViewMyScreen from "./agency/ViewMyScreen";
+import UserPage from "./layouts/UserPage";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -25,7 +26,7 @@ function App() {
             <Route path="addscreen" element={<AddScreen />}></Route>
             <Route path="myscreens" element={<ViewMyScreen/>}> </Route>
           </Route>
-          <Route path="/customer/*" element={<AgencyPage />}>
+          <Route path="/customer" element={<UserPage/>}>
           </Route>
         </Routes>
       </Router>
