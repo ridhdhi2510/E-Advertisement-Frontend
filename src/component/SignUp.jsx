@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Divider, FormControlLabel, Checkbox, IconButton, InputAdornment } from '@mui/material';
@@ -7,32 +7,40 @@ import axios from 'axios';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
-    const [role, setRole] = useState("")
-    const handleTogglePassword = () => {
-        setShowPassword(!showPassword);
-    };
-    const {register,handleSubmit, watch,formState: { errors },} = useForm();
-    
-    const getRoleId = async (role) => {
-        console.log(role);
-        const res = await axios.get("/role/getrolebyname/" + role);
-        console.log(res.data.data);
-        setRole(res.data.data);
-    }
+    const [roleId, setRoleId] = useState(""); // Store roleId
+    const navigate = useNavigate();
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
-    const onSubmit = async(data) => {
-        try{
-            // console.log("ridhdhi");
-
-            data.roleId= role._id;
-            const res = await axios.post("user/signup", data);
-            console.log("ridhhdi")
-            console.log(res.data)
-        }catch(err){
-            console.log(err)
+    // Fetch roleId when the user selects a role
+    const handleRoleChange = async (event) => {
+        const roleName = event.target.value;
+        try {
+            const res = await axios.get(`/role/getrolebyname/${roleName}`);
+            if (res.data.data) {
+                setRoleId(res.data.data._id); // Store roleId
+            }
+        } catch (error) {
+            console.error("Error fetching role ID:", error);
         }
+    };
 
-        console.log("User Data:", data);
+    const onSubmit = async (data) => {
+        if (!roleId) {
+            alert("Please select a valid role.");
+            return;
+        }
+        
+        data.roleId = roleId; // Assign roleId before sending the request
+        
+        try {
+            const res = await axios.post("/user/signup", data);
+            if (res.status === 201) {
+                alert("Signup successful! Please login.");
+                navigate("/signin"); // Redirect to SignIn after signup
+            }
+        } catch (err) {
+            console.error("Signup error:", err);
+        }
     };
 
     const password = watch("password", "");
@@ -65,7 +73,7 @@ export default function SignUp() {
                     <TextField
                         fullWidth
                         label="Password"
-                        type={showPassword ? "text" : "password"} // Toggle visibility
+                        type={showPassword ? "text" : "password"}
                         variant="outlined"
                         margin="normal"
                         {...register("password", { required: "Password is required", minLength: { value: 6, message: "Minimum 6 characters" } })}
@@ -74,14 +82,13 @@ export default function SignUp() {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={handleTogglePassword} edge="end">
+                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
                             ),
                         }}
                     />
-
                     <TextField
                         fullWidth
                         label="Confirm Password"
@@ -96,8 +103,8 @@ export default function SignUp() {
                         helperText={errors.confirmPassword?.message}
                     />
                     <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
-                        <InputLabel sx={{ mt: -0.8 }} >Role</InputLabel>
-                        <Select {...register("role", { required: "Role is required" })} defaultValue="customer" onChange={(event) => getRoleId(event.target.value)}>
+                        <InputLabel sx={{ mt: -0.8 }}>Role</InputLabel>
+                        <Select defaultValue="" {...register("role", { required: "Role is required" })} onChange={handleRoleChange}>
                             <MenuItem value="customer">Customer</MenuItem>
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
@@ -107,13 +114,11 @@ export default function SignUp() {
                         label="Remember Me"
                         sx={{ mt: 1 }}
                     />
-                    <Button type="submit" fullWidth variant="contained" color="error" sx={{ mt: 2 }}>
+                    <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign Up
                     </Button>
                 </form>
                 <Divider sx={{ my: 2 }}>or</Divider>
-
-
                 <Typography align="center" sx={{ mt: 2 }}>
                     Already have an account? <Link to="/" style={{ color: '#1976d2' }}>Sign In</Link>
                 </Typography>

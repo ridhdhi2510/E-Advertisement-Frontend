@@ -15,28 +15,54 @@ export default function SignIn() {
         setShowPassword(!showPassword);
     };
 
-    const onSubmit = async(data) => {
-        console.log("User Data:", data);
+    const onSubmit = async (data) => {
         try {
             const res = await axios.post("/user/login", data);
-            console.log(res.status)
             if (res.status === 200) {
-              console.log(res.data.data);
-              localStorage.setItem("id", res.data.data._id);
-              localStorage.setItem("role", res.data.data.roleId.name);
-              alert("Login Success");
-              console.log(res.data.data.roleId.name)
-              if (res.data.data.role === "customer") {
-                navigate("/customer");
-              } else if (res.data.data.roleId.name === "agency") {
-                navigate("/agency");
-              }
+                localStorage.setItem("id", res.data.data._id);
+    
+                // Ensure roleId exists before accessing `name`
+                if (!res.data.data.roleId || !res.data.data.roleId.name) {
+                    alert("Error: Role not assigned to user.");
+                    return;
+                }
+    
+                localStorage.setItem("role", res.data.data.roleId.name);
+                alert("Login Success");
+    
+                if (res.data.data.roleId.name === "customer") {
+                    navigate("/customer");
+                } else if (res.data.data.roleId.name === "agency") {
+                    navigate("/agency");
+                }
             }
-          } catch (error) {
-            console.log(error)
-          }
+        } catch (error) {
+            console.error("Login Error:", error);
+        }
     };
+    
 
+    // const onSubmit = async (data) => {
+    //     try {
+    //         const res = await axios.post("/user/login", data);
+            
+    //         if (res.status === 200) {
+    //           console.log(res.data.data);
+    //           localStorage.setItem("id", res.data.data._id);
+    //           localStorage.setItem("role", res.data.data.roleId.name);
+    //           alert("Login Success");
+    //           console.log(res.data.data.roleId.name)
+    //           if (res.data.data.role === "customer") {
+    //             navigate("/customer");
+    //           } else if (res.data.data.roleId.name === "agency") {
+    //             navigate("/agency");
+    //           }
+    //         }
+    //     } catch (error) {
+    //         console.error("Login Error:", error);
+    //     }
+    // };
+    
     return (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f5f5f5">
             <Paper elevation={3} sx={{ padding: 4, width: 350 }}>
@@ -83,19 +109,19 @@ export default function SignIn() {
                         }}
                     />
 
-                    <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
+                    {/* <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
                         <InputLabel sx={{ mt: -0.8 }}>Role</InputLabel>
                         <Select {...register("role", { required: "Role is required" })} defaultValue="customer">
                             <MenuItem value="customer">Customer</MenuItem>
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
                     <FormControlLabel
                         control={<Checkbox {...register("rememberMe")} />}
                         label="Remember Me"
                         sx={{ mt: 1 }}
                     />
-                    <Button type="submit" fullWidth variant="contained" color="error" sx={{ mt: 2 }}>
+                    <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign In
                     </Button>
                 </form>
