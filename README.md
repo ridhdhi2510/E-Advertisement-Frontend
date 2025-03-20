@@ -63,5 +63,5 @@
 - **Payment Integration:** Stripe, Razorpay
 - **Cloud Storage:** AWS S3, Firebase
 
-💡 **This e-hoarding platform revolutionizes digital advertising with efficiency, transparency, and real-time insights, empowering businesses and advertisers to optimize their campaigns effortlessly.**
+💡 **This e-hoarding platform revolutionizes digital advertising with efficiency, transparency, and real-time insights, empowering businesses and advertisers to optimize their campaigns effortlessly.** jjj
 
