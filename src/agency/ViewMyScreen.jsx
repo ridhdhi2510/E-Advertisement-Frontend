@@ -40,7 +40,7 @@ const HordingCard = ({ data }) => {
             width: "100%",
           }}
         >
-          Book Now
+          Update
         </Button>
       </CardContent>
     </Card>
