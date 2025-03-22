@@ -214,7 +214,7 @@ const PaymentPage = () => {
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={openSnackbar}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={() => setOpenSnackbar(false)}
       >
         <MuiAlert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>

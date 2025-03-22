@@ -35,11 +35,12 @@ export default function Home() {
           </Typography>
 
          
-
-          <Button color="primary" variant="contained" component={Link} to="/signin" sx={{ ml: 2, fontWeight: "bold" }}>Sign In</Button>
-          <Button color="primary" variant="contained" component={Link} to="/signup" sx={{ ml: 2, fontWeight: "bold" }}>Sign Up</Button>
-          <Button color="primary" variant="contained" onClick={handleContactClick} sx={{ ml: 2, fontWeight: "bold", ":hover": {} }}>Contact Us</Button>
-          <Button color="primary" variant="contained" onClick={handleServiceClick} sx={{ ml: 2, fontWeight: "bold", ":hover": {} }}>Services</Button>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+          <Button color="primary" variant="contained" component={Link} to="/signin" sx={{ ml: 2, fontWeight: "bold",minWidth: "90px", height: "42px"}}>Sign In</Button>
+          <Button color="primary" variant="contained" component={Link} to="/signup" sx={{ ml: 2, fontWeight: "bold",minWidth: "100px" , height: "42px" }}>Sign Up</Button>
+          <Button color="primary" variant="contained" onClick={handleContactClick} sx={{ ml: 2, fontWeight: "bold", ":hover": {},minWidth: "130px" , height: "42px" }}>Contact Us</Button>
+          <Button color="primary" variant="contained" onClick={handleServiceClick} sx={{ ml: 2, fontWeight: "bold", ":hover": {},minWidth: "100px" , height: "42px" }}>Services</Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -140,3 +141,4 @@ export default function Home() {
     </Box>
   );
 }
+
