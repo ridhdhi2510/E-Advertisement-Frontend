@@ -376,7 +376,7 @@ export default function AgencyPage() {
               localStorage.removeItem("role");
 
               // Navigate to login page
-              navigate("/login");
+              navigate("/signin");
             }}
           >
             <ListItemButton
