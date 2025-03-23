@@ -86,7 +86,6 @@ button:hover {
   .main-content {
     padding: 20px;
   }
-<<<<<<< HEAD
   
   #container {
     background: #ffffff;
@@ -96,10 +95,6 @@ button:hover {
     width: 100%; 
     max-width: 600px;
     margin: auto;
-=======
-  .container {
-    width: 90%;
->>>>>>> 60c997b2497e7dc83b38caeb2a04192cff553d6f
   }
 }
    
