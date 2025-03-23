@@ -38,6 +38,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="updateprofile" element={<UpdateProfile />} />
             <Route path="bookhording" element={<BookHording />} />
+            {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
             <Route path="bookhording/payment" element={<PaymentPage />} />
             <Route path="paymentdetails" element={<PaymentDetails />} />
             <Route path="mybookings" element={<MyBookings />} />

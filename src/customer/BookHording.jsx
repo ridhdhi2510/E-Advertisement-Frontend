@@ -1,221 +1,170 @@
-// import React, { useState } from "react";
-// import { Container, Typography, Button, Grid, TextField, MenuItem, Paper } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Grid, Card, CardContent, Typography, Button, Select, MenuItem, TextField, Box } from "@mui/material";
+import axios from "axios";
 
-// const BookHording = ({ setBookingDetails }) => {
-//   const navigate = useNavigate();
-//   const [formData, setFormData] = useState({
-//     state: "California",
-//     city: "Los Angeles",
-//     area: "Downtown",
-//     hoardingType: "Billboard",
-//     startDate: "",
-//     endDate: "",
-//     timeSlot: "Morning (6 AM - 12 PM)",
-//     totalCost: 5000,
-//   });
+const BookHording = () => {
+  const navigate = useNavigate();
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [hordings, setHordings] = useState([]);
+  const [selectedHording, setSelectedHording] = useState(null);
+  const [formData, setFormData] = useState({ state: "", city: "", area: "", startDate: "", endDate: "" });
+  
+  useEffect(() => {
+    axios.get("/state/getall").then((res) => setStates(res.data.data));
+    fetchFilteredHordings();
+  }, []);
 
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
+  useEffect(() => {
+    fetchFilteredHordings();
+  }, [formData.state, formData.city, formData.area]);
 
-//   const handleSubmit = () => {
-//     //setBookingDetails(formData);
-//     navigate("/customer/bookhording/payment");
-//   };
+  const fetchFilteredHordings = () => {
+    const { state, city, area } = formData;
+    let query = "";
+    if (state) query += `stateId=${state}&`;
+    if (city) query += `cityId=${city}&`;
+    if (area) query += `areaId=${area}&`;
 
-//   return (
-//     <Container maxWidth="sm">
-//       <Paper elevation={3} style={{ padding: "20px", borderRadius: "10px" }}>
-//         <Typography variant="h4" align="center" gutterBottom>
-//           Book Advertisement
-//         </Typography>
-//         <Grid container spacing={2}>
-//           <Grid item xs={12}>
-//             <TextField fullWidth label="State" name="state" value={formData.state} onChange={handleChange} />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <TextField fullWidth label="City" name="city" value={formData.city} onChange={handleChange} />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <TextField fullWidth label="Area" name="area" value={formData.area} onChange={handleChange} />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <TextField fullWidth label="Hoarding Type" name="hoardingType" value={formData.hoardingType} onChange={handleChange} />
-//           </Grid>
-//           <Grid item xs={6}>
-//             <TextField fullWidth label="Start Date" type="date" name="startDate" value={formData.startDate} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-//           </Grid>
-//           <Grid item xs={6}>
-//             <TextField fullWidth label="End Date" type="date" name="endDate" value={formData.endDate} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <TextField fullWidth select label="Time Slot" name="timeSlot" value={formData.timeSlot} onChange={handleChange}>
-//               <MenuItem value="Morning (6 AM - 12 PM)">Morning (6 AM - 12 PM)</MenuItem>
-//               <MenuItem value="Afternoon (12 PM - 6 PM)">Afternoon (12 PM - 6 PM)</MenuItem>
-//               <MenuItem value="Evening (6 PM - 12 AM)">Evening (6 PM - 12 AM)</MenuItem>
-//               <MenuItem value="Night (12 AM - 6 AM)">Night (12 AM - 6 AM)</MenuItem>
-//             </TextField>
-//           </Grid>
-//           <Grid item xs={12}>
-//             <Typography variant="h5" color="primary">
-//               Total Cost: ${formData.totalCost}
-//             </Typography>
-//           </Grid>
-//           <Grid item xs={12}>
-//             <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
-//               Proceed to Payment
-//             </Button>
-//           </Grid>
-//         </Grid>
-//       </Paper>
-//     </Container>
-//   );
-// };
+    axios.get(`/hording/getHordingsByLocation?${query}`).then((res) => {
+      setHordings(res.data.data);
+    }).catch(() => setHordings([]));
+  };
 
-// export default BookHording;
+  const getCityByStateId = (id) => {
+    axios.get(`/city/getcitybystate/${id}`).then((res) => setCities(res.data.data));
+  };
+  
+  const getAreaByCityId = (id) => {
+    axios.get(`/area/getareabycity/${id}`).then((res) => setAreas(res.data.data));
+  };
 
-import React from "react";
-import { useForm, Controller } from "react-hook-form";
-import { MenuItem, Select, Button, Grid, Box, Card, CardContent, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import HpImage from "../assets/EH-2.png";
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleHordingClick = (hording) => {
+    setSelectedHording((prev) => (prev && prev._id === hording._id ? null : hording));
+  };
 
+  const calculateTotalCost = () => {
+    if (!formData.startDate || !formData.endDate || !selectedHording) return 0;
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const diffInDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    return diffInDays > 0 ? diffInDays * 24 * selectedHording.hourlyRate : 0;
+  };
 
-const BookingHoarding = () => {
-  const theme = useTheme();
-  const { control, handleSubmit } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleBooking = () => {
+    if (!selectedHording || !formData.startDate || !formData.endDate) {
+      alert("Please select a hoarding and valid dates.");
+      return;
+    }
+    const totalCost = calculateTotalCost();
+    navigate("/customer/bookhording/payment", {
+      state: {
+        selectedHording,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        totalCost,
+      },
+    });
   };
 
   return (
-    <>
-      <Box sx={{ px: "2rem", mt: 3 }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2} alignItems="center" justifyContent="center">
+    <Container>
+      <Box mt={3}>
+        <Grid container spacing={2} alignItems="center">
+         
           <Grid item xs>
-            <Controller
-              name="state"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <Select
-                  fullWidth
-                  {...field}
-                  displayEmpty
-                  sx={{
-                    height: "45px",
-                    "&:hover": { border: `0.8px solid ${theme.palette.primary.main}` },
-                    "&.Mui-focused": { border: `0.8px solid ${theme.palette.primary.main}` },
-                  }}
-                >
-                  <MenuItem value="" disabled>Select State</MenuItem>
-                  <MenuItem value="Gujarat">Gujarat</MenuItem>
-                  <MenuItem value="Maharashtra">Maharashtra</MenuItem>
-                </Select>
-              )}
-            />
-          </Grid>
+              <Select 
+                fullWidth 
+                name="state" 
+                value={formData.state} 
+                onChange={(e) => { handleChange(e); getCityByStateId(e.target.value); }} 
+                displayEmpty 
+                renderValue={formData.state ? undefined : () => "Select State"}
+              >
+                <MenuItem value="">Select State</MenuItem>
+                {states.map((s) => <MenuItem key={s._id} value={s._id}>{s.name}</MenuItem>)}
+              </Select>
+            </Grid>
 
-          <Grid item xs>
-            <Controller
-              name="city"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <Select
-                  fullWidth
-                  {...field}
-                  displayEmpty
-                  sx={{
-                    height: "45px",
-                    "&:hover": { border: `0.8px solid ${theme.palette.primary.main}` },
-                    "&.Mui-focused": { border: `0.8px solid ${theme.palette.primary.main}` },
-                  }}
-                >
-                  <MenuItem value="" disabled>Select City</MenuItem>
-                  <MenuItem value="Ahmedabad">Ahmedabad</MenuItem>
-                  <MenuItem value="Mumbai">Mumbai</MenuItem>
-                </Select>
-              )}
-            />
-          </Grid>
+            <Grid item xs>
+              <Select 
+                fullWidth 
+                name="city" 
+                value={formData.city} 
+                onChange={(e) => { handleChange(e); getAreaByCityId(e.target.value); }} 
+                displayEmpty 
+                renderValue={formData.city ? undefined : () => "Select City"}
+              >
+                <MenuItem value="">Select City</MenuItem>
+                {cities.map((c) => <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>)}
+              </Select>
+            </Grid>
 
-          <Grid item xs>
-            <Controller
-              name="area"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <Select
-                  fullWidth
-                  {...field}
-                  displayEmpty
-                  sx={{
-                    height: "45px",
-                    "&:hover": { border: `0.8px solid ${theme.palette.primary.main}` },
-                    "&.Mui-focused": { border: `0.8px solid ${theme.palette.primary.main}` },
-                  }}
-                >
-                  <MenuItem value="" disabled>Select Area</MenuItem>
-                  <MenuItem value="Navrangpura">Navrangpura</MenuItem>
-                  <MenuItem value="Powai">Powai</MenuItem>
-                </Select>
-              )}
-            />
-          </Grid>
+            <Grid item xs>
+              <Select 
+                fullWidth 
+                name="area" 
+                value={formData.area} 
+                onChange={handleChange} 
+                displayEmpty 
+                renderValue={formData.area ? undefined : () => "Select Area"}
+              >
+                <MenuItem value="">Select Area</MenuItem>
+                {areas.map((a) => <MenuItem key={a._id} value={a._id}>{a.name}</MenuItem>)}
+              </Select>
+            </Grid>
 
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              sx={{ height: "45px", minWidth: "120px" }}
-            >
-              Search
-            </Button>
-          </Grid>
         </Grid>
 
-        {/* Cards Section */}
-        <Grid container spacing={2} sx={{ mt: 4 }}>
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card
-                sx={{
-                  textAlign: "center",
-                  boxShadow: 3,
-                  height: 350,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  backgroundImage: `url(${HpImage})`, // ✅ Corrected background image syntax
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {/* Hoarding Details */}
-                <CardContent
-                  sx={{
-                    height: "30%",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay for better readability
-                    color: "white",
-                  }}
-                >
-                  <Typography variant="subtitle1">Size: 20ft x 10ft</Typography>
-                  <Typography variant="body2">Type: Billboard</Typography>
+        <Grid container spacing={2} mt={2}>
+          {hordings.length > 0 ? hordings.map((hording) => (
+            <Grid item xs={12} sm={6} md={4} key={hording._id}>
+              <Card onClick={() => handleHordingClick(hording)} sx={{ cursor: "pointer", height: 350, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <CardContent>
+                  <img src={hording.hordingURL} alt="Hoarding" width="100%" height="150" style={{ objectFit: "cover" }} />
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">{hording.hoardingType}</Typography>
+                    <Typography variant="body2" sx={{ fontSize: "0.85rem", textTransform: "lowercase" }}>{hording.hoardingDimension}</Typography>
+                  </Box>
+                  <Typography variant="body2">{hording.areaId?.name}, {hording.cityId?.name}, {hording.stateId?.name}</Typography>
+                  <Typography variant="body2">Hourly Rate: ${hording.hourlyRate}</Typography>
                 </CardContent>
               </Card>
             </Grid>
-          ))}
+          )) : <Typography variant="h6" align="center" mt={3}>No hoardings available</Typography>}
         </Grid>
-      </form>
-    </Box>
-    </>
+
+        {selectedHording && (
+          <Box mt={3} p={2} border={1} borderRadius={2}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <img src={selectedHording.hordingURL} alt="Hoarding" width="100%" />
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{selectedHording.hoardingType}</Typography>
+                <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
+                <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
+                <TextField fullWidth type="date" name="startDate" value={formData.startDate} onChange={handleChange} label="Start Date" InputLabelProps={{ shrink: true }} sx={{ mt: 2 }} />
+                <TextField fullWidth type="date" name="endDate" value={formData.endDate} onChange={handleChange} label="End Date" InputLabelProps={{ shrink: true }} sx={{ mt: 2 }} />
+                <Typography variant="h6" color="primary" mt={2}>Total Cost: ${calculateTotalCost()}</Typography>
+                <Button variant="contained" color="primary" onClick={handleBooking} sx={{ mt: 2 }} disabled={!selectedHording}>
+                  Continue to Payment
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 };
 
-export default BookingHoarding;
+export default BookHording;
+
