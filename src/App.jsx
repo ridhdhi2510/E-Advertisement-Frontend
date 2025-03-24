@@ -17,6 +17,7 @@ import MyBookings from "./customer/MyBookings";
 import PaymentDetails from "./customer/PaymentDetails";
 import PaymentPage from "./customer/PaymentPage";
 import { UpdateMyScreen } from "./agency/UpdateMyScreen";
+import { ResetPassword } from "./component/ResetPassword";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -26,6 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/agency/*" element={<AgencyPage />}>
             <Route index element={<DefaultPage />} />

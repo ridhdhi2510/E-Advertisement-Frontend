@@ -1,17 +1,18 @@
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Dialog, DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Divider, FormControlLabel, Checkbox, IconButton, InputAdornment } from '@mui/material';
+import { Dialog, DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Divider, FormControlLabel, Checkbox, IconButton, InputAdornment, alertClasses } from '@mui/material';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from 'axios';
 import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
+import { event } from 'jquery';
 
 
 export default function SignIn() {
     //hook
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors }, } = useForm();
+    const { register, handleSubmit,getValues, formState: { errors }, } = useForm();
     const navigate = useNavigate();
     
 
@@ -42,8 +43,40 @@ export default function SignIn() {
             }
         } catch (error) {
             console.error("Login Error:", error);
+            if(error.response){
+                alert(error.response.data.message)
+            }
+            else {
+                alert("An unexpected error occurred.");
+            }
         }
     };
+
+    const onForgotPassword = async(event)=> {
+
+        event.preventDefault();
+
+        const email = getValues("email");//getValues parameter of useForm for getting specific data from useForm data (which is here onSubmit data)
+
+        if (!email) {
+            alert("Enter your email");
+            return;
+          }
+        
+        const maildata = { email };
+
+        try{
+            const res = await axios.post("/user/forgotpassword",maildata)
+            if(res.status === 200){
+                alert(res.data.message)
+            } 
+        }
+        catch(err){
+            // alert(err.message)
+            alert(err.response?.data?.message);
+            console.error("Forgot Password Error:", err);
+        }
+    }
 
 
     // const onSubmit = async (data) => {
@@ -197,6 +230,11 @@ export default function SignIn() {
 
                 <Typography align="center" sx={{ mt: 2 }}>
                     Don't have an account? <Link to="/signup" style={{ color: '#1976d2' }}>Create one</Link>
+                </Typography>
+
+                <Typography align="center" sx={{ mt: 2 }}>
+                    <Link to="" style={{ color: '#1976d2' }} onClick={onForgotPassword}>Forgot Your Password?</Link>
+                    {/* to="" makes the link behave like a normal text element. */}
                 </Typography>
             </Paper>
             
