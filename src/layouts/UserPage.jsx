@@ -444,6 +444,8 @@
 
 
 import * as React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Avatar,
   Link,
@@ -497,17 +499,31 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function UserPage() {
+  const [userName, setUserName] = useState("");
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = React.useState(null);
-
+  const fetchUserData =async () => {
+    const storedUserid = localStorage.getItem("id");
+    const res = await axios.get(`/user/getbyid/${storedUserid}`);
+    const storedUserName = res.data.data.name
+    setUserName(storedUserName)
+    // console.log(userName)
+  };
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setSelectedImage(URL.createObjectURL(file));
-    }
-  };
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+
+
+  }, [])
+
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -535,7 +551,7 @@ export default function UserPage() {
             />
           </label>
           <Typography variant="body1" fontWeight="bold">
-            User Name
+            {userName}
           </Typography>
           <Link href="../customer/profile" variant="body2" underline="hover">
             Profile
