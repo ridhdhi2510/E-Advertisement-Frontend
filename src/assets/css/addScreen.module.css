@@ -1,0 +1,72 @@
+/* Wrapper to scope styles inside AddScreen */
+.addScreenContainer {
+     background: linear-gradient(to bottom, #e3f2fd, #ffffff);
+     padding: 20px;
+     min-height: 100vh;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+   }
+   
+   /* Form Container */
+   .addScreenForm {
+     background: #ffffff;
+     padding: 30px;
+     border-radius: 12px;
+     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+     width: 100%;
+     max-width: 600px;
+   }
+   
+   /* Title */
+   .title {
+     text-align: center;
+     color: #003366;
+     font-size: 24px;
+     font-weight: 600;
+     margin-bottom: 20px;
+   }
+   
+   /* Labels */
+   .label {
+     display: block;
+     font-weight: 500;
+     color: #004080;
+     margin-bottom: 8px;
+     font-size: 14px;
+   }
+   
+   /* Inputs & Selects */
+   .input {
+     width: 100%;
+     padding: 12px;
+     border: 1px solid #0056b3;
+     border-radius: 8px;
+     font-size: 14px;
+     outline: none;
+     transition: border 0.3s ease-in-out;
+   }
+   
+   .input:focus {
+     border-color: #004080;
+     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+   }
+   
+   /* Submit Button */
+   .button {
+     width: 100%;
+     padding: 12px;
+     background: #288ffe;
+     color: white;
+     font-size: 16px;
+     font-weight: bold;
+     border: none;
+     border-radius: 8px;
+     cursor: pointer;
+     transition: background 0.3s ease-in-out;
+   }
+   
+   .button:hover {
+     background: #0056b3;
+   }
+   

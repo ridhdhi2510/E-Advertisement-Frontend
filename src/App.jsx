@@ -9,24 +9,39 @@ import { AddScreen } from "./agency/AddScreen";
 import DefaultPage from "./agency/DefaultPage";
 import ViewMyScreen from "./agency/ViewMyScreen";
 import UserPage from "./layouts/UserPage";
+import UserDefaultPage from "./users/UserDefaultPage";
+import Profile from "./customer/Profile";
+import UpdateProfile from "./customer/UpdateProfile";
+import BookHording from "./customer/BookHording";
+import MyBookings from "./customer/MyBookings";
+import PaymentDetails from "./customer/PaymentDetails";
+import PaymentPage from "./customer/PaymentPage";
+import { UpdateMyScreen } from "./agency/UpdateMyScreen";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
   return (
     <AppTheme>
-      {" "}
-      {/* ✅ Wrap the entire router inside AppTheme */}
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/signin" element={<SignIn />}></Route>
+          <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/agency/*" element={<AgencyPage />}>
-            <Route index element = {<DefaultPage/>}></Route>
-            <Route path="addscreen" element={<AddScreen />}></Route>
-            <Route path="myscreens" element={<ViewMyScreen/>}> </Route>
+            <Route index element={<DefaultPage />} />
+            <Route path="addscreen" element={<AddScreen />} />
+            <Route path="myscreens" element={<ViewMyScreen />} />
+            <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
           </Route>
-          <Route path="/customer" element={<UserPage/>}>
+          <Route path="/customer/*" element={<UserPage />}>
+            <Route index element={<UserDefaultPage />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="updateprofile" element={<UpdateProfile />} />
+            <Route path="bookhording" element={<BookHording />} />
+            {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
+            <Route path="bookhording/payment" element={<PaymentPage />} />
+            <Route path="paymentdetails" element={<PaymentDetails />} />
+            <Route path="mybookings" element={<MyBookings />} />
           </Route>
         </Routes>
       </Router>
