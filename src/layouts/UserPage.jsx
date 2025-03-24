@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Avatar,
   Link,
@@ -109,9 +111,24 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function UserPage() {
+  const [userName, setUserName] = useState("");
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
+  const fetchUserData =async () => {
+    const storedUserid = localStorage.getItem("id");
+    const res = await axios.get(`/user/getbyid/${storedUserid}`);
+    const storedUserName = res.data.data.name
+    setUserName(storedUserName)
+    // console.log(userName)
+  };
+
+  useEffect(() => {
+    fetchUserData();
+
+
+  }, [])
+
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -182,7 +199,7 @@ export default function UserPage() {
             sx={{ width: 64, height: 64, mb: 1 }}
           />
           <Typography variant="body1" fontWeight="bold">
-            Ridhdi Bhojani
+            {userName}
           </Typography>
           <Link href="/profile" variant="body2" underline="hover">
             Update Profile

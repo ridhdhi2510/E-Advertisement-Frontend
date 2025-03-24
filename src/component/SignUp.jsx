@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Divider, FormControlLabel, Checkbox, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -7,15 +7,22 @@ import axios from 'axios';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
-    const [roleId, setRoleId] = useState(""); // Store roleId
+    const [roleId, setRoleId] = useState(null); // Store roleId
     const navigate = useNavigate();
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, formState: { errors } ,setValue} = useForm();
+    const [role, setRole] = useState("");
 
     // Fetch roleId when the user selects a role
     const handleRoleChange = async (event) => {
+        
         const roleName = event.target.value;
+        console.log(roleName)
+        // setRole(roleName);
+        // setValue("role", event.target.value);
+        // console.log("Selected Role:", roleName);
         try {
             const res = await axios.get(`/role/getrolebyname/${roleName}`);
+            console.log("API Response:", res.data); 
             if (res.data.data) {
                 setRoleId(res.data.data._id); // Store roleId
             }
@@ -25,13 +32,15 @@ export default function SignUp() {
     };
 
     const onSubmit = async (data) => {
+        console.log(data);
+        // console.log("role id is", roleId)
         if (!roleId) {
             alert("Please select a valid role.");
             return;
         }
-        
+
         data.roleId = roleId; // Assign roleId before sending the request
-        
+
         try {
             const res = await axios.post("/user/signup", data);
             if (res.status === 201) {
@@ -109,6 +118,26 @@ export default function SignUp() {
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
                     </FormControl>
+                    
+
+                    {/* <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
+                        <InputLabel sx={{ mt: -0.8 }}>Role</InputLabel>
+                        <Controller
+                            name="role"
+                            control={control}
+                            rules={{ required: "Role is required" }}
+                            render={({ field }) => (
+                                <Select {...field} onChange={(event) => {
+                                    field.onChange(event); // Ensure React Hook Form updates value
+                                    handleRoleChange(event); // Call your function
+                                }}>
+                                    <MenuItem value="customer">Customer</MenuItem>
+                                    <MenuItem value="agency">Agency</MenuItem>
+                                </Select>
+                            )}
+                        />
+                    </FormControl> */}
+
                     <FormControlLabel
                         control={<Checkbox {...register("rememberMe")} />}
                         label="Remember Me"

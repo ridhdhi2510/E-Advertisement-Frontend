@@ -18,8 +18,10 @@ export default function SignIn() {
     const onSubmit = async (data) => {
         try {
             const res = await axios.post("/user/login", data);
+            
             if (res.status === 200) {
                 localStorage.setItem("id", res.data.data._id);
+                
     
                 // Ensure roleId exists before accessing `name`
                 if (!res.data.data.roleId || !res.data.data.roleId.name) {
