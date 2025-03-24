@@ -500,9 +500,11 @@ const Drawer = styled(MuiDrawer, {
 
 export default function UserPage() {
   const [userName, setUserName] = useState("");
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = React.useState(null);
   const fetchUserData =async () => {
     const storedUserid = localStorage.getItem("id");
     const res = await axios.get(`/user/getbyid/${storedUserid}`);
@@ -510,7 +512,12 @@ export default function UserPage() {
     setUserName(storedUserName)
     // console.log(userName)
   };
-
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+    }
+  };
   useEffect(() => {
     fetchUserData();
 
