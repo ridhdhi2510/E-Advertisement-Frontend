@@ -103,17 +103,62 @@ export default function SignIn() {
     // };
     
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f5f5f5">
-            <Paper elevation={3} sx={{ padding: 4, width: 350 }}>
-                <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
-                    Sign In
-                </Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f5f5f5"
+            
+            sx={{
+                    backgroundImage: `url(${bgImg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundColor: "rgba(103, 102, 102, 0.55)", // Light opacity overlay
+                    backgroundBlendMode: "lighten",
+                }}
+        >
+            
+            <Paper elevation={3} sx={{ padding: 4, width: 350, bgcolor: "rgba(33, 33, 33, 0.9)", color: "white" }}>
+            
+                <Box display="flex" justify-content="space-between" alignItems="center" width="100%">
+                    <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
+                        Sign In
+                    </Typography>
+                    <IconButton onClick={() => navigate("/")} color="inherit" sx={{
+                            position: "absolute",
+                            top: "10px",
+                            right: "10px",
+                            width: "32px",  // Set a fixed width
+                            height: "32px", // Set a fixed height
+                            minWidth: "auto", // Prevents default stretching
+                            padding: "5px",  // Reduces padding
+                            color: "white", backgroundColor: "rgba(255, 255, 255, 0.3)", // Light opacity background
+                            borderRadius: "50%", // Make it round
+                            ml: "auto", p: 0
+                        }}>
+                            <CloseIcon fontSize="medium" />
+                    </IconButton>
+                </Box>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <TextField
                         fullWidth
                         label="Email"
                         variant="outlined"
                         margin="normal"
+                        type="email"
+                        sx={{
+                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
+                            },
+                        }}
+                        InputProps={{
+                            style: {
+                                color: "white", // Text color
+                                backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
+                                borderRadius: "5px",
+                                border: "1px solid white",
+                            },
+                        }}
+                        InputLabelProps={{
+                            style: { color: "rgba(255, 255, 255, 0.7)" }, // Label color
+                        }}
                         {...register("email", { required: "Email is required", pattern: { value: /.+@.+\..+/, message: "Enter a valid email" } })}
                         error={!!errors.email}
                         helperText={errors.email?.message}
@@ -134,6 +179,11 @@ export default function SignIn() {
                         type={showPassword ? "text" : "password"} // Toggle visibility
                         variant="outlined"
                         margin="normal"
+                        sx={{
+                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
+                            },
+                        }}
                         {...register("password", { required: "Password is required", minLength: { value: 6, message: "Minimum 6 characters" } })}
                         error={!!errors.password}
                         helperText={errors.password?.message}
@@ -145,6 +195,15 @@ export default function SignIn() {
                                     </IconButton>
                                 </InputAdornment>
                             ),
+                            style: {
+                                color: "white", // Text color
+                                backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
+                                borderRadius: "5px",
+                                border: "1px solid white",
+                            },
+                        }}
+                        InputLabelProps={{
+                            style: { color: "rgba(255, 255, 255, 0.7)" }, // Label color
                         }}
                     />
 
@@ -156,10 +215,17 @@ export default function SignIn() {
                         </Select>
                     </FormControl> */}
                     <FormControlLabel
-                        control={<Checkbox {...register("rememberMe")} />}
+                        control={<Checkbox {...register("rememberMe")} sx={{
+                            color: "white", // Default checkbox color
+                            "&.Mui-checked": { color: "white" }, // Checked state color
+                        }} />}
                         label="Remember Me"
-                        sx={{ mt: 1 }}
+                        sx={{
+                            mt: 1, color: "white", // Label color
+                            "& .MuiTypography-root": { color: "white" },
+                        }}
                     />
+
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign In
                     </Button>
