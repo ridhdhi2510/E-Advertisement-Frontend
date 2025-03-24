@@ -42,9 +42,12 @@ export const AddScreen = () => {
   };
 
   return (
-    <div className={styles.addScreenContainer}>
-      <div className={styles.addScreenForm}>
-        <h2 className={styles.title}>Add New Hoarding</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 p-6">
+    <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-lg transition-all duration-300" id="container">
+      {/* Form Title */}
+      <h2 className="text-center text-3xl font-bold text-gray-800 dark:text-white mb-6">
+        Add New Hoarding
+      </h2>
 
         <form onSubmit={handleSubmit(submitHandler)} encType="multipart/form-data">
           {/* Hoarding Dimension */}
