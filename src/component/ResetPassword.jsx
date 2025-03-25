@@ -10,7 +10,7 @@ import CustomLoader from "./CustomLoader";
 
 export const ResetPassword = () => {
 
-    
+    const [isLoading, setisLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const {register,handleSubmit, formState: {errors}} = useForm()
     const navigate = useNavigate();
