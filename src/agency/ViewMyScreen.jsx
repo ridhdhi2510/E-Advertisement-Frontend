@@ -112,26 +112,67 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+// const HordingCard = ({ data }) => {
+//   const navigate = useNavigate(); // React Router navigation hook
+
+//   const handleUpdateClick = () => {
+//     navigate(`/agency/updateScreen/${data._id}`); // 🔥 Instant redirect
+//   };
+
+//   return (
+//     <Card sx={{ width: 280, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd" }}>
+//       <CardMedia
+//         component="img"
+//         height="150"
+//         image={data?.hordingURL || "https://via.placeholder.com/200x150"}
+//         alt="Hording"
+//       />
+//       <CardContent>
+//         <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
+//           {data?.hoardingType
+//             ? `${data.hoardingType} - ${data.hoardingDimension}`
+//             : "Unknown Type"}
+//         </Typography>
+//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
+//           Rate: {data?.hourlyRate || "N/A"}
+//         </Typography>
+//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
+//           Location: {data?.latitude && data?.longitude ? `${data.latitude}, ${data.longitude}` : "Location not available"}
+//         </Typography>
+//         <Button
+//           variant="contained"
+//           onClick={handleUpdateClick} // ✅ Single click to navigate
+//           sx={{ mt: 2, backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "100%" }}
+//         >
+//           Update
+//         </Button>
+//       </CardContent>
+//     </Card>
+//   );
+// };
+
 const HordingCard = ({ data }) => {
-  const navigate = useNavigate(); // React Router navigation hook
+  const navigate = useNavigate();
 
   const handleUpdateClick = () => {
-    navigate(`/agency/updateScreen/${data._id}`); // 🔥 Instant redirect
+    navigate(`/agency/updateScreen/${data._id}`);
   };
 
   return (
-    <Card sx={{ width: 280, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd" }}>
-      <CardMedia
-        component="img"
-        height="150"
-        image={data?.hordingURL || "https://via.placeholder.com/200x150"}
-        alt="Hording"
-      />
+    <Card sx={{ width: 280, height: 330, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd", overflow: "hidden" }}>
+      {/* ✅ Image inside a fixed container */}
+      <Box sx={{ height: 170, width: "100%", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <CardMedia
+          component="img"
+          image={data?.hordingURL || "https://via.placeholder.com/200x150"}
+          alt="Hoarding"
+          sx={{ height: "100%", width: "100%", objectFit: "cover" }} // ✅ Ensures full image is visible
+        />
+      </Box>
+
       <CardContent>
         <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
-          {data?.hoardingType
-            ? `${data.hoardingType} - ${data.hoardingDimension}`
-            : "Unknown Type"}
+          {data?.hoardingType ? `${data.hoardingType} - ${data.hoardingDimension}` : "Unknown Type"}
         </Typography>
         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
           Rate: {data?.hourlyRate || "N/A"}
@@ -141,7 +182,7 @@ const HordingCard = ({ data }) => {
         </Typography>
         <Button
           variant="contained"
-          onClick={handleUpdateClick} // ✅ Single click to navigate
+          onClick={handleUpdateClick}
           sx={{ mt: 2, backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "100%" }}
         >
           Update
@@ -150,6 +191,7 @@ const HordingCard = ({ data }) => {
     </Card>
   );
 };
+
 
 const ViewMyScreen = () => {
   // State Hooks

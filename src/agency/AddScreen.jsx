@@ -39,6 +39,7 @@ export const AddScreen = () => {
     Object.keys(data).forEach((key) => formData.append(key, data[key]));
     formData.append("image", data.image[0]);
     alert("Form submitted successfully!");
+    await axios.post("/hording/addWithFile", formData);
     navigate("/agency/myscreens");
   };
 
