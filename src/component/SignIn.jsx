@@ -7,11 +7,13 @@ import axios from 'axios';
 import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
 import { event } from 'jquery';
+import CustomLoader from "./CustomLoader";
 
 
 export default function SignIn() {
     
     //hook
+    const [isLoading, setisLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit,getValues, formState: { errors }, } = useForm();
     const navigate = useNavigate();
@@ -22,7 +24,9 @@ export default function SignIn() {
 
     const onSubmit = async (data) => {
         try {
+            setisLoading(true);
             const res = await axios.post("/user/login", data);
+            setisLoading(false);
             
             if (res.status === 200) {
                 localStorage.setItem("id", res.data.data._id);
@@ -68,7 +72,9 @@ export default function SignIn() {
         const maildata = { email };
 
         try{
+            setisLoading(true);
             const res = await axios.post("/user/forgotpassword",maildata)
+            setisLoading(false);
             if(res.status === 200){
                 alert(res.data.message)
             } 
@@ -103,6 +109,8 @@ export default function SignIn() {
     // };
     
     return (
+        <>
+        {isLoading == true && <CustomLoader />}
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f5f5f5"
             
             sx={{
@@ -242,5 +250,6 @@ export default function SignIn() {
                 </Typography>
             </Paper>
         </Box>
+        </>
     );
 }

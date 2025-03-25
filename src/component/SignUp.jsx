@@ -6,9 +6,10 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from 'axios';
 import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
-
+import CustomLoader from "./CustomLoader";
 
 export default function SignUp() {
+    const [isLoading, setisLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [roleId, setRoleId] = useState(null); // Store roleId
     const navigate = useNavigate();
@@ -44,7 +45,9 @@ export default function SignUp() {
         data.roleId = roleId; // Assign roleId before sending the request
 
         try {
+            setisLoading(true);
             const res = await axios.post("/user/signup", data);
+            setisLoading(false);
             if (res.status === 201) {
 
                 // localStorage.setItem("userName", data.name);
@@ -60,6 +63,8 @@ export default function SignUp() {
 
     return (
 
+        <>
+    {isLoading == true && <CustomLoader />}
         <Box sx={{
             display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundImage: `url(${bgImg})`,
             backgroundSize: "cover",
@@ -283,5 +288,6 @@ export default function SignUp() {
             </Paper>
 
         </Box>
+        </>
     );
 }

@@ -6,9 +6,11 @@ import axios from 'axios';
 import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useParams } from 'react-router-dom';
+import CustomLoader from "./CustomLoader";
 
 export const ResetPassword = () => {
 
+    
     const [showPassword, setShowPassword] = useState(false);
     const {register,handleSubmit, formState: {errors}} = useForm()
     const navigate = useNavigate();
@@ -23,7 +25,9 @@ export const ResetPassword = () => {
             token: token,
             password: data.password
         }
+        setisLoading(true);
         const res = await axios.post("/user/resetpassword",obj)
+        setisLoading(false); 
         if(res.status == 200){
             alert(res.data.message)
             navigate("/signin")
@@ -34,6 +38,8 @@ export const ResetPassword = () => {
     }
 
   return (
+    <>
+    {isLoading == true && <CustomLoader />}
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f5f5f5" sx={{
         backgroundImage: `url(${bgImg})`,
         backgroundSize: "cover",
@@ -108,5 +114,6 @@ export const ResetPassword = () => {
         </Paper>
         
     </Box>
+    </>
   )
 }
