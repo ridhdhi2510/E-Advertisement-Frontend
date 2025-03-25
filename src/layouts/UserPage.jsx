@@ -528,7 +528,19 @@ export default function UserPage() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent"
+        open={open}
+        anchor="left"
+        sx={{
+          width: open ? "220px" : "60px",
+          flexShrink: 0,
+          height: "660px", // Set the desired height
+          "& .MuiDrawer-paper": {
+            width: open ? "220px !important" : "60px !important", // Force width
+            height: "660px", // Ensure the drawer's paper follows this height
+            overflowY: "auto", // Enable scrolling if content overflows
+          },
+        }}>
         <DrawerHeader>
           <IconButton onClick={() => setOpen(!open)}>
             {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
