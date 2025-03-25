@@ -13,11 +13,11 @@ export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [roleId, setRoleId] = useState(null); // Store roleId
     const navigate = useNavigate();
-    const { register, handleSubmit, watch, formState: { errors } ,setValue} = useForm();
+    const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
     const [role, setRole] = useState("");
 
     const handleRoleChange = async (event) => {
-        
+
         const roleName = event.target.value;
         console.log(roleName)
         // setRole(roleName);
@@ -25,7 +25,7 @@ export default function SignUp() {
         // console.log("Selected Role:", roleName);
         try {
             const res = await axios.get(`/role/getrolebyname/${roleName}`);
-            console.log("API Response:", res.data); 
+            console.log("API Response:", res.data);
             if (res.data.data) {
                 setRoleId(res.data.data._id);
             }
@@ -102,16 +102,14 @@ export default function SignUp() {
                         variant="outlined"
                         margin="normal"
                         sx={{
-                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
-                            },
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
                         }}
                         InputProps={{
                             style: {
                                 color: "white", // Text color
                                 backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
                                 borderRadius: "5px",
-                                border: "1px solid white",
+                                // border: "1px solid white",
                             },
                         }}
                         InputLabelProps={{
@@ -128,16 +126,14 @@ export default function SignUp() {
                         margin="normal"
                         type="email"
                         sx={{
-                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
-                            },
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
                         }}
                         InputProps={{
                             style: {
                                 color: "white", // Text color
                                 backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
                                 borderRadius: "5px",
-                                border: "1px solid white",
+                                // border: "1px solid white",
                             },
                         }}
                         InputLabelProps={{
@@ -154,9 +150,7 @@ export default function SignUp() {
                         variant="outlined"
                         margin="normal"
                         sx={{
-                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
-                            },
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
                         }}
                         {...register("password", { required: "Password is required", minLength: { value: 6, message: "Minimum 6 characters" } })}
                         error={!!errors.password}
@@ -173,7 +167,7 @@ export default function SignUp() {
                                 color: "white", // Text color
                                 backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
                                 borderRadius: "5px",
-                                border: "1px solid white",
+                                // border: "1px solid white",
                             },
                         }}
                         InputLabelProps={{
@@ -187,16 +181,14 @@ export default function SignUp() {
                         variant="outlined"
                         margin="normal"
                         sx={{
-                            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                                borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
-                            },
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
                         }}
                         InputProps={{
                             style: {
                                 color: "white", // Text color
                                 backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
                                 borderRadius: "5px",
-                                border: "1px solid white",
+                                // border: "1px solid white",
                             },
                         }}
                         InputLabelProps={{
@@ -210,32 +202,50 @@ export default function SignUp() {
                         helperText={errors.confirmPassword?.message}
                     />
                     <FormControl fullWidth margin="normal" variant="outlined" sx={{
-                        backgroundColor: "rgba(71, 70, 70, 0.2)", // Dark background with opacity
-                        borderRadius: "5px",
                         "& .MuiOutlinedInput-root": {
-                            color: "#fff !important" , // Light text color
-                            "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#fff !important", // Light border
+                            "& fieldset": {
+                                border: "1px solid white", // Normal state border
                             },
-                            "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#fff !important", // Border on hover
-                            }
-                        }
+                            "&:hover fieldset": {
+                                border: "1px solid white", // Hover state
+                            },
+
+                            "&.Mui-focused": {
+                                border: "none !important", // Remove border on focus (matches other fields)
+                            },
+                        },
+
+                        // Label styling
+                        "& .MuiInputLabel-root": {
+                            color: "rgba(255, 255, 255, 0.7)",
+                            "&.Mui-focused": {
+                                color: "rgba(255, 255, 255, 0.7) !important", // Keep same color when focused
+                            },
+                        },
                     }} >
 
-                        <InputLabel sx={{ color: "#FFFFFFB3", "&.Mui-focused": { color: "#fff !important" } }}>Role</InputLabel>
+                        <InputLabel sx={{
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
+                        }}> Role</InputLabel>
                         <Select
                             defaultValue=""
                             {...register("role", { required: "Role is required" })}
                             onChange={handleRoleChange}
                             sx={{
-                                color: "#fff", // Light text color
-                                "& .MuiSvgIcon-root": { color: "#fff" }, // Light dropdown icon
+                                "& .MuiSvgIcon-root": { color: "#fff" },
+                                // Remove any focus effects on the select itself
+                                "&:before": {
+                                    borderBottom: "none",
+                                },
+                                "&:after": {
+                                    borderBottom: "none",
+                                },
                             }}
                             MenuProps={{
                                 PaperProps: {
                                     sx: {
                                         backgroundColor: "rgb(69, 69, 69)", // Dark dropdown background
+
                                         color: "#fff", // Light text in dropdown
                                     }
                                 }
@@ -246,7 +256,7 @@ export default function SignUp() {
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
                     </FormControl>
-                    
+
 
                     {/* <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
                         <InputLabel sx={{ mt: -0.8 }}>Role</InputLabel>
