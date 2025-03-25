@@ -7,6 +7,7 @@ import axios from 'axios';
 import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
 
+
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [roleId, setRoleId] = useState(null); // Store roleId
@@ -45,6 +46,8 @@ export default function SignUp() {
         try {
             const res = await axios.post("/user/signup", data);
             if (res.status === 201) {
+
+                // localStorage.setItem("userName", data.name);
                 alert("Signup successful! Please login.");
                 navigate("/signin");
             }

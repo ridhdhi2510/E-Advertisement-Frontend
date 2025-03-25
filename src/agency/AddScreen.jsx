@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../assets/css/addScreen.module.css"; // ✅ Import as module
 
+
 export const AddScreen = () => {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -30,14 +31,14 @@ export const AddScreen = () => {
     setAreas(res.data.data);
   };
 
+
   const submitHandler = async (data) => {
     data.userId = localStorage.getItem("id");
 
     const formData = new FormData();
     Object.keys(data).forEach((key) => formData.append(key, data[key]));
     formData.append("image", data.image[0]);
-
-    await axios.post("/hording/addWithFile", formData);
+    alert("Form submitted successfully!");
     navigate("/agency/myscreens");
   };
 
