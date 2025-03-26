@@ -472,6 +472,7 @@ import {
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 const drawerWidth = 240;
 
@@ -565,9 +566,9 @@ export default function UserPage() {
           <Typography variant="body1" fontWeight="bold">
             {userName}
           </Typography>
-          <Link href="../customer/profile" variant="body2" underline="hover">
+          {/* <Link href="../customer/profile" variant="body2" underline="hover">
             Profile
-          </Link>
+          </Link> */}
           <Link href="../customer/updateprofile" variant="body2" underline="hover">
             Update Profile
           </Link>
@@ -579,6 +580,14 @@ export default function UserPage() {
               <ListItemText primary="Home" />
             </ListItemButton>
           </ListItem>
+
+          <ListItem disablePadding onClick={() => navigate("/customer")}>
+            <ListItemButton>
+              <ListItemIcon><DashboardIcon /></ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItemButton>
+          </ListItem>
+
           <ListItem disablePadding onClick={() => navigate("../customer/bookhording")}>
             <ListItemButton>
               <ListItemIcon><BookIcon /></ListItemIcon>

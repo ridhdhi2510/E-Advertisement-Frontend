@@ -2,26 +2,69 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Container, Grid, Card, CardContent, Typography, Button, Select, MenuItem, 
-  TextField, Box, Modal, Backdrop, IconButton 
+  TextField, Box, Modal, Backdrop, IconButton , CardActionArea 
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 
 const BookHording = () => {
   const navigate = useNavigate();
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
   const [hordings, setHordings] = useState([]);
   const [selectedHording, setSelectedHording] = useState(null);
   const [formData, setFormData] = useState({ startDate: "", endDate: "" });
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    axios.get("/state/getall").then((res) => setStates(res.data.data));
+    fetchFilteredHordings();
+  }, []);
+
+  useEffect(() => {
+    fetchFilteredHordings();
+  }, [formData.state, formData.city, formData.area]);
+
+  const fetchFilteredHordings = () => {
+    const { state, city, area } = formData;
+    let queryParams = [];
+  
+    if (state) queryParams.push(`stateId=${state}`);
+    if (city) queryParams.push(`cityId=${city}`);
+    if (area) queryParams.push(`areaId=${area}`);
+  
+    let query = queryParams.length ? `?${queryParams.join("&")}` : "";
+  
+    axios.get(`/hording/getHordingsByLocation${query}`)
+      .then((res) => {
+        setHordings(res.data.data);
+      })
+      .catch(() => setHordings([]));
+  };
+
+  const getCityByStateId = (id) => {
+    axios.get(`/city/getcitybystate/${id}`)
+      .then((res) => setCities(res.data.data))
+      .catch((err) => console.error("Error fetching cities:", err));
+  };
+  
+  const getAreaByCityId = (id) => {
+    axios.get(`/area/getareabycity/${id}`)
+      .then((res) => setAreas(res.data.data))
+      .catch((err) => console.error("Error fetching areas:", err));
+  };
+  
+
+  useEffect(() => {
     axios.get("/hording/getAll").then((res) => setHordings(res.data.data)).catch(() => setHordings([]));
   }, []);
 
   const handleHordingClick = (hording) => {
-    setSelectedHording(hording);
-    setModalOpen(true);
+    setSelectedHording((prev) => (prev && prev._id === hording._id ? null : hording));
+    setModalOpen((prev) => !(prev && prev._id === hording._id)); // Toggle modal based on selection
   };
+  
 
   // ✅ Function to close the modal
   const handleCloseModal = () => {
@@ -58,38 +101,88 @@ const BookHording = () => {
   return (
     <Container>
       <Box mt={3}>
+        {/* State, City, and Area Filters */}
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
+            <Select
+              fullWidth
+              name="state"
+              value={formData.state}
+              onChange={(e) => { handleChange(e); getCityByStateId(e.target.value); }}
+              displayEmpty
+              renderValue={formData.state ? undefined : () => "Select State"}
+            >
+              <MenuItem value="">Select State</MenuItem>
+              {states.map((s) => <MenuItem key={s._id} value={s._id}>{s.name}</MenuItem>)}
+            </Select>
+          </Grid>
+
+          <Grid item xs>
+            <Select
+              fullWidth
+              name="city"
+              value={formData.city}
+              onChange={(e) => { handleChange(e); getAreaByCityId(e.target.value); }}
+              displayEmpty
+              renderValue={formData.city ? undefined : () => "Select City"}
+            >
+              <MenuItem value="">Select City</MenuItem>
+              {cities.map((c) => <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>)}
+            </Select>
+          </Grid>
+
+          <Grid item xs>
+            <Select
+              fullWidth
+              name="area"
+              value={formData.area}
+              onChange={handleChange}
+              displayEmpty
+              renderValue={formData.area ? undefined : () => "Select Area"}
+            >
+              <MenuItem value="">Select Area</MenuItem>
+              {areas.map((a) => <MenuItem key={a._id} value={a._id}>{a.name}</MenuItem>)}
+            </Select>
+          </Grid>
+        </Grid>
+
+        {/* Hoarding Cards */}
         <Grid container spacing={2} mt={2}>
           {hordings.length > 0 ? hordings.map((hording) => (
             <Grid item xs={12} sm={6} md={4} key={hording._id}>
-              <Card
-                onClick={() => handleHordingClick(hording)}
-                sx={{ cursor: "pointer", height: 350, display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", boxShadow: 2, borderRadius: 2, border: "1px solid #ddd" }}
-              >
+              <Card onClick={() => handleHordingClick(hording)} sx={{ height: 330, cursor: "pointer", display: "flex", flexDirection: "column",  justifyContent: "space-between", overflow: "hidden", boxShadow: 2, borderRadius: 2, border: "1px solid #ddd" }}>
+
                 <CardContent sx={{ flexGrow: 1, padding: 2 }}>
-                  <Box sx={{ height: 150, width: "100%", overflow: "hidden" }}>
-                    <img src={hording.hordingURL || "https://via.placeholder.com/280x150"} alt="Hoarding" width="100%" height="100%" style={{ objectFit: "cover", borderRadius: "4px" }} />
+                <Box sx={{ height: 180, width: "100%", overflow: "hidden" }}>
+                  <img src={hording.hordingURL} alt="Hoarding" width="100%"  style={{ objectFit: "cover", maxHeight: "250px", height: "auto" }} />
+                </Box>
+                <Box>
+                  <Typography variant="h6"sx={{ fontWeight: "bold", color: "gray.800" }} >{hording.hoardingType}</Typography>
+                  <Typography variant="body2" >{hording.areaId?.name}, {hording.cityId?.name}, {hording.stateId?.name}</Typography>
+                  <Typography variant="body2" sx={{ color: "gray.600", mt: 1 }} >Hourly Rate: ${hording.hourlyRate}</Typography>
                   </Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-                    <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>{hording.hoardingType || "Unknown Type"}</Typography>
-                    <Typography variant="body2" sx={{ fontSize: "0.85rem", textTransform: "lowercase", color: "gray.600" }}>{hording.hoardingDimension || "N/A"}</Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{ color: "gray.600", mt: 1 }}>{hording.areaId?.name}, {hording.cityId?.name}, {hording.stateId?.name}</Typography>
-                  <Typography variant="body2" sx={{ color: "gray.600", mt: 1 }}>Hourly Rate: ${hording.hourlyRate || "N/A"}</Typography>
                 </CardContent>
+               
               </Card>
             </Grid>
           )) : <Typography variant="h6" align="center" mt={3}>No hoardings available</Typography>}
         </Grid>
 
-        {/* ✅ Payment Details Modal with Close Button */}
-        <Modal
-          open={modalOpen}
-          onClose={handleCloseModal}  // ✅ Now this function exists
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{ sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" } }}
-        >
-          <Box
+        {/* Payment Details Modal */}
+        <Modal open={modalOpen} onClose={handleCloseModal} closeAfterTransition BackdropComponent={Backdrop} BackdropProps={{ sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" } }}>
+          {/* <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 400, bgcolor: "white", boxShadow: 24, p: 4, borderRadius: 2 }}>
+            <IconButton onClick={handleCloseModal} sx={{ position: "absolute", top: 8, right: 8, color: "gray" }}>
+              <CloseIcon />
+            </IconButton>
+            {selectedHording && (
+              <>
+                <Typography variant="h6">{selectedHording.hoardingType}</Typography>
+                <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
+              </>
+            )}
+          </Box> */}
+
+<Box
             sx={{
               position: "absolute",
               top: "50%",
@@ -117,7 +210,7 @@ const BookHording = () => {
 
             {selectedHording && (
               <>
-                <Typography variant="h6">{selectedHording.hoardingType}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>{selectedHording.hoardingType}</Typography>
                 <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
                 <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
                 <TextField fullWidth type="date" name="startDate" value={formData.startDate} onChange={handleChange} label="Start Date" InputLabelProps={{ shrink: true }} sx={{ mt: 2 }} />
@@ -134,5 +227,6 @@ const BookHording = () => {
     </Container>
   );
 };
+
 
 export default BookHording;

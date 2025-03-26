@@ -180,13 +180,25 @@ const HordingCard = ({ data }) => {
         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
           Location: {data?.latitude && data?.longitude ? `${data.latitude}, ${data.longitude}` : "Location not available"}
         </Typography>
-        <Button
-          variant="contained"
-          onClick={handleUpdateClick}
-          sx={{ mt: 2, backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "100%" }}
-        >
-          Update
-        </Button>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleUpdateClick}
+            sx={{ backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "48%" }}
+          >
+            Update
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            // onClick={handleRemoveClick} // Ensure this function handles removal
+            sx={{ backgroundColor: "red.500", "&:hover": { backgroundColor: "red.700" }, fontWeight: "bold", width: "48%" }}
+          >
+            Remove
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );
