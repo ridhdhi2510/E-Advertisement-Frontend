@@ -157,6 +157,8 @@ export default function SignIn() {
                             //"& .MuiOutlinedInput-root.Mui-focused fieldset": {
                             //     borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
                             // },
+                            
+
                              "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused": { border: "none" }
                         }}
                         InputProps={{
