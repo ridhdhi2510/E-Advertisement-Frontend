@@ -39,7 +39,7 @@ export default function SignIn() {
                 }
     
                 localStorage.setItem("role", res.data.data.roleId.name);
-                alert("Login Success");
+                // alert("Login Success");
     
                 if (res.data.data.roleId.name === "customer") {
                     navigate("/customer");
