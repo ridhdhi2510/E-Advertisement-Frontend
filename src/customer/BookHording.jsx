@@ -182,13 +182,13 @@ const BookHording = () => {
             )}
           </Box> */}
 
-<Box
+          <Box
             sx={{
               position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: 400,
+              width: 700,
               bgcolor: "white",
               boxShadow: 24,
               p: 4,
@@ -210,17 +210,97 @@ const BookHording = () => {
 
             {selectedHording && (
               <>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>{selectedHording.hoardingType}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
+                  {selectedHording.hoardingType}
+                </Typography>
                 <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
                 <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
-                <TextField fullWidth type="date" name="startDate" value={formData.startDate} onChange={handleChange} label="Start Date" InputLabelProps={{ shrink: true }} sx={{ mt: 2 }} />
-                <TextField fullWidth type="date" name="endDate" value={formData.endDate} onChange={handleChange} label="End Date" InputLabelProps={{ shrink: true }} sx={{ mt: 2 }} />
-                <Typography variant="h6" color="primary" mt={2}>Total Cost: ${calculateTotalCost()}</Typography>
-                <Button variant="contained" color="primary" onClick={handleBooking} sx={{ mt: 2 }} disabled={!selectedHording}>
+
+                {/* Ad Name */}
+                <TextField
+                  fullWidth
+                  name="adName"
+                  label="Ad Name"
+                  value={formData.adName}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
+
+                {/* Ad Description */}
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  name="adDescription"
+                  label="Ad Description"
+                  value={formData.adDescription}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
+
+                {/* File Upload */}
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  name="adFile"
+                  onChange={(e) => setFormData({ ...formData, adFile: e.target.files[0] })}
+                  style={{ marginTop: "16px" }}
+                />
+
+                {/* Website or Product URL (Optional) */}
+                <TextField
+                  fullWidth
+                  type="url"
+                  name="websiteUrl"
+                  label="Website or Product URL (Optional)"
+                  value={formData.websiteUrl}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
+
+                {/* Start Date */}
+                <TextField
+                  fullWidth
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  label="Start Date"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mt: 2 }}
+                />
+
+                {/* End Date */}
+                <TextField
+                  fullWidth
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  label="End Date"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mt: 2 }}
+                />
+
+                {/* Total Cost */}
+                <Typography variant="h6" color="primary" mt={2}>
+                  Total Cost: ${calculateTotalCost()}
+                </Typography>
+
+                {/* Continue to Payment Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBooking}
+                  sx={{ mt: 2 }}
+                  disabled={!selectedHording}
+                >
                   Continue to Payment
                 </Button>
               </>
             )}
+
+
           </Box>
         </Modal>
       </Box>
