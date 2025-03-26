@@ -39,7 +39,7 @@ export default function SignIn() {
                 }
     
                 localStorage.setItem("role", res.data.data.roleId.name);
-                alert("Login Success");
+                // alert("Login Success");
     
                 if (res.data.data.roleId.name === "customer") {
                     navigate("/customer");
@@ -48,6 +48,7 @@ export default function SignIn() {
                 }
             }
         } catch (error) {
+            setisLoading(false);
             console.error("Login Error:", error);
             if(error.response){
                 alert(error.response.data.message)
@@ -80,6 +81,7 @@ export default function SignIn() {
             } 
         }
         catch(err){
+            setisLoading(false);
             // alert(err.message)
             alert(err.response?.data?.message);
             console.error("Forgot Password Error:", err);
@@ -155,6 +157,8 @@ export default function SignIn() {
                             //"& .MuiOutlinedInput-root.Mui-focused fieldset": {
                             //     borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
                             // },
+                            
+
                              "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused": { border: "none" }
                         }}
                         InputProps={{

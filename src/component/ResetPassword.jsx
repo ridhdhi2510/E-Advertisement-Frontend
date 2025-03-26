@@ -81,9 +81,7 @@ export const ResetPassword = () => {
                     variant="outlined"
                     margin="normal"
                     sx={{
-                        "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                            borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
-                        },
+                        "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
                     }}
                     {...register("password", { required: "Password is required", minLength: { value: 6, message: "Minimum 6 characters" } })}
                     error={!!errors.password}
@@ -100,7 +98,7 @@ export const ResetPassword = () => {
                             color: "white", // Text color
                             backgroundColor: "rgba(71, 70, 70, 0.2)", // Slightly visible background
                             borderRadius: "5px",
-                            border: "1px solid white",
+                            // border: "1px solid white",
                         },
                     }}
                     InputLabelProps={{

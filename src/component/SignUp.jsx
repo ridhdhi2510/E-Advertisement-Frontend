@@ -46,15 +46,19 @@ export default function SignUp() {
 
         try {
             setisLoading(true);
-            const res = await axios.post("/user/signup", data);
+            setTimeout(() => {
+                console.log("Processing signup...");
+            }, 500);
+            const res = await axios.post("/user/signup", data,{timeout:10000});
             setisLoading(false);
             if (res.status === 201) {
 
                 // localStorage.setItem("userName", data.name);
-                alert("Signup successful! Please login.");
+                // alert("Signup successful! Please login.");
                 navigate("/signin");
             }
         } catch (err) {
+            setisLoading(false);
             console.error("Signup error:", err);
         }
     };

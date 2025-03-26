@@ -29,6 +29,13 @@ import {
   SpaceDashboardRounded as SpaceDashboardRoundedIcon,
 } from "@mui/icons-material";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import HomeIcon from "@mui/icons-material/Home";
+import TvIcon from "@mui/icons-material/Tv";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+
+
 
 const drawerWidth = 240;
 
@@ -239,11 +246,20 @@ export default function AgencyPage() {
                   },
                 ]}
               >
-                <SpaceDashboardRoundedIcon />
+                <HomeIcon /> 
               </ListItemIcon>
               <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+
+            {/* for agency dashboard navigation */}
+          <ListItem disablePadding onClick={() => navigate("/agency")}>
+            <ListItemButton>
+              <ListItemIcon><DashboardIcon /></ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItemButton>
+          </ListItem>
+
 
           {/*  add Screen page  Navigation */}
           <ListItem
@@ -308,7 +324,7 @@ export default function AgencyPage() {
                   },
                 ]}
               >
-                <AddIcCallSharpIcon />
+                <TvIcon />
               </ListItemIcon>
               <ListItemText
                 primary="View My Screens"
@@ -321,7 +337,7 @@ export default function AgencyPage() {
 
         <List>
           {/* for Home navigation */}
-          <ListItem
+          {/* <ListItem
             disablePadding
             sx={{ display: "block" }}
             onClick={() => {
@@ -355,10 +371,10 @@ export default function AgencyPage() {
                 sx={{ opacity: open ? 1 : 0 }}
               />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
 
           {/*  About page  Navigation */}
-          <ListItem
+          {/* <ListItem
             disablePadding
             sx={{ display: "block" }}
             onClick={() => {
@@ -388,7 +404,7 @@ export default function AgencyPage() {
               </ListItemIcon>
               <ListItemText primary="About" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
 
           {/* contact page navigation */}
 
@@ -421,7 +437,7 @@ export default function AgencyPage() {
 
                 }}
               >
-                <AddIcCallSharpIcon />
+                <LogoutIcon />
               </ListItemIcon>
               <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>

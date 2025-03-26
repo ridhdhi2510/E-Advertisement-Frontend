@@ -111,6 +111,7 @@ import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mu
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import CustomLoader from "../component/CustomLoader";
 
 // const HordingCard = ({ data }) => {
 //   const navigate = useNavigate(); // React Router navigation hook
@@ -180,13 +181,25 @@ const HordingCard = ({ data }) => {
         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
           Location: {data?.latitude && data?.longitude ? `${data.latitude}, ${data.longitude}` : "Location not available"}
         </Typography>
-        <Button
-          variant="contained"
-          onClick={handleUpdateClick}
-          sx={{ mt: 2, backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "100%" }}
-        >
-          Update
-        </Button>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleUpdateClick}
+            sx={{ backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "48%" }}
+          >
+            Update
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            // onClick={handleRemoveClick} // Ensure this function handles removal
+            sx={{ backgroundColor: "red.500", "&:hover": { backgroundColor: "red.700" }, fontWeight: "bold", width: "48%" }}
+          >
+            Remove
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -196,12 +209,14 @@ const HordingCard = ({ data }) => {
 const ViewMyScreen = () => {
   // State Hooks
   const [hordingData, setHordingData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setisLoading] = useState(false);
 
   // Fetch all hoardings
   const getAllScreens = async () => {
     try {
+      setisLoading(true);
       const res = await axios.get("/hording/getHordingsbyuserid/" + localStorage.getItem("id"));
+      setisLoading(false);
       console.log("Full API Response:", res);
       console.log("Fetched Data:", res.data?.data);
 
@@ -211,9 +226,8 @@ const ViewMyScreen = () => {
         console.error("Invalid API response:", res.data);
       }
     } catch (error) {
+      setisLoading(false);
       console.error("Error fetching hoardings:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -221,15 +235,17 @@ const ViewMyScreen = () => {
     getAllScreens();
   }, []);
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <Typography variant="h6">Loading...</Typography>
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+  //       <Typography variant="h6">Loading...</Typography>
+  //     </Box>
+  //   );
+  // }
 
   return (
+    <>
+    {isLoading == true && <CustomLoader />}
     <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
       <Grid container spacing={4} justifyContent="center">
         {hordingData.length > 0 ? (
@@ -243,6 +259,7 @@ const ViewMyScreen = () => {
         )}
       </Grid>
     </Box>
+    </>
   );
 };
 

@@ -31,6 +31,7 @@ import {
   SpaceDashboardRounded as SpaceDashboardRoundedIcon,
 } from "@mui/icons-material";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 const drawerWidth = 240;
 
