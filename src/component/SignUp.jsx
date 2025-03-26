@@ -55,6 +55,7 @@ export default function SignUp() {
                 navigate("/signin");
             }
         } catch (err) {
+            setisLoading(false);
             console.error("Signup error:", err);
         }
     };

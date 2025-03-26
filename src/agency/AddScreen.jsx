@@ -17,30 +17,53 @@ export const AddScreen = () => {
   }, []);
 
   const getAllStates = async () => {
-    const res = await axios.get("/state/getall");
-    setStates(res.data.data);
+    try {
+      const res = await axios.get("/state/getall");
+      setStates(res.data.data);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
   };
 
   const getCityByStateId = async (id) => {
-    const res = await axios.get("/city/getcitybystate/" + id);
-    setCities(res.data.data);
+    try {
+      const res = await axios.get("/city/getcitybystate/" + id);
+      setCities(res.data.data);
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
   };
 
   const getAreaByCityId = async (id) => {
-    const res = await axios.get("/area/getareabycity/" + id);
-    setAreas(res.data.data);
+    try {
+      const res = await axios.get("/area/getareabycity/" + id);
+      setAreas(res.data.data);
+    } catch (error) {
+      console.error("Error fetching areas:", error);
+    }
   };
 
 
   const submitHandler = async (data) => {
-    data.userId = localStorage.getItem("id");
+    try {
+      data.userId = localStorage.getItem("id");
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => formData.append(key, data[key]));
+      formData.append("image", data.image[0]);
+  
+      const res = await axios.post("/hording/addWithFile", formData);
+  
+      if (res.status === 201) {
+        alert("Hoarding added successfully!");
+        navigate("/agency/myscreens");
+      } else {
+        alert("Failed to add hoarding: " + res.data.message);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong. Please try again.");
+    }
 
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => formData.append(key, data[key]));
-    formData.append("image", data.image[0]);
-    alert("Form submitted successfully!");
-    await axios.post("/hording/addWithFile", formData);
-    navigate("/agency/myscreens");
   };
 
   return (

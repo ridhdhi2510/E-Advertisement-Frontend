@@ -48,6 +48,7 @@ export default function SignIn() {
                 }
             }
         } catch (error) {
+            setisLoading(false);
             console.error("Login Error:", error);
             if(error.response){
                 alert(error.response.data.message)
@@ -80,6 +81,7 @@ export default function SignIn() {
             } 
         }
         catch(err){
+            setisLoading(false);
             // alert(err.message)
             alert(err.response?.data?.message);
             console.error("Forgot Password Error:", err);
