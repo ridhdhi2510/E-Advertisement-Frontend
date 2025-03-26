@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../assets/css/addScreen.module.css"; // ✅ Import as module
+import CustomLoader from "../component/CustomLoader";
 
 
 export const AddScreen = () => {
+  const [isLoading, setisLoading] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -50,8 +52,10 @@ export const AddScreen = () => {
       const formData = new FormData();
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
       formData.append("image", data.image[0]);
-  
+      
+      setisLoading(true);
       const res = await axios.post("/hording/addWithFile", formData);
+      setisLoading(false);
   
       if (res.status === 201) {
         alert("Hoarding added successfully!");
@@ -60,6 +64,7 @@ export const AddScreen = () => {
         alert("Failed to add hoarding: " + res.data.message);
       }
     } catch (error) {
+      setisLoading(false);
       console.error("Error submitting form:", error);
       alert("Something went wrong. Please try again.");
     }
@@ -67,6 +72,8 @@ export const AddScreen = () => {
   };
 
   return (
+    <>
+    {isLoading == true && <CustomLoader />}
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 p-6">
     <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-lg transition-all duration-300" id="container">
       {/* Form Title */}
@@ -153,6 +160,7 @@ export const AddScreen = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
