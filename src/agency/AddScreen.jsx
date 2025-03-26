@@ -22,7 +22,8 @@ export const AddScreen = () => {
     try {
       const res = await axios.get("/state/getall");
       setStates(res.data.data);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching states:", error);
     }
   };
@@ -31,7 +32,8 @@ export const AddScreen = () => {
     try {
       const res = await axios.get("/city/getcitybystate/" + id);
       setCities(res.data.data);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching cities:", error);
     }
   };
@@ -40,7 +42,8 @@ export const AddScreen = () => {
     try {
       const res = await axios.get("/area/getareabycity/" + id);
       setAreas(res.data.data);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching areas:", error);
     }
   };
@@ -48,6 +51,12 @@ export const AddScreen = () => {
 
   const submitHandler = async (data) => {
     try {
+
+      if (!data.hoardingDimension || !data.hoardingType || !data.hourlyRate || !data.latitude || !data.longitude || !data.stateId || !data.cityId || !data.areaId || !data.image || data.image.length === 0) {
+        alert("All fields are required. Please fill out the form completely.");
+        return;
+      }
+
       data.userId = localStorage.getItem("id");
       const formData = new FormData();
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
@@ -74,13 +83,10 @@ export const AddScreen = () => {
   return (
     <>
     {isLoading == true && <CustomLoader />}
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 p-6">
-    <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-lg transition-all duration-300" id="container">
+    <div className={styles.addScreenContainer}>
+    <div className={styles.addScreenForm}>
       {/* Form Title */}
-      <h2 className="text-center text-3xl font-bold text-gray-800 dark:text-white mb-6">
-        Add New Hoarding
-      </h2>
-
+      <h2 className={styles.title}>Add New Hoarding</h2>
         <form onSubmit={handleSubmit(submitHandler)} encType="multipart/form-data">
           {/* Hoarding Dimension */}
           <label className={styles.label}>Hoarding Dimension</label>
