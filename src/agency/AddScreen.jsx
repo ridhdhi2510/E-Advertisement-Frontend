@@ -104,10 +104,10 @@ export const AddScreen = () => {
 
           {/* Latitude & Longitude */}
           <label className={styles.label}>Latitude</label>
-          <input type="text" placeholder="Enter latitude" className={styles.input} {...register("latitude")} />
+          <input type="text" placeholder="e.g., 37.7749, -122.4194" className={styles.input} {...register("latitude")} />
 
           <label className={styles.label}>Longitude</label>
-          <input type="text" placeholder="Enter longitude" className={styles.input} {...register("longitude")} />
+          <input type="text" placeholder="e.g., 37.7749, -122.4194" className={styles.input} {...register("longitude")} />
 
           {/* State Selection */}
           <label className={styles.label}>Select State</label>
