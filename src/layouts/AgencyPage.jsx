@@ -49,7 +49,7 @@ const closedMixin = (theme) => ({
   overflowX: "hidden",
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(10)} + 1px)`,
   },
 });
 
@@ -158,12 +158,14 @@ export default function AgencyPage() {
         open={open}
         anchor="left"
         sx={{
-          width: open ? "220px" : "60px",
+          width: open ? "220px" : "90px",
           flexShrink: 0,
           height: "660px", // Set the desired height
           "& .MuiDrawer-paper": {
-            width: open ? "220px !important" : "60px !important", // Force width
-            height: "660px", // Ensure the drawer's paper follows this height
+            width: open ? "220px" : "90p", // Force width
+            height: "660px", // Ensure the drawer's paper follows this 
+            // height
+            transition: "width 0.5s ease-in-out",
             overflowY: "auto", // Enable scrolling if content overflows
           },
         }}
@@ -195,7 +197,10 @@ export default function AgencyPage() {
           <Avatar
             alt="User Profile"
             src="/mnt/data/image.png"
-            sx={{ width: 64, height: 64, mb: 1 }}
+            sx={{
+               width: open? 64:50, 
+               height: open? 64:50,
+                mb: 1 }}
           />
           <Typography variant="body1" fontWeight="bold">
             {userName}
@@ -217,6 +222,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
+                  height: "40px", 
                   padding: "5px 15px",
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -250,7 +256,8 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  minHeight: 48,
+                  height: "40px", 
+                  minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 },
@@ -285,7 +292,8 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  minHeight: 48,
+                  height: "40px", 
+                  minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 },
@@ -323,6 +331,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
+                  height: "40px", 
                   padding: "5px 15px",
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -359,6 +368,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
+                  height: "40px", 
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -397,6 +407,7 @@ export default function AgencyPage() {
           >
             <ListItemButton
               sx={{
+                height: "40px", 
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
@@ -415,37 +426,6 @@ export default function AgencyPage() {
               <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-
-          {/* <ListItem
-            disablePadding
-            sx={{ display: "block" }}
-            onClick={() => {
-              navigate("/contact");
-            }}
-          >
-            <ListItemButton
-              sx={[
-                {
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                },
-              ]}
-            >
-              <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  },
-                ]}
-              >
-                <AddIcCallSharpIcon />
-              </ListItemIcon>
-              <ListItemText primary="Contact" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem> */}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
