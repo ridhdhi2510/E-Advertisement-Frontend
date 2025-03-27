@@ -160,7 +160,7 @@ const HordingCard = ({ data }) => {
   };
 
   return (
-    <Card sx={{ width: 280, height: 330, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd", overflow: "hidden" }}>
+    <Card sx={{ width: 280, height: 330, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd", overflow: "hidden"}}>
       {/* ✅ Image inside a fixed container */}
       <Box sx={{ height: 170, width: "100%", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <CardMedia

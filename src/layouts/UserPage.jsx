@@ -32,6 +32,7 @@ import {
 } from "@mui/icons-material";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const drawerWidth = 240;
 
@@ -278,7 +279,7 @@ export default function AgencyPage() {
                 <InboxIcon />
               </ListItemIcon>
               <ListItemText
-                primary="bookhording"
+                primary="Book Hoarding"
                 sx={{ opacity: open ? 1 : 0 }}
               />
             </ListItemButton>
@@ -461,7 +462,7 @@ export default function AgencyPage() {
 
                 }}
               >
-                <AddIcCallSharpIcon />
+                <LogoutIcon />
               </ListItemIcon>
               <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
