@@ -54,7 +54,7 @@ const UserDefaultPage = () => {
                 <img style={{height:'150px' , width:'150px'}}
                   src={partner.logo}
                   alt={partner.name}
-                  className="h-32 w-32 object-contain"
+                  className="w-full h-full object-contain"
                   
                 />
               </CardContent>

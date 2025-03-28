@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 
-const UpdateProfile = () => {
+const UpdateAgencyProfile = () => {
   const [data, setData] = useState(null);
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
@@ -70,7 +70,7 @@ const UpdateProfile = () => {
         
         const response = await axios.put(`/user/update/${localStorage.getItem("id")}` , updatedData);
         console.log("Update successful", response)
-        navigate("/customer", { state: { refresh: true } });
+        navigate("/agency", { state: { refresh: true } });
       }catch(err){
         console.log(err.message);
       }
@@ -119,7 +119,9 @@ const UpdateProfile = () => {
   );
 };
 
-export default UpdateProfile;
+export default UpdateAgencyProfile;
+
+
 
 
 

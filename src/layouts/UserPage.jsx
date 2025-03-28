@@ -30,7 +30,7 @@ import {
   AddIcCallSharp as AddIcCallSharpIcon,
   SpaceDashboardRounded as SpaceDashboardRoundedIcon,
 } from "@mui/icons-material";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -126,12 +126,14 @@ export default function AgencyPage() {
     setUserName(storedUserName)
     // console.log(userName)
   };
-
+  const location = useLocation();
   useEffect(() => {
+
     fetchUserData();
-
-
-  }, [])
+    if (location.state?.refresh) {
+      window.history.replaceState({}, ""); // Reload the page when refresh is true
+  }
+  }, [location.state])
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -209,7 +211,7 @@ export default function AgencyPage() {
           <Typography variant="body1" fontWeight="bold">
             {userName}
           </Typography>
-          <Link href="/profile" variant="body2" underline="hover">
+          <Link href="/customer/update" variant="body2" underline="hover">
             Update Profile
           </Link>
         </Box>
