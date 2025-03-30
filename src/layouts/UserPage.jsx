@@ -245,11 +245,19 @@ export default function AgencyPage() {
                   },
                 ]}
               >
-                <SpaceDashboardRoundedIcon />
+                <HomeIcon />
               </ListItemIcon>
               <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+
+            {/* for agency dashboard navigation */}
+                    <ListItem disablePadding onClick={() => navigate("/customer")}>
+                      <ListItemButton>
+                        <ListItemIcon><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary="Dashboard" />
+                      </ListItemButton>
+                    </ListItem>
 
           {/*  Book Hoarding Nevigation */}
           <ListItem

@@ -35,8 +35,6 @@ import TvIcon from "@mui/icons-material/Tv";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 
-
-
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
