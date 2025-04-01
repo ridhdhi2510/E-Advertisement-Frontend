@@ -304,7 +304,7 @@ const BookHording = () => {
 
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" sx={{ mb: 1 }}>Upload Ad Content:</Typography>
-                  <input
+                  {/* <input
                     type="file"
                     accept="image/*,video/*"
                     name="adFile"
@@ -321,7 +321,27 @@ const BookHording = () => {
                         });
                       }
                     }}
-                  />
+                  /> */}
+                  <label htmlFor="adFile">
+                      <input
+                        type="file"
+                        accept="image/,video/"
+                        name="adFile"
+                        id="adFile"
+                        onChange={(e) => setFormData({ 
+                          ...formData, 
+                          adFile: e.target.files[0] 
+                        })}
+                        style={{ display: "none" }}
+                      />
+                      <Button variant="contained" color="primary" component="span" sx={{ mt: 1 }}>
+                      Choose File
+                      </Button>
+                      <span style={{ marginLeft: "10px"}} >
+                        {formData.adFile ? formData.adFile.name : "No file chosen"}
+                      </span>
+                  </label>
+
                 </Box>
 
                 <TextField

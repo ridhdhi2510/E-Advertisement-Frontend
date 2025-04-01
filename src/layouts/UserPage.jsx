@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import RemoveFromQueueRoundedIcon from '@mui/icons-material/RemoveFromQueueRounded';
 import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded';
+import HomeIcon from '@mui/icons-material/Home'
 import {
   Avatar,
   Link,
@@ -251,13 +252,13 @@ export default function AgencyPage() {
             </ListItemButton>
           </ListItem>
 
-            {/* for agency dashboard navigation */}
-                    <ListItem disablePadding onClick={() => navigate("/customer")}>
-                      <ListItemButton>
-                        <ListItemIcon><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="Dashboard" />
-                      </ListItemButton>
-                    </ListItem>
+          {/* customer Dashboard navigation */}
+          <ListItem disablePadding onClick={() => navigate("/customer")}>
+            <ListItemButton>
+              <ListItemIcon><DashboardIcon /></ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItemButton>
+          </ListItem>
 
           {/*  Book Hoarding Nevigation */}
           <ListItem
@@ -492,158 +493,3 @@ export default function AgencyPage() {
 
 
 
-// import * as React from "react";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-// import { Avatar, Link,Box,List,CssBaseline,Typography,Divider,IconButton,ListItem,ListItemButton,ListItemIcon,ListItemText,Drawer as MuiDrawer,} from "@mui/material";
-
-// import { styled, useTheme } from "@mui/material/styles";
-
-// import {ChevronLeft as ChevronLeftIcon,ChevronRight as ChevronRightIcon,Home as HomeIcon,Payment as PaymentIcon, Book as BookIcon,EventNote as EventNoteIcon,ExitToApp as ExitToAppIcon,} from "@mui/icons-material";
-// import { Outlet, useNavigate } from "react-router-dom";
-
-// const drawerWidth = 240;
-
-// const DrawerHeader = styled("div")(({ theme }) => ({
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "flex-end",
-//   padding: theme.spacing(0, 1),
-//   ...theme.mixins.toolbar,
-// }));
-
-// const Drawer = styled(MuiDrawer, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })(({ theme, open }) => ({
-//   width: drawerWidth,
-//   flexShrink: 0,
-//   whiteSpace: "nowrap",
-//   boxSizing: "border-box",
-//   ...(open && {
-//     "& .MuiDrawer-paper": { width: drawerWidth },
-//   }),
-//   ...(!open && {
-//     "& .MuiDrawer-paper": { width: theme.spacing(7) + 1 },
-//   }),
-// }));
-
-// export default function UserPage() {
-//   const [userName, setUserName] = useState("");
-
-//   const theme = useTheme();
-//   const [open, setOpen] = React.useState(true);
-//   const navigate = useNavigate();
-//   const [selectedImage, setSelectedImage] = React.useState(null);
-//   const fetchUserData =async () => {
-//     const storedUserid = localStorage.getItem("id");
-//     const res = await axios.get(`/user/getbyid/${storedUserid}`);
-//     const storedUserName = res.data.data.name
-//     setUserName(storedUserName)
-//     // console.log(userName)
-//   };
-//   const handleImageChange = (event) => {
-//     const file = event.target.files[0];
-//     if (file) {
-//       setSelectedImage(URL.createObjectURL(file));
-//      }
-//   };
-//   useEffect(() => {
-//     fetchUserData();
-
-
-//   }, [])
-
-
-//   return (
-//     <Box sx={{ display: "flex" }}>
-//       <CssBaseline />
-//       <Drawer variant="permanent"
-//         open={open}
-//         anchor="left"
-//         sx={{
-//           width: open ? "220px" : "90px",
-//           flexShrink: 0,
-//           height: "660px", // Set the desired height
-//           "& .MuiDrawer-paper": {
-//             width: open ? "220px !important" : "90px !important", // Force width
-//             height: "660px", // Ensure the drawer's paper follows this height
-//             overflowY: "auto", // Enable scrolling if content overflows
-//           },
-//         }}>
-//         <DrawerHeader>
-//           <IconButton onClick={() => setOpen(!open)}>
-//             {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-//           </IconButton>
-//         </DrawerHeader>
-//         <Divider />
-//         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "16px" }}>
-//           <input
-//             accept="image/*"
-//             type="file"
-//             style={{ display: "none" }}
-//             id="profile-photo-upload"
-//             onChange={handleImageChange}
-//           />
-//           <label htmlFor="profile-photo-upload">
-//             <Avatar
-//               alt="User Profile"
-//               src={selectedImage || "default-profile.png"}
-//               sx={{ 
-//                 width: 64, 
-//                 height: 64,
-//                  mb: 1, 
-//                  cursor: "pointer" }}
-//             />
-//           </label>
-//           <Typography variant="body1" fontWeight="bold">
-//             {userName}
-//           </Typography>
-//           <Link href="../customer/profile" variant="body2" underline="hover">
-//             Profile
-//           </Link>
-//           <Link href="../customer/updateprofile" variant="body2" underline="hover">
-//             Update Profile
-//           </Link>
-//         </Box>
-//         <List>
-//           <ListItem disablePadding onClick={() => navigate("/")}>
-//             <ListItemButton>
-//               <ListItemIcon><HomeIcon /></ListItemIcon>
-//               <ListItemText primary="Home" />
-//             </ListItemButton>
-//           </ListItem>
-//           <ListItem disablePadding onClick={() => navigate("../customer/bookhording")}>
-//             <ListItemButton>
-//               <ListItemIcon><BookIcon /></ListItemIcon>
-//               <ListItemText primary="Book Hording" />
-//             </ListItemButton>
-//           </ListItem>
-//           <ListItem disablePadding onClick={() => navigate("../customer/paymentdetails")}>
-//             <ListItemButton>
-//               <ListItemIcon><PaymentIcon /></ListItemIcon>
-//               <ListItemText primary="Payment Details" />
-//             </ListItemButton>
-//           </ListItem>
-//           <ListItem disablePadding onClick={() => navigate("../customer/mybookings")}>
-//             <ListItemButton>
-//               <ListItemIcon><EventNoteIcon /></ListItemIcon>
-//               <ListItemText primary="View My Bookings" />
-//             </ListItemButton>
-//           </ListItem>
-//         </List>
-//         <Divider />
-//         <List>
-//           <ListItem disablePadding onClick={() => { localStorage.clear(); navigate("../signin"); }}>
-//             <ListItemButton>
-//               <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-//               <ListItemText primary="Logout" />
-//             </ListItemButton>
-//           </ListItem>
-//         </List>
-//       </Drawer>
-//       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-//         <Outlet />
-//       </Box>
-//     </Box>
-//   );
-// }

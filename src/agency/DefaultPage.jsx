@@ -37,6 +37,7 @@ import TvIcon from '@mui/icons-material/Tv';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HomeIcon from '@mui/icons-material/Home'
 
 const DefaultPage = () => {
   const theme = useTheme();
