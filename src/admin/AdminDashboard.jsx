@@ -1,127 +1,115 @@
-import React from 'react';
-import { Card, CardContent, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, Grid, IconButton } from '@mui/material';
-import { PieChart, Pie, Cell } from 'recharts';
-import { Activity, Users, DollarSign } from 'lucide-react';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useState } from 'react';
+import { Box, Grid, Card, CardContent, Typography, IconButton, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Edit, Delete, CheckCircle, Cancel } from '@mui/icons-material';
 
-const adRequests = [
-  { id: 1, advertiser: 'ABC Corp', adType: 'Billboard', status: 'Pending' },
-  { id: 2, advertiser: 'XYZ Ltd', adType: 'Digital', status: 'Pending' },
-];
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState('AdRequests');
 
-const payments = [
-  { id: 1, advertiser: 'ABC Corp', amount: 5000, status: 'Paid' },
-  { id: 2, advertiser: 'XYZ Ltd', amount: 3000, status: 'Pending' },
-];
-
-const users = [
-  { id: 1, name: 'John Doe', role: 'Advertiser', status: 'Active' },
-  { id: 2, name: 'Jane Smith', role: 'Admin', status: 'Inactive' },
-];
-
-const AdminDashboard = () => {
   return (
-    <div>
-    <h1>Admin Dashboard</h1>
-    <Grid container spacing={4} padding={4}>
-      {/* Overview Cards */}
-      <Grid item xs={12} md={4}>
-        <Card>
-          <CardContent>
-            <Activity size={32} />
-            <Typography variant="h6">Active Ads</Typography>
-            <Typography variant="h4">12</Typography>
-          </CardContent>
-        </Card>
+    <Box sx={{ bgcolor: '#f4f6f8', height: '100vh', padding: 3 }}>
+      <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Active Ads</Typography>
+              <Typography variant="h3">12</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Users</Typography>
+              <Typography variant="h3">256</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h6" color="primary">Revenue</Typography>
+              <Typography variant="h3">₹14,500</Typography> 
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-
-      <Grid item xs={12} md={4}>
-        <Card>
-          <CardContent>
-            <Users size={32} />
-            <Typography variant="h6">Users</Typography>
-            <Typography variant="h4">256</Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} md={4}>
-        <Card>
-          <CardContent>
-            <DollarSign size={32} />
-            <Typography variant="h6">Revenue</Typography>
-            <Typography variant="h4">$14,500</Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* User Account Management */}
-      <Grid item xs={12} md={8}>
-        <Card>
-          <CardContent>
-            <Typography variant="h5" gutterBottom>User Accounts</Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map(user => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>{user.status}</TableCell>
+      <Grid container spacing={3} mt={3}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3}>
+            <Typography variant="h6" p={2} color="primary">User Accounts</Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Role</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>John Doe</TableCell>
+                    <TableCell>Advertiser</TableCell>
+                    <TableCell>Active</TableCell>
                     <TableCell>
-                      <IconButton><EditIcon /></IconButton>
-                      <IconButton color="error"><DeleteIcon /></IconButton>
+                      <IconButton color="primary"><Edit /></IconButton>
+                      <IconButton color="error"><Delete /></IconButton>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* Ad Requests Management */}
-      <Grid item xs={12} md={4}>
-        <Card>
-          <CardContent>
-            <Typography variant="h5" gutterBottom>Ad Requests</Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Advertiser</TableCell>
-                  <TableCell>Ad Type</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {adRequests.map(request => (
-                  <TableRow key={request.id}>
-                    <TableCell>{request.advertiser}</TableCell>
-                    <TableCell>{request.adType}</TableCell>
-                    <TableCell>{request.status}</TableCell>
+                  <TableRow>
+                    <TableCell>Jane Smith</TableCell>
+                    <TableCell>Agency</TableCell>
+                    <TableCell>Inactive</TableCell>
                     <TableCell>
-                      <Button color="primary">Accept</Button>
-                      <Button color="error">Reject</Button>
+                      <IconButton color="primary"><Edit /></IconButton>
+                      <IconButton color="error"><Delete /></IconButton>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3}>
+            <Typography variant="h6" p={2} color="primary">Ad Requests</Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Advertiser</TableCell>
+                    <TableCell>Ad Type</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>ABC Corp</TableCell>
+                    <TableCell>Billboard</TableCell>
+                    <TableCell>Pending</TableCell>
+                    <TableCell>
+                      <Button color="primary">ACCEPT</Button>
+                      <Button color="error">REJECT</Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>XYZ Ltd</TableCell>
+                    <TableCell>Digital</TableCell>
+                    <TableCell>Pending</TableCell>
+                    <TableCell>
+                      <Button color="primary">ACCEPT</Button>
+                      <Button color="error">REJECT</Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
-    </div>
+    </Box>
   );
-};
-
-export default AdminDashboard;
+}
