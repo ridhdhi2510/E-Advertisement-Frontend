@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container, Grid, Card, CardContent, Typography, Button, Select, MenuItem,
-  TextField, Box, Modal, Backdrop, IconButton, CardActionArea, CardMedia
+  TextField, Box, Modal, Backdrop, IconButton
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -14,7 +14,16 @@ const BookHording = () => {
   const [areas, setAreas] = useState([]);
   const [hordings, setHordings] = useState([]);
   const [selectedHording, setSelectedHording] = useState(null);
-  const [formData, setFormData] = useState({ startDate: "", endDate: "" });
+  const [formData, setFormData] = useState({
+    state: '',
+    city: '',
+    area: '',
+    startDate: "",
+    endDate: "",
+    adName: "",
+    adDescription: "",
+    websiteUrl: ""
+  });
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -43,36 +52,47 @@ const BookHording = () => {
       .catch(() => setHordings([]));
   };
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const getCityByStateId = (id) => {
-    axios.get(`/city/getcitybystate/${id}`)
-      .then((res) => setCities(res.data.data))
-      .catch((err) => console.error("Error fetching cities:", err));
+    setFormData(prev => ({ ...prev, city: '', area: '' }));
+    setCities([]);
+    setAreas([]);
+    if (id) {
+      axios.get(`/city/getcitybystate/${id}`)
+        .then((res) => setCities(res.data.data))
+        .catch((err) => console.error("Error fetching cities:", err));
+    }
   };
 
   const getAreaByCityId = (id) => {
-    axios.get(`/area/getareabycity/${id}`)
-      .then((res) => setAreas(res.data.data))
-      .catch((err) => console.error("Error fetching areas:", err));
+    setFormData(prev => ({ ...prev, area: '' }));
+    setAreas([]);
+    if (id) {
+      axios.get(`/area/getareabycity/${id}`)
+        .then((res) => setAreas(res.data.data))
+        .catch((err) => console.error("Error fetching areas:", err));
+    }
   };
-
-
-  useEffect(() => {
-    axios.get("/hording/getAll").then((res) => setHordings(res.data.data)).catch(() => setHordings([]));
-  }, []);
 
   const handleHordingClick = (hording) => {
-    setSelectedHording((prev) => (prev && prev._id === hording._id ? null : hording));
-    setModalOpen((prev) => !(prev && prev._id === hording._id)); // Toggle modal based on selection
+    setSelectedHording(hording);
+    setModalOpen(true);
   };
 
-
-  // ✅ Function to close the modal
   const handleCloseModal = () => {
     setModalOpen(false);
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const calculateTotalCost = () => {
@@ -90,6 +110,7 @@ const BookHording = () => {
     }
     navigate("/customer/bookhording/payment", {
       state: {
+        adpic:formData.adFileUrl,
         selectedHording,
         startDate: formData.startDate,
         endDate: formData.endDate,
@@ -108,12 +129,16 @@ const BookHording = () => {
               fullWidth
               name="state"
               value={formData.state}
-              onChange={(e) => { handleChange(e); getCityByStateId(e.target.value); }}
+              onChange={(e) => {
+                handleChange(e);
+                getCityByStateId(e.target.value);
+              }}
               displayEmpty
-              renderValue={formData.state ? undefined : () => "Select State"}
             >
               <MenuItem value="">Select State</MenuItem>
-              {states.map((s) => <MenuItem key={s._id} value={s._id}>{s.name}</MenuItem>)}
+              {states.map((s) => (
+                <MenuItem key={s._id} value={s._id}>{s.name}</MenuItem>
+              ))}
             </Select>
           </Grid>
 
@@ -122,12 +147,17 @@ const BookHording = () => {
               fullWidth
               name="city"
               value={formData.city}
-              onChange={(e) => { handleChange(e); getAreaByCityId(e.target.value); }}
+              onChange={(e) => {
+                handleChange(e);
+                getAreaByCityId(e.target.value);
+              }}
               displayEmpty
-              renderValue={formData.city ? undefined : () => "Select City"}
+              disabled={!formData.state}
             >
               <MenuItem value="">Select City</MenuItem>
-              {cities.map((c) => <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>)}
+              {cities.map((c) => (
+                <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
+              ))}
             </Select>
           </Grid>
 
@@ -138,10 +168,12 @@ const BookHording = () => {
               value={formData.area}
               onChange={handleChange}
               displayEmpty
-              renderValue={formData.area ? undefined : () => "Select Area"}
+              disabled={!formData.city}
             >
               <MenuItem value="">Select Area</MenuItem>
-              {areas.map((a) => <MenuItem key={a._id} value={a._id}>{a.name}</MenuItem>)}
+              {areas.map((a) => (
+                <MenuItem key={a._id} value={a._id}>{a.name}</MenuItem>
+              ))}
             </Select>
           </Grid>
         </Grid>
@@ -150,174 +182,215 @@ const BookHording = () => {
         <Grid container spacing={2} mt={2}>
           {hordings.length > 0 ? hordings.map((hording) => (
             <Grid item xs={12} sm={6} md={4} key={hording._id}>
-              <Card onClick={() => handleHordingClick(hording)} sx={{ height: 310, cursor: "pointer", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", boxShadow: 2, borderRadius: 2, border: "1px solid #ddd", mt:2, mr:1 }}>
-
-                
-                  {/* <Box sx={{ height: 180, width: "100%", overflow: "hidden" }}> */}
-                  <Box sx={{ height: 170, width: "100%", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <CardMedia
-                    component="img"
-                    image={hording.hordingURL}
-                    alt="Hoarding"
-                    sx={{ height: "100%", width: "100%", objectFit: "cover" }}
+              <Card
+                onClick={() => handleHordingClick(hording)}
+                sx={{
+                  height: 330,
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  overflow: "hidden",
+                  boxShadow: 2,
+                  borderRadius: 2,
+                  border: "1px solid #ddd"
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, padding: 0 }}>
+                  <Box sx={{ height: 170, width: "100%", overflow: "hidden" }}>
+                    <img
+                      src={hording.hordingURL}
+                      alt="Hoarding"
+                      width="100%"
+                      style={{
+                        objectFit: "cover",
+                        height: "100%",
+                        width: "100%"
+                      }}
                     />
-                    {/* <img src={hording.hordingURL} alt="Hoarding" width="100%" style={{ objectFit: "cover", maxHeight: "250px", height: "auto" }} /> */}
                   </Box>
-
-                  <CardContent sx={{ flexGrow: 1, padding: 2 }}>
                   <Box>
-                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "gray.800" }} >{hording.hoardingType}</Typography>
-                    <Typography variant="body2" sx={{fontSize:"15px", mt:2}}>{hording.areaId?.name}, {hording.cityId?.name}, {hording.stateId?.name}</Typography>
-                    <Typography variant="body2" sx={{ color: "gray.600", mt: 0.5 }} >Hourly Rate: ${hording.hourlyRate}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', padding:1 }}  >
+                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800", padding: 1,paddingLeft:0.02 }}>
+                        {hording.hoardingType}</Typography>
+                      <Typography variant="body2" sx={{ ml: 0.5, color: 'text.secondary' }}>({hording.hoardingDimension})</Typography>
+
+                    </Box>
+                 
+                    <Typography variant="body2" sx={{ padding: 1 }}>
+                      {hording.areaId?.name}, {hording.cityId?.name}, {hording.stateId?.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "gray.600", mt: 1, padding: 1 }}>
+                      Hourly Rate: Rs.{hording.hourlyRate}
+                    </Typography>
                   </Box>
                 </CardContent>
-
               </Card>
             </Grid>
-          )) : <Typography variant="h6" align="center" mt={3}>No hoardings available</Typography>}
+          )) : (
+            <Typography variant="h6" align="center" mt={3} width="100%">
+              No hoardings available
+            </Typography>
+          )}
         </Grid>
 
         {/* Payment Details Modal */}
-        <Modal open={modalOpen} onClose={handleCloseModal} closeAfterTransition BackdropComponent={Backdrop} BackdropProps={{ sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" } }}>
+        <Modal
+          open={modalOpen}
+          onClose={() => { }} // Disable default close behavior
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            sx: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
+            onClick: (e) => e.stopPropagation() // Prevent closing on backdrop click
+          }}
+        >
           <Box
             sx={{
               position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "90%", // Responsive width
-              maxWidth: "600px",
+              width: { xs: "90%", sm: 700 },
+              maxWidth: "100%",
               maxHeight: "90vh",
+              overflowY: "auto",
               bgcolor: "white",
               boxShadow: 24,
               p: 4,
-              borderRadius: 3, // ✅ Increased to ensure proper rounding
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden", // Prevents inner content from breaking rounding
+              borderRadius: 2,
             }}
+            onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
           >
-
-            <Box
+            <IconButton
+              onClick={handleCloseModal}
               sx={{
-                overflowY: "auto",
-                maxHeight: "90vh", // ✅ Ensures scrolling inside modal
-                paddingRight: "8px",
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "gray",
               }}
             >
-              {/* ✅ Close (X) Button */}
-              <IconButton
-                onClick={handleCloseModal}  // ✅ Works fine now
-                sx={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  color: "gray",
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
+              <CloseIcon />
+            </IconButton>
 
-              {selectedHording && (
-                <>
-                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
-                    {selectedHording.hoardingType}
-                  </Typography>
-                  <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
-                  <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
+            {selectedHording && (
+              <>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
+                  {selectedHording.hoardingType}
+                </Typography>
+                <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
+                <Typography variant="body2">Rate: Rs.{selectedHording.hourlyRate} per hour</Typography>
 
-                  {/* Ad Name */}
-                  <TextField
-                    fullWidth
-                    name="adName"
-                    label="Ad Name"
-                    value={formData.adName}
-                    onChange={handleChange}
-                    sx={{ mt: 2 }}
-                  />
+                <TextField
+                  fullWidth
+                  name="adName"
+                  label="Ad Name"
+                  value={formData.adName}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
 
-                  {/* Ad Description */}
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    name="adDescription"
-                    label="Ad Description"
-                    value={formData.adDescription}
-                    onChange={handleChange}
-                    sx={{ mt: 2 }}
-                  />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  name="adDescription"
+                  label="Ad Description"
+                  value={formData.adDescription}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
 
-                  {/* File Upload */}
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>Upload Ad Content:</Typography>
                   <input
                     type="file"
                     accept="image/*,video/*"
                     name="adFile"
-                    onChange={(e) => setFormData({ ...formData, adFile: e.target.files[0] })}
-                    style={{ marginTop: "16px" }}
+                    
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        // Create object URL for preview (if needed)
+                        const fileUrl = URL.createObjectURL(file);
+                        setFormData({ 
+                          ...formData, 
+                          adFile: file,
+                          adFileUrl: file.type.startsWith('image/') ? fileUrl : null
+                        });
+                      }
+                    }}
                   />
+                </Box>
 
-                  {/* Website or Product URL (Optional) */}
-                  <TextField
-                    fullWidth
-                    type="url"
-                    name="websiteUrl"
-                    label="Website or Product URL (Optional)"
-                    value={formData.websiteUrl}
-                    onChange={handleChange}
-                    sx={{ mt: 2 }}
-                  />
+                <TextField
+                  fullWidth
+                  type="url"
+                  name="websiteUrl"
+                  label="Website or Product URL (Optional)"
+                  value={formData.websiteUrl}
+                  onChange={handleChange}
+                  sx={{ mt: 2 }}
+                />
 
-                  {/* Start Date */}
-                  <TextField
-                    fullWidth
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                    label="Start Date"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ mt: 2 }}
-                  />
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleChange}
+                      label="Start Date"
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        inputProps: {
+                          min: getTodayDate() // Disable past dates
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="endDate"
+                      value={formData.endDate}
+                      onChange={handleChange}
+                      label="End Date"
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        inputProps: {
+                          min: formData.startDate || getTodayDate() // Can't be before start date
+                        }
+                      }}
+                    />
+                  </Grid>
+                </Grid>
 
-                  {/* End Date */}
-                  <TextField
-                    fullWidth
-                    type="date"
-                    name="endDate"
-                    value={formData.endDate}
-                    onChange={handleChange}
-                    label="End Date"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ mt: 2 }}
-                  />
+                <Typography variant="h6" color="primary" mt={2}>
+                  Total Cost: Rs.{calculateTotalCost()}
+                </Typography>
 
-                  {/* Total Cost */}
-                  <Typography variant="h6" color="primary" mt={2}>
-                    Total Cost: ${calculateTotalCost()}
-                  </Typography>
-
-                  {/* Continue to Payment Button */}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleBooking}
-                    sx={{ mt: 2 }}
-                    disabled={!selectedHording}
-                  >
-                    Continue to Payment
-                  </Button>
-                </>
-              )}
-
-
-            </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBooking}
+                  sx={{ mt: 2 }}
+                  disabled={!selectedHording || !formData.startDate || !formData.endDate}
+                  size="large"
+                >
+                  Continue to Payment
+                </Button>
+              </>
+            )}
           </Box>
         </Modal>
       </Box>
     </Container>
   );
 };
-
 
 export default BookHording;
