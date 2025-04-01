@@ -172,11 +172,12 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Container, TextField, Button, Card, CardContent, Typography, MenuItem, Select, Grid, Box, Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import { Co2Sharp } from "@mui/icons-material";
 
 const PaymentPage = () => {
   const location = useLocation();
-  const { selectedHording, startDate, endDate, totalCost } = location.state || {};
-  
+  const { adpic,selectedHording, startDate, endDate, totalCost} = location.state || {};
+    console.log(location.state)
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryMonth, setExpiryMonth] = useState("");
@@ -201,7 +202,7 @@ const PaymentPage = () => {
           <Grid container spacing={4}>
             {/* Hoarding Details */}
             <Grid item xs={12} md={4}>
-              <Box component="img" src={selectedHording?.hordingURL} alt="Hoarding" width="100%" borderRadius={2} />
+              <Box component="img" src={adpic} alt="Hoarding" width="100%" borderRadius={2} />
               <Typography variant="h6" fontWeight="bold" mt={2}>
                 {selectedHording?.hoardingType}
               </Typography>
