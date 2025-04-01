@@ -304,7 +304,7 @@ const BookHording = () => {
 
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" sx={{ mb: 1 }}>Upload Ad Content:</Typography>
-                  {/* <input
+                  <input
                     type="file"
                     accept="image/*,video/*"
                     name="adFile"
@@ -321,8 +321,8 @@ const BookHording = () => {
                         });
                       }
                     }}
-                  /> */}
-                  <label htmlFor="adFile">
+                  />
+                  {/* <label htmlFor="adFile">
                       <input
                         type="file"
                         accept="image/,video/"
@@ -340,7 +340,7 @@ const BookHording = () => {
                       <span style={{ marginLeft: "10px"}} >
                         {formData.adFile ? formData.adFile.name : "No file chosen"}
                       </span>
-                  </label>
+                  </label> */}
 
                 </Box>
 
