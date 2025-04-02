@@ -33,6 +33,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
 import TvIcon from "@mui/icons-material/Tv";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { DeleteIcon } from "lucide-react";
 
 
 
@@ -410,8 +411,43 @@ export default function AgencyPage() {
           </ListItem> */}
 
           {/* contact page navigation */}
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+             onClick={() => setDeleteDialogOpen(true)}
+            // onClick={() => {
+            //   navigate("/agency/myscreens");
+            // }}
+          >
+            <ListItemButton
+              sx={[
+                {
+                  height: "40px", 
+                  minHeight: 32,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                },
+              ]}
+            >
+              <ListItemIcon
+                sx={[
+                  {
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  },
+                ]}
+              >
+                <DeleteIcon color="red"/>
+              </ListItemIcon>
+              <ListItemText
+                primary="Delete Account"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
 
-          {/* Contact page navigation with Logout functionality */}
+          {/* Contact page navigation with Logout functionality */}          
           <ListItem
             disablePadding
             sx={{ display: "block" }}

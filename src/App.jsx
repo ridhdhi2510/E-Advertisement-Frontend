@@ -19,6 +19,7 @@ import PaymentPage from "./customer/PaymentPage";
 import { UpdateMyScreen } from "./agency/UpdateMyScreen";
 import { ResetPassword } from "./component/ResetPassword";
 import UpdateAgencyProfile from "./agency/UpdateAgencyProfile";
+import PrivateRoute from "./component/PrivateRoute";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -30,6 +31,8 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
           <Route path="/signup" element={<SignUp />} />
+
+          <Route element={<PrivateRoute/>}>
           <Route path="/agency/*" element={<AgencyPage />}>
             <Route index element={<DefaultPage />} />
             <Route path="addscreen" element={<AddScreen />} />
@@ -46,6 +49,7 @@ function App() {
             <Route path="paymentdetails" element={<PaymentDetails />} />
             <Route path="mybookings" element={<MyBookings />} />
           </Route>
+          </Route>    
         </Routes>
       </Router>
     </AppTheme>
