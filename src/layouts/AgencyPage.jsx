@@ -28,13 +28,12 @@ import {
   AddIcCallSharp as AddIcCallSharpIcon,
   SpaceDashboardRounded as SpaceDashboardRoundedIcon,
 } from "@mui/icons-material";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
 import TvIcon from "@mui/icons-material/Tv";
 import LogoutIcon from "@mui/icons-material/Logout";
-
-
+import { DeleteIcon } from "lucide-react";
 
 
 const drawerWidth = 240;
@@ -129,12 +128,15 @@ export default function AgencyPage() {
     setUserName(storedUserName)
     // console.log(userName)
   };
-
+  const location = useLocation();
   useEffect(() => {
     fetchUserData();
+    if (location.state?.refresh) {
+      window.history.replaceState({}, ""); // Reload the page when refresh is true
+  }
 
 
-  }, [])
+  }, [location.state])
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -212,7 +214,7 @@ export default function AgencyPage() {
           <Typography variant="body1" fontWeight="bold">
             {userName}
           </Typography>
-          <Link href="/profile" variant="body2" underline="hover">
+          <Link href="/agency/update" variant="body2" underline="hover">
             Update Profile
           </Link>
         </Box>
@@ -407,8 +409,43 @@ export default function AgencyPage() {
           </ListItem> */}
 
           {/* contact page navigation */}
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+             onClick={() => setDeleteDialogOpen(true)}
+            // onClick={() => {
+            //   navigate("/agency/myscreens");
+            // }}
+          >
+            <ListItemButton
+              sx={[
+                {
+                  height: "40px", 
+                  minHeight: 32,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                },
+              ]}
+            >
+              <ListItemIcon
+                sx={[
+                  {
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  },
+                ]}
+              >
+                <DeleteIcon color="red"/>
+              </ListItemIcon>
+              <ListItemText
+                primary="Delete Account"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
 
-          {/* Contact page navigation with Logout functionality */}
+          {/* Contact page navigation with Logout functionality */}          
           <ListItem
             disablePadding
             sx={{ display: "block" }}

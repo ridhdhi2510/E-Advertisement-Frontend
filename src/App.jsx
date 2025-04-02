@@ -18,6 +18,8 @@ import PaymentDetails from "./customer/PaymentDetails";
 import PaymentPage from "./customer/PaymentPage";
 import { UpdateMyScreen } from "./agency/UpdateMyScreen";
 import { ResetPassword } from "./component/ResetPassword";
+import UpdateAgencyProfile from "./agency/UpdateAgencyProfile";
+import PrivateRoute from "./component/PrivateRoute";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -29,22 +31,25 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
           <Route path="/signup" element={<SignUp />} />
+
+          <Route element={<PrivateRoute/>}>
           <Route path="/agency/*" element={<AgencyPage />}>
             <Route index element={<DefaultPage />} />
             <Route path="addscreen" element={<AddScreen />} />
+            <Route path="update" element={<UpdateAgencyProfile />} />
             <Route path="myscreens" element={<ViewMyScreen />} />
             <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
           </Route>
           <Route path="/customer/*" element={<UserPage />}>
             <Route index element={<UserDefaultPage />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="updateprofile" element={<UpdateProfile />} />
+            <Route path="update" element={<UpdateProfile />} />
             <Route path="bookhording" element={<BookHording />} />
             {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
             <Route path="bookhording/payment" element={<PaymentPage />} />
             <Route path="paymentdetails" element={<PaymentDetails />} />
             <Route path="mybookings" element={<MyBookings />} />
           </Route>
+          </Route>    
         </Routes>
       </Router>
     </AppTheme>
