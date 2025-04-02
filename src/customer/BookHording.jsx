@@ -84,13 +84,14 @@ const BookHording = () => {
   };
 
   const handleBooking = () => {
-    if (!selectedHording || !formData.startDate || !formData.endDate) {
+    if (!selectedHording || !formData.startDate || !formData.endDate) { //change as per fields
       alert("Please select valid dates.");
       return;
     }
     navigate("/customer/bookhording/payment", {
       state: {
         selectedHording,
+        //need extra fields check??
         startDate: formData.startDate,
         endDate: formData.endDate,
         totalCost: calculateTotalCost(),
@@ -224,6 +225,7 @@ const BookHording = () => {
                     {selectedHording.hoardingType}
                   </Typography>
                   <Typography variant="body2">Size: {selectedHording.hoardingDimension}</Typography>
+                  {/* add location */}
                   <Typography variant="body2">Rate: ${selectedHording.hourlyRate} per hour</Typography>
 
                   {/* Ad Name */}
