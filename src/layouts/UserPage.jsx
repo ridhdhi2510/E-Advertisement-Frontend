@@ -40,6 +40,10 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
+import { Delete as DeleteIcon } from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
+
+
 
 const drawerWidth = 240;
 
@@ -121,16 +125,16 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
-export default function AgencyPage() {
+export default function UserPage() {
   const [userName, setUserName] = useState("");
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
-  const fetchUserData =  async() => {
+  const fetchUserData = async () => {
     const storedUserid = localStorage.getItem("id");
     const res = await axios.get(`/user/getbyid/${storedUserid}`);
-    const storedUserName=res.data.data.name
+    const storedUserName = res.data.data.name
     setUserName(storedUserName)
     // console.log(userName)
   };
@@ -140,7 +144,7 @@ export default function AgencyPage() {
     fetchUserData();
     if (location.state?.refresh) {
       window.history.replaceState({}, ""); // Reload the page when refresh is true
-  }
+    }
   }, [location.state])
 
 
@@ -164,30 +168,46 @@ export default function AgencyPage() {
         sx={{
           width: open ? "220px" : "90px",
           flexShrink: 0,
-          height: "660px", // Set the desired height
+          height: "100vh", // Set the desired height
           "& .MuiDrawer-paper": {
             width: open ? "220px" : "90p", // Force width
-            height: "660px", // Ensure the drawer's paper follows this 
+            height: "100vh", // Ensure the drawer's paper follows this 
             // height
             transition: "width 0.5s ease-in-out",
             overflowY: "auto", // Enable scrolling if content overflows
+            backgroundColor: "#1E2A47 ",
+            color: "#E0E7FF",
+            //color: "#b0b0b0",
           },
         }}
       >
-        <DrawerHeader>
+
+        <DrawerHeader
+          sx={{
+            padding: 0,
+            backgroundColor: "#5C738F",
+            display: "flex",
+            justifyContent: open ? "flex-end" : "flex-start", // Align based on open state
+            alignItems: "center",
+          }}
+        >
           <IconButton
             onClick={() => {
               setOpen(!open);
             }}
+            sx={{
+              color: "white",
+              height: "56px",
+              borderRadius: 0,
+              marginLeft: open ? "180px" : "10px", // Adjust distance based on state
+              transition: "margin-left 0.3s ease", // Smooth transition
+            }}
           >
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
+            <MenuIcon />
           </IconButton>
         </DrawerHeader>
         <Divider />
+
 
         <Box
           sx={{
@@ -196,29 +216,81 @@ export default function AgencyPage() {
             alignItems: "center",
             padding: "16px",
             borderBottom: "1px solid #ddd",
+            height: "90px",
+            mt: "12px"
           }}
         >
-          <Avatar
+          {/* <Avatar
             alt="User Profile"
             src="/mnt/data/image.png"
             sx={{
-               width: open? 64:50, 
-               height: open? 64:50,
-                mb: 1 }}
-          />
-          <Typography variant="body1" fontWeight="bold">
-            {userName}
+              width: open ? 64 : 50,
+              height: open ? 64 : 50,
+              mb: 1
+            }}
+          /> */}
+          <Typography variant="body1" fontWeight="bold" sx={{
+            color: "white",
+            fontSize: open ? "20px" : "14px",
+            textAlign: open ? "center" : "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}>
+            Hi, {userName}
           </Typography>
-          <Link href="/customer/update" variant="body2" underline="hover">
+          {/* <Link href="/customer/update" variant="body2" underline="hover" sx={{
+            fontSize: open ? "13px" : "12px",
+            textAlign: open ? "center" : "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}>
             Update Profile
-          </Link>
+          </Link> */}
+
+          {open ? (
+            <Link
+              href="/customer/update"
+              variant="body2"
+              underline="hover"
+              sx={{ fontSize: "13px", textAlign: "left", mt: "4px" }}
+            >
+              Update Profile
+            </Link>
+          ) : (
+            <Box
+              sx={{
+                padding: "5px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#3B4F6B", // Hover background
+                  color: "white", // Icon color on hover
+                },
+              }}
+            >
+              <EditIcon
+                fontSize="4px"
+                sx={{
+                  color: "white",
+                }}
+              />
+            </Box>
+          )}
         </Box>
 
         <List>
           {/* for Home navigation */}
           <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{
+              display: "block", p: 0.3, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              },
+            }}
             onClick={() => {
               navigate("/");
             }}
@@ -226,8 +298,8 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  height: "40px", 
-                  padding: "5px 15px",
+                  // height: "40px",
+                  // padding: "5px 15px",
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -240,6 +312,7 @@ export default function AgencyPage() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: '#E0E7FF'
                   },
                 ]}
               >
@@ -248,19 +321,40 @@ export default function AgencyPage() {
               <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
           {/* customer Dashboard navigation */}
-          <ListItem disablePadding onClick={() => navigate("/customer")}>
-            <ListItemButton>
-              <ListItemIcon><DashboardIcon /></ListItemIcon>
-              <ListItemText primary="Dashboard" />
+          <ListItem disablePadding onClick={() => navigate("/customer")} sx={{
+            p: 0.5, "&:hover": {
+              backgroundColor: "#3B4F6B", // Hover background
+            },
+          }}>
+            <ListItemButton sx={[
+              {
+                // height: "40px",
+                // padding: "5px 15px",
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              },
+            ]}>
+              <ListItemIcon sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+                color: '#E0E7FF'
+              }}><DashboardIcon /></ListItemIcon>
+              <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
           {/*  Book Hoarding Nevigation */}
           <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{ display: "block", p: 0.7, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              }, }}
             onClick={() => {
               navigate("/customer/bookhording");
             }}
@@ -268,7 +362,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  height: "40px", 
+                  height: "40px",
                   minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -281,6 +375,7 @@ export default function AgencyPage() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: '#E0E7FF'
                   },
                 ]}
               >
@@ -292,11 +387,14 @@ export default function AgencyPage() {
               />
             </ListItemButton>
           </ListItem>
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
           {/* view my screen  page navigation */}
           <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{ display: "block", p: 0.8, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              }, }}
             onClick={() => {
               navigate("/customer/paymentdetails");
             }}
@@ -304,7 +402,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  height: "40px", 
+                  height: "40px",
                   minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -317,10 +415,11 @@ export default function AgencyPage() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: '#E0E7FF'
                   },
                 ]}
               >
-               <PaymentRoundedIcon/>
+                <PaymentRoundedIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Payment Detail"
@@ -328,12 +427,14 @@ export default function AgencyPage() {
               />
             </ListItemButton>
           </ListItem>
-
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
           {/* view my booking nevigation page */}
           <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{ display: "block", p: 1.2, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              }, }}
             onClick={() => {
               navigate("/customer/mybookings");
             }}
@@ -341,7 +442,7 @@ export default function AgencyPage() {
             <ListItemButton
               sx={[
                 {
-                  height: "40px", 
+                  height: "40px",
                   minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -354,10 +455,11 @@ export default function AgencyPage() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: '#E0E7FF'
                   },
                 ]}
               >
-                <RemoveFromQueueRoundedIcon/>
+                <RemoveFromQueueRoundedIcon />
               </ListItemIcon>
               <ListItemText
                 primary="View My Bookings"
@@ -366,18 +468,21 @@ export default function AgencyPage() {
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider />
+        <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
-        <List>
-            <ListItem
+        {/* <List> */}
+          {/* for delete */}
+          <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{ display: "block", p: 0.5, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              }, }}
             onClick={() => setDeleteDialogOpen(true)}
           >
             <ListItemButton
               sx={[
                 {
-                  height: "40px", 
+                  height: "40px",
                   minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -390,10 +495,11 @@ export default function AgencyPage() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: '#E0E7FF'
                   },
                 ]}
               >
-                <DeleteIcon color="red"/>
+                <DeleteIcon color="red" />
               </ListItemIcon>
               <ListItemText
                 primary="Delete Account"
@@ -401,11 +507,14 @@ export default function AgencyPage() {
               />
             </ListItemButton>
           </ListItem>
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
 
-         {/* for Logout */}
+          {/* for Logout */}
           <ListItem
             disablePadding
-            sx={{ display: "block" }}
+            sx={{ display: "block", p: 0.5, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              }, }}
             onClick={() => {
               // Remove user ID and role from localStorage
               localStorage.removeItem("id");
@@ -417,7 +526,7 @@ export default function AgencyPage() {
           >
             <ListItemButton
               sx={{
-                height: "40px", 
+                height: "40px",
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
@@ -428,7 +537,7 @@ export default function AgencyPage() {
                   minWidth: 0,
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
-
+                  color: '#E0E7FF'
                 }}
               >
                 <LogoutIcon />
@@ -436,8 +545,13 @@ export default function AgencyPage() {
               <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-        </List>
+          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+
+        {/* </List> */}
       </Drawer>
+
+
+      {/* delete popup */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Outlet />
       </Box>
