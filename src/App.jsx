@@ -20,6 +20,7 @@ import { UpdateMyScreen } from "./agency/UpdateMyScreen";
 import { ResetPassword } from "./component/ResetPassword";
 import UpdateAgencyProfile from "./agency/UpdateAgencyProfile";
 import PrivateRoute from "./component/PrivateRoute";
+import AdminDashboard from "./admin/adminDashboard";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -31,6 +32,7 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/admin" element={<AdminDashboard />} />
 
           <Route element={<PrivateRoute/>}>
           <Route path="/agency/*" element={<AgencyPage />}>
