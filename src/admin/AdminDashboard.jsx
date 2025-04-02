@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Grid, Card, CardContent, Typography, IconButton, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Edit, Delete, CheckCircle, Cancel } from '@mui/icons-material';
+import axios from 'axios';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('AdRequests');
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/user/getall")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched Data:", data);
+            setUsers(Array.isArray(data.data) ? data.data : []);
+        })
+        .catch(error => console.error("Error fetching users:", error));
+}, []);
+
 
   return (
     <Box sx={{ bgcolor: '#f4f6f8', height: '100vh', padding: 3 }}>
@@ -29,7 +42,7 @@ export default function AdminDashboard() {
           <Card elevation={3}>
             <CardContent>
               <Typography variant="h6" color="primary">Revenue</Typography>
-              <Typography variant="h3">₹14,500</Typography> 
+              <Typography variant="h3">₹14,500</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -49,24 +62,17 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>John Doe</TableCell>
-                    <TableCell>Advertiser</TableCell>
-                    <TableCell>Active</TableCell>
-                    <TableCell>
-                      <IconButton color="primary"><Edit /></IconButton>
-                      <IconButton color="error"><Delete /></IconButton>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Jane Smith</TableCell>
-                    <TableCell>Agency</TableCell>
-                    <TableCell>Inactive</TableCell>
-                    <TableCell>
-                      <IconButton color="primary"><Edit /></IconButton>
-                      <IconButton color="error"><Delete /></IconButton>
-                    </TableCell>
-                  </TableRow>
+                  {users.map(user => (
+                    <TableRow key={user._id}>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.roleId?.name || "N/A"}</TableCell>
+                      <TableCell>{"Active"}</TableCell> {/* Assuming status is always active */}
+                      <TableCell>
+                        <IconButton color="primary"><Edit /></IconButton>
+                        <IconButton color="error"><Delete /></IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
