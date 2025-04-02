@@ -20,6 +20,12 @@ import {
   ListItemText,
   AppBar as MuiAppBar,
   Drawer as MuiDrawer,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -34,6 +40,7 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { DeleteIcon } from "lucide-react";
 
 const drawerWidth = 240;
 
@@ -119,6 +126,7 @@ export default function AgencyPage() {
   const [userName, setUserName] = useState("");
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
   const fetchUserData =  async() => {
     const storedUserid = localStorage.getItem("id");
@@ -136,30 +144,20 @@ export default function AgencyPage() {
   }
   }, [location.state])
 
+
+  const handleDeleteAccount = async () => {
+    const storedUserid = localStorage.getItem("id");
+    if (storedUserid) {
+      await axios.delete(`/user/delete/${storedUserid}`);
+      localStorage.removeItem("id");
+      localStorage.removeItem("role");
+      navigate("/");
+    }
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      {/* <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={[
-              {
-                marginRight: 5,
-              },
-              open && { display: "none" },
-            ]}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
       <Drawer
         variant="permanent"
         open={open}
@@ -372,20 +370,16 @@ export default function AgencyPage() {
         <Divider />
 
         <List>
-         
-          {/* <ListItem
+            <ListItem
             disablePadding
             sx={{ display: "block" }}
-            onClick={() => {
-              navigate("/addscreen");
-            }}
+            onClick={() => setDeleteDialogOpen(true)}
           >
             <ListItemButton
               sx={[
                 {
                   height: "40px", 
-                  padding: "5px 15px",
-                  minHeight: 48,
+                  minHeight: 32,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 },
@@ -400,49 +394,14 @@ export default function AgencyPage() {
                   },
                 ]}
               >
-                <SpaceDashboardRoundedIcon />
+                <DeleteIcon color="red"/>
               </ListItemIcon>
               <ListItemText
-                primary="Add Screen"
+                primary="Delete Account"
                 sx={{ opacity: open ? 1 : 0 }}
               />
             </ListItemButton>
-          </ListItem> */}
-
-          
-          {/* <ListItem
-            disablePadding
-            sx={{ display: "block" }}
-            onClick={() => {
-              navigate("/about");
-            }}
-          >
-            <ListItemButton
-              sx={[
-                {
-                  height: "40px", 
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                },
-              ]}
-            >
-              <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  },
-                ]}
-              >
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="About" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem> */}
-
-         
+          </ListItem>
 
          {/* for Logout */}
           <ListItem
@@ -483,6 +442,18 @@ export default function AgencyPage() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Outlet />
       </Box>
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Account Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete your account? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteAccount} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
