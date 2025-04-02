@@ -321,7 +321,7 @@ export default function UserPage() {
               <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/* customer Dashboard navigation */}
           <ListItem disablePadding onClick={() => navigate("/customer")} sx={{
@@ -347,7 +347,7 @@ export default function UserPage() {
               <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/*  Book Hoarding Nevigation */}
           <ListItem
@@ -387,7 +387,7 @@ export default function UserPage() {
               />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/* view my screen  page navigation */}
           <ListItem
@@ -427,7 +427,7 @@ export default function UserPage() {
               />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/* view my booking nevigation page */}
           <ListItem
@@ -468,7 +468,7 @@ export default function UserPage() {
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+        <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* <List> */}
           {/* for delete */}
@@ -507,7 +507,7 @@ export default function UserPage() {
               />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/* for Logout */}
           <ListItem
@@ -545,7 +545,7 @@ export default function UserPage() {
               <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: '#4d4d4d' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* </List> */}
       </Drawer>

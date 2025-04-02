@@ -571,6 +571,7 @@ export default function AgencyPage() {
             />
           </ListItemButton>
         </ListItem>
+        <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/*  Logout functionality */}
         <ListItem
@@ -611,6 +612,7 @@ export default function AgencyPage() {
             <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
           </ListItemButton>
         </ListItem>
+        <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
         {/* </List> */}
       </Drawer>
 
