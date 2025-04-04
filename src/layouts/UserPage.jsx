@@ -235,6 +235,8 @@ export default function UserPage() {
             {/* Hi, {userName} */}
             {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
           </Typography>
+
+
           {/* <Link href="/customer/update" variant="body2" underline="hover" sx={{
             fontSize: open ? "13px" : "12px",
             textAlign: open ? "center" : "center",
@@ -286,6 +288,7 @@ export default function UserPage() {
               Update Profile
             </Link>
           )}
+
         </Box>
 
         <List>
