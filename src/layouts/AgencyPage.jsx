@@ -146,14 +146,14 @@ export default function AgencyPage() {
   }, [location.state])
 
   const handleDeleteAccount = async () => {
-      const storedUserid = localStorage.getItem("id");
-      if (storedUserid) {
-        await axios.delete(`/user/delete/${storedUserid}`);
-        localStorage.removeItem("id");
-        localStorage.removeItem("role");
-        navigate("/");
-      }
-    };
+    const storedUserid = localStorage.getItem("id");
+    if (storedUserid) {
+      await axios.delete(`/user/delete/${storedUserid}`);
+      localStorage.removeItem("id");
+      localStorage.removeItem("role");
+      navigate("/");
+    }
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -259,22 +259,22 @@ export default function AgencyPage() {
               mb: 1
             }}
           /> */}
-          <Typography variant="body1" fontWeight="bold" sx={{
+          <Typography key={open} variant="body1" fontWeight="bold" sx={{
             color: "white",
-            fontSize: open ? "20px" : "14px",
+            fontSize: open ? "20px" : "30px",
             textAlign: open ? "center" : "center",
             width: "100%",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}>
-            Hi, {userName}
+            {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
           </Typography>
           {/* <Link href="/agency/update" variant="body2" underline="hover">
             Update Profile
           </Link> */}
 
-          {open ? (
+          {/* {open ? (
             <Link
               href="/customer/update"
               variant="body2"
@@ -303,6 +303,17 @@ export default function AgencyPage() {
               />
 
             </Box>
+          )} */}
+
+          {open && (
+            <Link
+              href="/customer/update"
+              variant="body2"
+              underline="hover"
+              sx={{ fontSize: "13px", textAlign: "left", mt: "4px" }}
+            >
+              Update Profile
+            </Link>
           )}
         </Box>
 

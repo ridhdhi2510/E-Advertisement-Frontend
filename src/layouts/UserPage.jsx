@@ -4,10 +4,8 @@ import axios from "axios";
 import RemoveFromQueueRoundedIcon from '@mui/icons-material/RemoveFromQueueRounded';
 import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded';
 import {
-  Avatar,
   Link,
   Box,
-  Toolbar,
   List,
   CssBaseline,
   Typography,
@@ -26,23 +24,17 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+// eslint-disable-next-line no-unused-vars
 import { styled, useTheme } from "@mui/material/styles";
 import {
   Menu as MenuIcon,
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
   MoveToInbox as InboxIcon,
-  Mail as MailIcon,
-  AddIcCallSharp as AddIcCallSharpIcon,
-  SpaceDashboardRounded as SpaceDashboardRoundedIcon,
 } from "@mui/icons-material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import { Delete as DeleteIcon } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
-
 
 
 const drawerWidth = 240;
@@ -77,6 +69,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
+// eslint-disable-next-line no-unused-vars
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme }) => ({
@@ -127,7 +120,6 @@ const Drawer = styled(MuiDrawer, {
 
 export default function UserPage() {
   const [userName, setUserName] = useState("");
-  const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
@@ -170,7 +162,7 @@ export default function UserPage() {
           flexShrink: 0,
           height: "100vh", // Set the desired height
           "& .MuiDrawer-paper": {
-            width: open ? "220px" : "90p", // Force width
+            width: open ? "220px" : "90px", // Force width
             height: "100vh", // Ensure the drawer's paper follows this 
             // height
             transition: "width 0.5s ease-in-out",
@@ -231,15 +223,20 @@ export default function UserPage() {
           /> */}
           <Typography variant="body1" fontWeight="bold" sx={{
             color: "white",
-            fontSize: open ? "20px" : "14px",
-            textAlign: open ? "center" : "center",
+            fontSize: open ? "20px" : "30px",
+            //textAlign: open ? "center" : "center",
+            textAlign: "center",
             width: "100%",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}>
-            Hi, {userName}
+
+            {/* Hi, {userName} */}
+            {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
           </Typography>
+
+
           {/* <Link href="/customer/update" variant="body2" underline="hover" sx={{
             fontSize: open ? "13px" : "12px",
             textAlign: open ? "center" : "center",
@@ -251,7 +248,7 @@ export default function UserPage() {
             Update Profile
           </Link> */}
 
-          {open ? (
+          {/* {open ? (
             <Link
               href="/customer/update"
               variant="body2"
@@ -279,7 +276,19 @@ export default function UserPage() {
                 }}
               />
             </Box>
+          )} */}
+
+          {open && (
+            <Link
+              href="/customer/update"
+              variant="body2"
+              underline="hover"
+              sx={{ fontSize: "13px", textAlign: "left", mt: "4px" }}
+            >
+              Update Profile
+            </Link>
           )}
+
         </Box>
 
         <List>
@@ -352,9 +361,11 @@ export default function UserPage() {
           {/*  Book Hoarding Nevigation */}
           <ListItem
             disablePadding
-            sx={{ display: "block", p: 0.7, "&:hover": {
+            sx={{
+              display: "block", p: 0.7, "&:hover": {
                 backgroundColor: "#3B4F6B", // Hover background
-              }, }}
+              },
+            }}
             onClick={() => {
               navigate("/customer/bookhording");
             }}
@@ -392,9 +403,11 @@ export default function UserPage() {
           {/* view my screen  page navigation */}
           <ListItem
             disablePadding
-            sx={{ display: "block", p: 0.8, "&:hover": {
+            sx={{
+              display: "block", p: 0.8, "&:hover": {
                 backgroundColor: "#3B4F6B", // Hover background
-              }, }}
+              },
+            }}
             onClick={() => {
               navigate("/customer/paymentdetails");
             }}
@@ -432,9 +445,11 @@ export default function UserPage() {
           {/* view my booking nevigation page */}
           <ListItem
             disablePadding
-            sx={{ display: "block", p: 1.2, "&:hover": {
+            sx={{
+              display: "block", p: 1.2, "&:hover": {
                 backgroundColor: "#3B4F6B", // Hover background
-              }, }}
+              },
+            }}
             onClick={() => {
               navigate("/customer/mybookings");
             }}
@@ -471,81 +486,85 @@ export default function UserPage() {
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* <List> */}
-          {/* for delete */}
-          <ListItem
-            disablePadding
-            sx={{ display: "block", p: 0.5, "&:hover": {
-                backgroundColor: "#3B4F6B", // Hover background
-              }, }}
-            onClick={() => setDeleteDialogOpen(true)}
-          >
-            <ListItemButton
-              sx={[
-                {
-                  height: "40px",
-                  minHeight: 32,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                },
-              ]}
-            >
-              <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                    color: '#E0E7FF'
-                  },
-                ]}
-              >
-                <DeleteIcon color="red" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Delete Account"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-          </ListItem>
-          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
-
-          {/* for Logout */}
-          <ListItem
-            disablePadding
-            sx={{ display: "block", p: 0.5, "&:hover": {
-                backgroundColor: "#3B4F6B", // Hover background
-              }, }}
-            onClick={() => {
-              // Remove user ID and role from localStorage
-              localStorage.removeItem("id");
-              localStorage.removeItem("role");
-
-              // Navigate to login page
-              navigate("/signin");
-            }}
-          >
-            <ListItemButton
-              sx={{
+        {/* for delete */}
+        <ListItem
+          disablePadding
+          sx={{
+            display: "block", p: 0.5, "&:hover": {
+              backgroundColor: "#3B4F6B", // Hover background
+            },
+          }}
+          onClick={() => setDeleteDialogOpen(true)}
+        >
+          <ListItemButton
+            sx={[
+              {
                 height: "40px",
-                minHeight: 48,
+                minHeight: 32,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
+              },
+            ]}
+          >
+            <ListItemIcon
+              sx={[
+                {
                   minWidth: 0,
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
                   color: '#E0E7FF'
-                }}
-              >
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
+                },
+              ]}
+            >
+              <DeleteIcon color="red" />
+            </ListItemIcon>
+            <ListItemText
+              primary="Delete Account"
+              sx={{ opacity: open ? 1 : 0 }}
+            />
+          </ListItemButton>
+        </ListItem>
+        <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
+
+        {/* for Logout */}
+        <ListItem
+          disablePadding
+          sx={{
+            display: "block", p: 0.5, "&:hover": {
+              backgroundColor: "#3B4F6B", // Hover background
+            },
+          }}
+          onClick={() => {
+            // Remove user ID and role from localStorage
+            localStorage.removeItem("id");
+            localStorage.removeItem("role");
+
+            // Navigate to login page
+            navigate("/signin");
+          }}
+        >
+          <ListItemButton
+            sx={{
+              height: "40px",
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+                color: '#E0E7FF'
+              }}
+            >
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
+        <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* </List> */}
       </Drawer>

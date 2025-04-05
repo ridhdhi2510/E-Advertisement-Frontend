@@ -2,24 +2,44 @@ import { useState, useEffect } from 'react';
 import { Box, Grid, Card, CardContent, Typography, IconButton, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Edit, Delete, CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('AdRequests');
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3000/user/getall")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Fetched Data:", data);
-            setUsers(Array.isArray(data.data) ? data.data : []);
-        })
-        .catch(error => console.error("Error fetching users:", error));
-}, []);
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched Data:", data);
+        setUsers(Array.isArray(data.data) ? data.data : []);
+      })
+      .catch(error => console.error("Error fetching users:", error));
+  }, []);
 
 
   return (
-    <Box sx={{ bgcolor: '#f4f6f8', height: '100vh', padding: 3 }}>
+    <Box sx={{ bgcolor: '#f4f6f8', height: '100vh', padding: 3, position: 'relative' }}>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={() => {
+          localStorage.removeItem("id");
+          localStorage.removeItem("role");
+
+          navigate("/signin");
+        }}
+        sx={{ position: 'absolute', top: 16, right: 16, borderColor: 'red', 
+          color: 'red', 
+          backgroundColor: 'white', 
+          '&:hover': {
+            backgroundColor: '#ffebee' // Light red on hover
+          } }}
+      >
+        Logout
+      </Button>
       <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
