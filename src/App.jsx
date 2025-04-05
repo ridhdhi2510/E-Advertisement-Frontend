@@ -21,6 +21,7 @@ import { ResetPassword } from "./component/ResetPassword";
 import UpdateAgencyProfile from "./agency/UpdateAgencyProfile";
 import PrivateRoute from "./component/PrivateRoute";
 import AdminDashboard from "./admin/adminDashboard";
+import Unauthorized from "./component/Unauthorized";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -32,26 +33,33 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          
+          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
 
-          <Route element={<PrivateRoute/>}>
-          <Route path="/agency/*" element={<AgencyPage />}>
-            <Route index element={<DefaultPage />} />
-            <Route path="addscreen" element={<AddScreen />} />
-            <Route path="update" element={<UpdateAgencyProfile />} />
-            <Route path="myscreens" element={<ViewMyScreen />} />
-            <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
+          <Route element={<PrivateRoute allowedRoles={["agency"]} />}>
+            <Route path="/agency/*" element={<AgencyPage />}>
+              <Route index element={<DefaultPage />} />
+              <Route path="addscreen" element={<AddScreen />} />
+              <Route path="update" element={<UpdateAgencyProfile />} />
+              <Route path="myscreens" element={<ViewMyScreen />} />
+              <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
+            </Route>
           </Route>
-          <Route path="/customer/*" element={<UserPage />}>
-            <Route index element={<UserDefaultPage />} />
-            <Route path="update" element={<UpdateProfile />} />
-            <Route path="bookhording" element={<BookHording />} />
-            {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
-            <Route path="bookhording/payment" element={<PaymentPage />} />
-            <Route path="paymentdetails" element={<PaymentDetails />} />
-            <Route path="mybookings" element={<MyBookings />} />
+
+          <Route element={<PrivateRoute allowedRoles={["customer"]} />}>
+            <Route path="/customer/*" element={<UserPage />}>
+              <Route index element={<UserDefaultPage />} />
+              <Route path="update" element={<UpdateProfile />} />
+              <Route path="bookhording" element={<BookHording />} />
+              {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
+              <Route path="bookhording/payment" element={<PaymentPage />} />
+              <Route path="paymentdetails" element={<PaymentDetails />} />
+              <Route path="mybookings" element={<MyBookings />} />
+            </Route>
           </Route>
-          </Route>    
         </Routes>
       </Router>
     </AppTheme>

@@ -43,8 +43,10 @@ export default function SignIn() {
     
                 if (res.data.data.roleId.name === "customer") {
                     navigate("/customer");
-                } else if (res.data.data.roleId.name === "agency") {
+                }else if (res.data.data.roleId.name === "agency") {
                     navigate("/agency");
+                }else if (res.data.data.roleId.name === "admin") {
+                    navigate("/admin");
                 }
             }
         } catch (error) {

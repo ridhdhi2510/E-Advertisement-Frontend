@@ -1,12 +1,40 @@
-import React from 'react'
-import { Navigate, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-const PrivateRoute = () => {
-     const isAuthenticated = !!localStorage.getItem("id"); // Check if token exists
-    
-     return (
-         isAuthenticated ? <Outlet /> : <Navigate to="/signin" />
-     );
-}
+const useAuth = () => {
+  const [authState, setAuthState] = useState({ isLoggedIn: false, role: "" });
+  const [loading, setLoading] = useState(true);
 
-export default PrivateRoute
+  useEffect(() => {
+    const id = localStorage.getItem("id");
+    const role = localStorage.getItem("role");
+
+    if (id && role) {
+      setAuthState({ isLoggedIn: true, role });
+    }
+    setLoading(false);
+  }, []);
+
+  return { ...authState, loading };
+};
+
+const PrivateRoute = ({ allowedRoles = [] }) => {
+  const auth = useAuth();
+  const location = useLocation();
+  console.log("allowedRoles:", allowedRoles);
+  if (auth.loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (!auth.isLoggedIn) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
+  }
+
+  if (!allowedRoles.includes(auth.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return <Outlet />;
+};
+
+export default PrivateRoute;
