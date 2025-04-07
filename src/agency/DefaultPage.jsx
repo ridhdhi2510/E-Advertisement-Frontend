@@ -11,7 +11,7 @@
 
 // export default DefaultPage
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
@@ -38,34 +38,101 @@ import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HomeIcon from '@mui/icons-material/Home'
+import axios from "axios";
+import CustomLoader from "../component/CustomLoader";
 
 const DefaultPage = () => {
+  const [hoardings, setHoardings] = useState([]);
+  const [isLoading, setisLoading] = useState(false);
+  const [carouselKey, setCarouselKey] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   let carouselRef = React.useRef(null);
 
+
+  useEffect(() => {
+    
+  
+    const fetchHoardings = async () => {
+      try {
+        const userId = localStorage.getItem("id");
+        if (!userId) {
+          throw new Error("User ID not found");
+        }
+       
+        setisLoading(true);
+        const response = await axios.get(`/hording/getHordingsbyuserid/${userId}`);
+        setisLoading(false);
+        console.log(response.data);
+        const formattedHoardings = response.data.data.map(hoarding => ({
+          id: hoarding._id || hoarding.id,
+          name: hoarding.name || hoarding.title || "Unnamed Hoarding",
+          location: hoarding.location || "Location not specified",
+          image: hoarding.hordingURL || hoarding.image || "https://via.placeholder.com/300",
+          price: hoarding.hourlyRate ? `$${hoarding.hourlyRate}/week` : "$0/week",
+          bookings: hoarding.bookings || 0
+        }));
+        console.log(formattedHoardings);
+        setHoardings(formattedHoardings);
+        setCarouselKey(prev => prev + 1);
+      } catch (err) {
+        console.error("Error fetching hoardings:", err);
+        setError(err.message);
+      } finally {
+        setisLoading(false);
+      }
+    };
+
+    fetchHoardings();
+  }, []);
+
   // Sample empty state hoarding data
-  const sampleHoardings = [
-    { 
-      id: 1, 
-      name: "No Hoardings Added Yet", 
-      location: "Add your first hoarding to get started", 
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      price: "$0/week",
-      bookings: 0
-    },
-    { 
-      id: 2, 
-      name: "Example: Times Square Digital", 
-      location: "New York", 
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      price: "$5,000/week",
-      bookings: 42
-    }
-  ];
+
+  const sampleHoardings = hoardings 
+  // : [
+  //   { 
+  //     id: 1, 
+  //     name: "No Hoardings Added Yet", 
+  //     location: "Add your first hoarding to get started", 
+  //     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  //     price: "$0/week",
+  //     bookings: 0
+  //   },
+  //   { 
+  //     id: 2, 
+  //     name: "Example: Times Square Digital", 
+  //     location: "New York", 
+  //     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  //     price: "$5,000/week",
+  //     bookings: 42
+  //   }
+  // ];
+
+
+
+  // const sampleHoardings = [
+  //   { 
+  //     id: 1, 
+  //     name: "No Hoardings Added Yet", 
+  //     location: "Add your first hoarding to get started", 
+  //     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  //     price: "$0/week",
+  //     bookings: 0
+  //   },
+  //   { 
+  //     id: 2, 
+  //     name: "Example: Times Square Digital", 
+  //     location: "New York", 
+  //     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  //     price: "$5,000/week",
+  //     bookings: 42
+  //   }
+  // ];
 
   return (
+    <>
+    {isLoading == true && <CustomLoader />}
     <Container maxWidth="lg" sx={{ 
       p: isMobile ? 1 : 3,
       overflowX: 'hidden',
@@ -237,6 +304,7 @@ const DefaultPage = () => {
           maxWidth: '100%'
         }}>
           <OwlCarousel
+           key={`carousel-${carouselKey}`}
             ref={carouselRef}
             className="owl-theme"
             loop
@@ -391,6 +459,7 @@ const DefaultPage = () => {
         </Stack>
       </Paper>
     </Container>
+    </>
   );
 };
 

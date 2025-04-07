@@ -22,6 +22,12 @@ import UpdateAgencyProfile from "./agency/UpdateAgencyProfile";
 import PrivateRoute from "./component/PrivateRoute";
 import AdminDashboard from "./admin/adminDashboard";
 import Unauthorized from "./component/Unauthorized";
+import Dashboard from "./admin/Dashboard";
+import HordingsPage from "./admin/HordingsPage";
+import AgenciesPage from "./admin/AgenciesPage";
+import CustomersPage from "./admin/CustomersPage";
+import PaymentsPage from "./admin/PaymentsPage";
+import SettingsPage from "./admin/SettingsPage";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -36,7 +42,17 @@ function App() {
           <Route path="/unauthorized" element={<Unauthorized />} />
           
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
+            {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+            <Route path="/admin/*" element={<AdminDashboard />}>
+                <Route path="dashboard" element={<Dashboard />} />
+                {/* Add placeholders for now, replace later */}
+                <Route path="hoardings" element={<HordingsPage/>} />
+                <Route path="agencies" element={<AgenciesPage/>} />
+                <Route path="customers" element={<CustomersPage/>} />
+                <Route path="payments" element={<PaymentsPage/>} />
+                <Route path="settings" element={<SettingsPage/>} />
+            </Route>
+
           </Route>
 
           <Route element={<PrivateRoute allowedRoles={["agency"]} />}>
