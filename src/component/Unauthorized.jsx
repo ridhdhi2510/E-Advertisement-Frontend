@@ -52,12 +52,22 @@
 
 // export default Unauthorized;
 
-
 import { useNavigate } from "react-router-dom";
-import unauthorizedImage from "../assets/unauthorized.png"; 
+import { useEffect, useState } from "react";
+import unauthorizedImage from "../assets/unauthorized.png";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("id");
@@ -68,8 +78,15 @@ const Unauthorized = () => {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <img src={unauthorizedImage} alt="Unauthorized" style={styles.image} />
-        <button style={styles.button} onClick={handleLogout}>
+        <img
+          src={unauthorizedImage}
+          alt="Unauthorized"
+          style={isMobile ? styles.imageMobile : styles.image}
+        />
+        <button
+          style={isMobile ? styles.buttonMobile : styles.button}
+          onClick={handleLogout}
+        >
           Logout
         </button>
       </div>
@@ -81,24 +98,42 @@ const styles = {
   container: {
     height: "100vh",
     width: "100vw",
-    backgroundColor: "#ffffff", 
+    backgroundColor: "#ffffff",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
+    padding: "20px",
+    boxSizing: "border-box",
   },
   content: {
     textAlign: "center",
+    maxWidth: "90%",
   },
   image: {
     width: "100%",
     maxWidth: "700px",
     height: "auto",
   },
+  imageMobile: {
+    width: "100%",
+    maxWidth: "90vw",
+    height: "auto",
+  },
   button: {
     marginTop: "20px",
     padding: "12px 30px",
     fontSize: "1rem",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
+  },
+  buttonMobile: {
+    marginTop: "16px",
+    padding: "10px 24px",
+    fontSize: "0.9rem",
     backgroundColor: "#007bff",
     color: "#fff",
     border: "none",
