@@ -34,7 +34,7 @@ const sidebarItems = [
   { text: "Customers", path: "/admin/customers", icon: <GroupIcon /> },
   { text: "Payments", path: "/admin/payments", icon: <PaymentIcon /> },
   {
-    text: "Logout", path: "/admin/signin", icon: <LogoutIcon />, onClick: () => {
+    text: "Logout", path: "/signin", icon: <LogoutIcon />, onClick: () => {
       localStorage.removeItem("id");
       localStorage.removeItem("role");
       navigate("/signin");
@@ -108,10 +108,10 @@ export default function AdminSidebar() {
         {sidebarItems.map((item) => (
           <React.Fragment key={item.text}>
             <Tooltip title={!open ? item.text : ''} placement="right">
-              <ListItem
-                button
-                component={item.onClick ? 'div' : Link}
-                to={!item.onClick ? item.path : undefined}
+              <ListItem disablePadding>
+              <ListItemButton
+                component={item.path ? Link : 'button'}
+                to={item.path || undefined}
                 onClick={item.onClick}
                 selected={location.pathname === item.path}
                 sx={{
@@ -134,6 +134,7 @@ export default function AdminSidebar() {
                   {item.icon}
                 </ListItemIcon>
                 {open && <ListItemText primary={item.text} />}
+                </ListItemButton>
               </ListItem>
             </Tooltip>
             <Divider sx={{ backgroundColor: 'grey' }} />
