@@ -100,6 +100,7 @@ export default function SignUp() {
                 </Box>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
+                    {/* ------------------------ Name --------------------------- */}
                     <TextField
                         fullWidth
                         label="Name"
@@ -123,6 +124,7 @@ export default function SignUp() {
                         error={!!errors.name}
                         helperText={errors.name?.message}
                     />
+                    {/* ----------------------------- Email ------------------------------- */}
                     <TextField
                         fullWidth
                         label="Email"
@@ -147,6 +149,7 @@ export default function SignUp() {
                         error={!!errors.email}
                         helperText={errors.email?.message}
                     />
+                    {/* ----------------------------- Password ----------------------------------- */}
                     <TextField
                         fullWidth
                         label="Password"
@@ -178,6 +181,7 @@ export default function SignUp() {
                             style: { color: "rgba(255, 255, 255, 0.7)" }, // Label color
                         }}
                     />
+                    {/* ----------------------------- Confirm Password ----------------------------------  */}
                     <TextField
                         fullWidth
                         label="Confirm Password"
@@ -205,81 +209,62 @@ export default function SignUp() {
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword?.message}
                     />
+                    {/* ---------------------------- Role -------------------------------------------------- */}
                     <FormControl fullWidth margin="normal" variant="outlined" sx={{
                         "& .MuiOutlinedInput-root": {
                             "& fieldset": {
-                                border: "1px solid white", // Normal state border
+                            border: "1px solid white", // Normal state border
                             },
                             "&:hover fieldset": {
-                                border: "1px solid white", // Hover state
+                            border: "1px solid white", // Hover state
                             },
-
                             "&.Mui-focused": {
-                                border: "none !important", // Remove border on focus (matches other fields)
+                            border: "none !important", // Remove border on focus
                             },
+                            color: "white", // Add this for white text color
                         },
-
                         // Label styling
                         "& .MuiInputLabel-root": {
                             color: "rgba(255, 255, 255, 0.7)",
                             "&.Mui-focused": {
-                                color: "rgba(255, 255, 255, 0.7) !important", // Keep same color when focused
+                            color: "rgba(255, 255, 255, 0.7) !important",
                             },
                         },
-                    }} >
-
+                        }}>
                         <InputLabel sx={{
-                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, "& .MuiOutlinedInput-root.Mui-focused ": { border: "none" }
-                        }}> Role</InputLabel>
+                            "& .MuiOutlinedInput-root": { border: "1px solid white" }, 
+                            "& .MuiOutlinedInput-root.Mui-focused": { border: "none" }
+                        }}>Role</InputLabel>
                         <Select
                             defaultValue=""
                             {...register("role", { required: "Role is required" })}
                             onChange={handleRoleChange}
                             sx={{
-                                "& .MuiSvgIcon-root": { color: "#fff" },
-                                // Remove any focus effects on the select itself
-                                "&:before": {
-                                    borderBottom: "none",
-                                },
-                                "&:after": {
-                                    borderBottom: "none",
-                                },
+                            "& .MuiSvgIcon-root": { color: "#fff" },
+                            color: "white", // Ensure selected text is white
+                            // Remove any focus effects
+                            "&:before": {
+                                borderBottom: "none",
+                            },
+                            "&:after": {
+                                borderBottom: "none",
+                            },
                             }}
                             MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        backgroundColor: "rgb(69, 69, 69)", // Dark dropdown background
-
-                                        color: "#fff", // Light text in dropdown
-                                    }
+                            PaperProps: {
+                                sx: {
+                                backgroundColor: "rgb(69, 69, 69)",
+                                color: "#fff",
                                 }
+                            }
                             }}
-
                         >
-                            <MenuItem value="customer">Customer</MenuItem>
-                            <MenuItem value="agency">Agency</MenuItem>
+                            <MenuItem value="customer" sx={{ color: "#fff" }}>Customer</MenuItem>
+                            <MenuItem value="agency" sx={{ color: "#fff" }}>Agency</MenuItem>
                         </Select>
                     </FormControl>
 
-
-                    {/* <FormControl fullWidth margin="normal" sx={{ mt: 2 }}>
-                        <InputLabel sx={{ mt: -0.8 }}>Role</InputLabel>
-                        <Controller
-                            name="role"
-                            control={control}
-                            rules={{ required: "Role is required" }}
-                            render={({ field }) => (
-                                <Select {...field} onChange={(event) => {
-                                    field.onChange(event); // Ensure React Hook Form updates value
-                                    handleRoleChange(event); // Call your function
-                                }}>
-                                    <MenuItem value="customer">Customer</MenuItem>
-                                    <MenuItem value="agency">Agency</MenuItem>
-                                </Select>
-                            )}
-                        />
-                    </FormControl> */}
-
+                    {/* ------------------------------------- Remember me ----------------------------------- */}
                     <FormControlLabel
                         control={<Checkbox {...register("rememberMe")} sx={{
                             color: "white", // Default checkbox color
@@ -291,6 +276,8 @@ export default function SignUp() {
                             "& .MuiTypography-root": { color: "white" },
                         }}
                     />
+
+                    {/* -------------------------------- SignUp Button ------------------------------------- */}
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign Up
                     </Button>
