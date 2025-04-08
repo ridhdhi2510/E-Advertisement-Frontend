@@ -90,28 +90,6 @@ export default function SignIn() {
         }
     }
 
-
-    // const onSubmit = async (data) => {
-    //     try {
-    //         const res = await axios.post("/user/login", data);
-            
-    //         if (res.status === 200) {
-    //           console.log(res.data.data);
-    //           localStorage.setItem("id", res.data.data._id);
-    //           localStorage.setItem("role", res.data.data.roleId.name);
-    //           alert("Login Success");
-    //           console.log(res.data.data.roleId.name)
-    //           if (res.data.data.role === "customer") {
-    //             navigate("/customer");
-    //           } else if (res.data.data.roleId.name === "agency") {
-    //             navigate("/agency");
-    //           }
-    //         }
-    //     } catch (error) {
-    //         console.error("Login Error:", error);
-    //     }
-    // };
-    
     return (
         <>
         {isLoading == true && <CustomLoader />}
@@ -231,17 +209,7 @@ export default function SignIn() {
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
                     </FormControl> */}
-                    <FormControlLabel
-                        control={<Checkbox {...register("rememberMe")} sx={{
-                            color: "white", // Default checkbox color
-                            "&.Mui-checked": { color: "white" }, // Checked state color
-                        }} />}
-                        label="Remember Me"
-                        sx={{
-                            mt: 1, color: "white", // Label color
-                            "& .MuiTypography-root": { color: "white" },
-                        }}
-                    />
+                   
 
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign In
