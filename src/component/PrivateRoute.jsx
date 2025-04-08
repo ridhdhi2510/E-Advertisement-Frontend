@@ -21,7 +21,6 @@ const useAuth = () => {
 const PrivateRoute = ({ allowedRoles = [] }) => {
   const auth = useAuth();
   const location = useLocation();
-  console.log("allowedRoles:", allowedRoles);
   if (auth.loading) {
     return <h1>Loading...</h1>;
   }
