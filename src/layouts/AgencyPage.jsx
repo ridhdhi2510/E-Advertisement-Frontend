@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useTheme, useMediaQuery } from "@mui/material";
 import {
   Avatar,
   Link,
@@ -24,7 +25,7 @@ import {
   DialogActions,
   Button
 } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import {
   Menu as MenuIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -124,8 +125,10 @@ const Drawer = styled(MuiDrawer, {
 
 export default function AgencyPage() {
   const [userName, setUserName] = useState("");
+
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [open, setOpen] = React.useState(!isSmallScreen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
   const fetchUserData = async () => {
@@ -142,8 +145,8 @@ export default function AgencyPage() {
       window.history.replaceState({}, ""); // Reload the page when refresh is true
     }
 
-
-  }, [location.state])
+    setOpen(!isSmallScreen);
+  }, [location.state , isSmallScreen])
 
   const handleDeleteAccount = async () => {
     const storedUserid = localStorage.getItem("id");
@@ -158,27 +161,6 @@ export default function AgencyPage() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      {/* <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={[
-              {
-                marginRight: 5,
-              },
-              open && { display: "none" },
-            ]}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
       <Drawer
         variant="permanent"
         open={open}
@@ -198,21 +180,7 @@ export default function AgencyPage() {
           },
         }}
       >
-        {/* <DrawerHeader>
-          <IconButton
-            onClick={() => {
-              setOpen(!open);
-            }}
-          >
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider /> */}
-
+       
         <DrawerHeader
           sx={{
             padding: 0,
@@ -270,41 +238,6 @@ export default function AgencyPage() {
           }}>
             {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
           </Typography>
-          {/* <Link href="/agency/update" variant="body2" underline="hover">
-            Update Profile
-          </Link> */}
-
-          {/* {open ? (
-            <Link
-              href="/customer/update"
-              variant="body2"
-              underline="hover"
-              sx={{ fontSize: "13px", textAlign: "left", mt: "4px" }}
-            >
-              Update Profile
-            </Link>
-          ) : (
-            <Box
-              sx={{
-                padding: "5px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#3B4F6B", // Hover background
-                  color: "white", // Icon color on hover
-                },
-              }}
-            >
-              <EditIcon
-                fontSize="4px"
-                sx={{
-                  color: "white",
-                }}
-              />
-
-            </Box>
-          )} */}
-
           {open && (
             <Link
               href="/customer/update"
@@ -469,77 +402,6 @@ export default function AgencyPage() {
           </ListItem>
         </List>
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
-
-        {/* <List> */}
-        {/* for Home navigation */}
-        {/* <ListItem
-            disablePadding
-            sx={{ display: "block" }}
-            onClick={() => {
-              navigate("/addscreen");
-            }}
-          >
-            <ListItemButton
-              sx={[
-                {
-                  height: "40px", 
-                  padding: "5px 15px",
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                },
-              ]}
-            >
-              <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  },
-                ]}
-              >
-                <SpaceDashboardRoundedIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Add Screen"
-                sx={{ opacity: open ? 1 : 0 }}
-              />
-            </ListItemButton>
-          </ListItem> */}
-
-        {/*  About page  Navigation */}
-        {/* <ListItem
-            disablePadding
-            sx={{ display: "block" }}
-            onClick={() => {
-              navigate("/about");
-            }}
-          >
-            <ListItemButton
-              sx={[
-                {
-                  height: "40px", 
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                },
-              ]}
-            >
-              <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  },
-                ]}
-              >
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="About" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem> */}
 
         {/* contact page navigation */}
         <ListItem

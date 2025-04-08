@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import RemoveFromQueueRoundedIcon from '@mui/icons-material/RemoveFromQueueRounded';
 import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded';
+import { useTheme, useMediaQuery } from "@mui/material";
 import {
   Link,
   Box,
@@ -25,7 +26,7 @@ import {
   Button,
 } from "@mui/material";
 // eslint-disable-next-line no-unused-vars
-import { styled, useTheme } from "@mui/material/styles";
+import { styled} from "@mui/material/styles";
 import {
   Menu as MenuIcon,
   MoveToInbox as InboxIcon,
@@ -120,7 +121,9 @@ const Drawer = styled(MuiDrawer, {
 
 export default function UserPage() {
   const [userName, setUserName] = useState("");
-  const [open, setOpen] = React.useState(true);
+  const theme = useTheme();
+const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+const [open, setOpen] = React.useState(!isSmallScreen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
   const fetchUserData = async () => {
@@ -137,7 +140,8 @@ export default function UserPage() {
     if (location.state?.refresh) {
       window.history.replaceState({}, ""); // Reload the page when refresh is true
     }
-  }, [location.state])
+    setOpen(!isSmallScreen);
+  }, [location.state , isSmallScreen])
 
 
   const handleDeleteAccount = async () => {
@@ -199,8 +203,6 @@ export default function UserPage() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-
-
         <Box
           sx={{
             display: "flex",
@@ -212,15 +214,6 @@ export default function UserPage() {
             mt: "12px"
           }}
         >
-          {/* <Avatar
-            alt="User Profile"
-            src="/mnt/data/image.png"
-            sx={{
-              width: open ? 64 : 50,
-              height: open ? 64 : 50,
-              mb: 1
-            }}
-          /> */}
           <Typography variant="body1" fontWeight="bold" sx={{
             color: "white",
             fontSize: open ? "20px" : "30px",
@@ -235,48 +228,6 @@ export default function UserPage() {
             {/* Hi, {userName} */}
             {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
           </Typography>
-
-
-          {/* <Link href="/customer/update" variant="body2" underline="hover" sx={{
-            fontSize: open ? "13px" : "12px",
-            textAlign: open ? "center" : "center",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}>
-            Update Profile
-          </Link> */}
-
-          {/* {open ? (
-            <Link
-              href="/customer/update"
-              variant="body2"
-              underline="hover"
-              sx={{ fontSize: "13px", textAlign: "left", mt: "4px" }}
-            >
-              Update Profile
-            </Link>
-          ) : (
-            <Box
-              sx={{
-                padding: "5px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#3B4F6B", // Hover background
-                  color: "white", // Icon color on hover
-                },
-              }}
-            >
-              <EditIcon
-                fontSize="4px"
-                sx={{
-                  color: "white",
-                }}
-              />
-            </Box>
-          )} */}
 
           {open && (
             <Link
