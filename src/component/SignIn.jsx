@@ -258,17 +258,7 @@ export default function SignIn() {
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
                     </FormControl> */}
-                    <FormControlLabel
-                        control={<Checkbox {...register("rememberMe")} sx={{
-                            color: "white", // Default checkbox color
-                            "&.Mui-checked": { color: "white" }, // Checked state color
-                        }} />}
-                        label="Remember Me"
-                        sx={{
-                            mt: 1, color: "white", // Label color
-                            "& .MuiTypography-root": { color: "white" },
-                        }}
-                    />
+                   
 
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign In

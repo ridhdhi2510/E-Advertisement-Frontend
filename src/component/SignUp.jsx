@@ -263,20 +263,7 @@ export default function SignUp() {
                             <MenuItem value="agency" sx={{ color: "#fff" }}>Agency</MenuItem>
                         </Select>
                     </FormControl>
-
-                    {/* ------------------------------------- Remember me ----------------------------------- */}
-                    <FormControlLabel
-                        control={<Checkbox {...register("rememberMe")} sx={{
-                            color: "white", // Default checkbox color
-                            "&.Mui-checked": { color: "white" }, // Checked state color
-                        }} />}
-                        label="Remember Me"
-                        sx={{
-                            mt: 1, color: "white", // Label color
-                            "& .MuiTypography-root": { color: "white" },
-                        }}
-                    />
-
+                    
                     {/* -------------------------------- SignUp Button ------------------------------------- */}
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign Up
