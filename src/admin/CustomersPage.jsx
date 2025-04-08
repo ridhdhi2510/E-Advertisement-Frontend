@@ -44,34 +44,6 @@ export default function CustomersPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch all customers from backend
-  // useEffect(() => {
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await fetch("http://localhost:3000/user/getall");
-  //       const data = await response.json();
-
-  //       if (!response.ok) {
-  //         throw new Error(data.message || 'Failed to fetch users');
-  //       }
-
-  //       // Filter for customers only and ensure we have an array
-  //       const customerUsers = Array.isArray(data.data) 
-  //         ? data.data.filter(user => user.role === 'customer')
-  //         : [];
-
-  //       setCustomers(customerUsers);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       console.error('Error fetching customers:', err);
-  //       setError(err.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchCustomers();
-  // }, []);
 
   useEffect(() => {
     axios
