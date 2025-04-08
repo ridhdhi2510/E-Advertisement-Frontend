@@ -90,54 +90,22 @@ const DefaultPage = () => {
   // Sample empty state hoarding data
 
   const sampleHoardings = hoardings 
-  // : [
-  //   { 
-  //     id: 1, 
-  //     name: "No Hoardings Added Yet", 
-  //     location: "Add your first hoarding to get started", 
-  //     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-  //     price: "$0/week",
-  //     bookings: 0
-  //   },
-  //   { 
-  //     id: 2, 
-  //     name: "Example: Times Square Digital", 
-  //     location: "New York", 
-  //     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-  //     price: "$5,000/week",
-  //     bookings: 42
-  //   }
-  // ];
-
-
-
-  // const sampleHoardings = [
-  //   { 
-  //     id: 1, 
-  //     name: "No Hoardings Added Yet", 
-  //     location: "Add your first hoarding to get started", 
-  //     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-  //     price: "$0/week",
-  //     bookings: 0
-  //   },
-  //   { 
-  //     id: 2, 
-  //     name: "Example: Times Square Digital", 
-  //     location: "New York", 
-  //     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-  //     price: "$5,000/week",
-  //     bookings: 42
-  //   }
-  // ];
-
   return (
     <>
     {isLoading == true && <CustomLoader />}
-    <Container maxWidth="lg" sx={{ 
-      p: isMobile ? 1 : 3,
+    <Container 
+    sx={{
       overflowX: 'hidden',
-      width: '100%'
-    }}>
+      width: {
+        xs:350,
+        sm:500,
+        md:700,
+        lg:900,
+        xl:1000
+      },
+      marginLeft: 0 // Remove any fixed margins
+  }}
+    >
       {/* Welcome Section */}
       <Box sx={{ mb: isMobile ? 2 : 4 }}>
         <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
