@@ -8,6 +8,8 @@ import bgImg from '../assets/Bg-1.png';
 import CloseIcon from "@mui/icons-material/Close";
 import { event } from 'jquery';
 import CustomLoader from "./CustomLoader";
+import { jwtDecode } from "jwt-decode";
+
 
 
 export default function SignIn() {
@@ -22,40 +24,85 @@ export default function SignIn() {
         setShowPassword(!showPassword);
     };
 
+    // const onSubmit = async (data) => {
+    //     try {
+    //         setisLoading(true);
+    //         const res = await axios.post("/user/login", data);
+    //         setisLoading(false);
+            
+    //         if (res.status === 200) {
+    //             localStorage.setItem("id", res.data.data._id);
+                
+    
+    //             // Ensure roleId exists before accessing `name`
+    //             if (!res.data.data.roleId || !res.data.data.roleId.name) {
+    //                 alert("Error: Role not assigned to user.");
+    //                 return;
+    //             }
+    
+    //             localStorage.setItem("role", res.data.data.roleId.name);
+    //             // alert("Login Success");
+    
+    //             if (res.data.data.roleId.name === "customer") {
+    //                 navigate("/customer");
+    //             }else if (res.data.data.roleId.name === "agency") {
+    //                 navigate("/agency");
+    //             }else if (res.data.data.roleId.name === "admin") {
+    //                 navigate("/admin");
+    //             }
+    //         }
+    //     } catch (error) {
+    //         setisLoading(false);
+    //         console.error("Login Error:", error);
+    //         if(error.response){
+    //             alert(error.response.data.message)
+    //         }
+    //         else {
+    //             alert("An unexpected error occurred.");
+    //         }
+    //     }
+    // };
+
     const onSubmit = async (data) => {
         try {
             setisLoading(true);
             const res = await axios.post("/user/login", data);
             setisLoading(false);
-            
+
             if (res.status === 200) {
-                localStorage.setItem("id", res.data.data._id);
-                
-    
-                // Ensure roleId exists before accessing `name`
-                if (!res.data.data.roleId || !res.data.data.roleId.name) {
-                    alert("Error: Role not assigned to user.");
-                    return;
-                }
-    
-                localStorage.setItem("role", res.data.data.roleId.name);
-                // alert("Login Success");
-    
-                if (res.data.data.roleId.name === "customer") {
+                const token = res.data.token;
+                console.log(token)
+                localStorage.setItem("token", token);
+
+                // Decode token
+                const decoded = jwtDecode(token);
+                console.log(decoded)
+
+                //taking id and role from decoded
+                const id = decoded._id;
+                const role = decoded.roleId.name;
+
+
+                localStorage.setItem("id", id);
+                localStorage.setItem("role", role);
+
+                //  Navigate based on role
+                if (role === "customer") {
                     navigate("/customer");
-                }else if (res.data.data.roleId.name === "agency") {
+                } else if (role === "agency") {
                     navigate("/agency");
-                }else if (res.data.data.roleId.name === "admin") {
+                } else if (role === "admin") {
                     navigate("/admin");
+                } else {
+                    alert("Unknown role. Access denied.");
                 }
             }
         } catch (error) {
             setisLoading(false);
             console.error("Login Error:", error);
-            if(error.response){
-                alert(error.response.data.message)
-            }
-            else {
+            if (error.response) {
+                alert(error.response.data.message);
+            } else {
                 alert("An unexpected error occurred.");
             }
         }
@@ -90,28 +137,8 @@ export default function SignIn() {
         }
     }
 
+    //useApi code remain here and after reset password update token remain and athorization
 
-    // const onSubmit = async (data) => {
-    //     try {
-    //         const res = await axios.post("/user/login", data);
-            
-    //         if (res.status === 200) {
-    //           console.log(res.data.data);
-    //           localStorage.setItem("id", res.data.data._id);
-    //           localStorage.setItem("role", res.data.data.roleId.name);
-    //           alert("Login Success");
-    //           console.log(res.data.data.roleId.name)
-    //           if (res.data.data.role === "customer") {
-    //             navigate("/customer");
-    //           } else if (res.data.data.roleId.name === "agency") {
-    //             navigate("/agency");
-    //           }
-    //         }
-    //     } catch (error) {
-    //         console.error("Login Error:", error);
-    //     }
-    // };
-    
     return (
         <>
         {isLoading == true && <CustomLoader />}
@@ -231,17 +258,7 @@ export default function SignIn() {
                             <MenuItem value="agency">Agency</MenuItem>
                         </Select>
                     </FormControl> */}
-                    <FormControlLabel
-                        control={<Checkbox {...register("rememberMe")} sx={{
-                            color: "white", // Default checkbox color
-                            "&.Mui-checked": { color: "white" }, // Checked state color
-                        }} />}
-                        label="Remember Me"
-                        sx={{
-                            mt: 1, color: "white", // Label color
-                            "& .MuiTypography-root": { color: "white" },
-                        }}
-                    />
+                   
 
                     <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
                         Sign In

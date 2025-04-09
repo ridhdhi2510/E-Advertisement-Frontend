@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import {
   Box,
   Typography,
@@ -14,14 +15,15 @@ import {
   Button,
   IconButton,
   Chip,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Tabs,
   Tab,
-  Avatar,
+  CircularProgress,
+  InputAdornment,
+  TableSortLabel,
   MenuItem
 } from '@mui/material';
 import {
@@ -40,312 +42,390 @@ export default function CustomersPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('id');
   const navigate = useNavigate();
 
-  // Fetch customer data from backend
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/user/getall");
-        const data = await response.json();
-        
-        // Filter users who signed up as customers (assuming role is stored in user data)
-        const customerUsers = Array.isArray(data.data) 
-          ? data.data.filter(user => user.role === 'customer') 
-          : [];
-        
-        setCustomers(customerUsers);
+    axios
+      .get("http://localhost:3000/user/getall")
+      .then((response) => {
+        console.log("Customer API Response:", response.data);
+        setCustomers(response.data.data);
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching customers:', error);
+      })
+      .catch((error) => {
+        console.error("Error fetching customers:", error);
         setLoading(false);
-      }
-    };
-
-    fetchCustomers();
+      });
   }, []);
 
-  // Fetch booking data (you'll need to implement this API endpoint)
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        // TODO: Replace with actual bookings API call
-        // const response = await fetch("http://localhost:3000/bookings/getall");
-        // const data = await response.json();
-        // setBookings(Array.isArray(data.data) ? data.data : []);
-        
-        // Mock data for demonstration
-        const mockBookings = [
-          {
-            bookingId: 'B001',
-            customerId: customers[0]?.id || 'C001',
-            customerName: customers[0]?.name || 'John Smith',
-            hoardingType: 'Digital Billboard',
-            location: 'Times Square, NY',
-            startDate: '2023-06-01',
-            endDate: '2023-06-30',
-            amount: 5000,
-            status: 'Completed'
-          },
-          {
-            bookingId: 'B002',
-            customerId: customers[0]?.id || 'C001',
-            customerName: customers[0]?.name || 'John Smith',
-            hoardingType: 'Static Billboard',
-            location: '5th Avenue, NY',
-            startDate: '2023-07-15',
-            endDate: '2023-08-15',
-            amount: 3500,
-            status: 'Active'
-          }
-        ];
-        setBookings(mockBookings);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-      }
-    };
-
     if (customers.length > 0) {
+      const fetchBookings = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/bookings/getall");
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch bookings');
+          }
+
+          setBookings(Array.isArray(data.data) ? data.data : []);
+        } catch (err) {
+          console.error('Error fetching bookings:', err);
+        }
+      };
+
       fetchBookings();
     }
   }, [customers]);
 
-  // For Navigation to "Customer Details" and "Booking Details"
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  // Sorting functions
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
-  // For Searching Bar
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+  const stableSort = (array, comparator) => {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
   };
 
-  // For the purpose of Add/Edit table data
-  const handleDialogOpen = (customer = null) => {
-    setCurrentCustomer(customer);
-    setOpenDialog(true);
+  const getComparator = (order, orderBy) => {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
   };
 
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-    setCurrentCustomer(null);
+  const descendingComparator = (a, b, orderBy) => {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
   };
 
-  // Save the Data of table "Customer Details" after Editing
   const handleSaveCustomer = async () => {
     try {
-      // TODO: Implement API call to save customer
-      handleDialogClose();
-    } catch (error) {
-      console.error('Error saving customer:', error);
+      setOpenDialog(false);
+      setCurrentCustomer(null);
+    } catch (err) {
+      console.error('Error saving customer:', err);
+      setError(err.message);
     }
   };
 
-  // Update Table After Delete the "Customer Details" Data
-  const handleDelete = async (id) => {
+  const handleDelete = async (customerId) => {
     try {
-      // TODO: Implement API call to delete customer
-    } catch (error) {
-      console.error('Error deleting customer:', error);
+      console.log(`Would delete customer with ID: ${customerId}`);
+    } catch (err) {
+      console.error('Error deleting customer:', err);
+      setError(err.message);
     }
   };
 
-  // For searching purpose
-  const filteredCustomers = customers.filter(customer =>
-    Object.values(customer).some(
-      value => typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-  ));
-
+  const filteredCustomers = customers.filter(customer => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (customer.name && customer.name.toLowerCase().includes(searchLower)) ||
+      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
+      (customer.phone && customer.phone.toString().toLowerCase().includes(searchLower))
+    );
+  });
 
   if (loading) {
-    return <Typography>Loading customers...</Typography>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
+  if (error) {
+    return (
+      <Box sx={{ ml: '240px', p: 3 }}>
+        <Typography color="error">Error: {error}</Typography>
+      </Box>
+    );
+  }
+
+  // Table headers with sorting
+  const customerHeaders = [
+    { id: '_id', label: 'ID', sortable: true },
+    { id: 'name', label: 'Customer', sortable: true },
+    { id: 'email', label: 'Email', sortable: true },
+    { id: 'phone', label: 'Phone', sortable: true },
+    { id: 'status', label: 'Status', sortable: true },
+    { id: 'bookings', label: 'Bookings', sortable: true },
+    { id: 'actions', label: 'Actions', sortable: false }
+  ];
+
+  const bookingHeaders = [
+    { id: '_id', label: 'Booking ID', sortable: true },
+    { id: 'customer', label: 'Customer', sortable: true },
+    { id: 'type', label: 'Type', sortable: true },
+    { id: 'location', label: 'Location', sortable: true },
+    { id: 'dates', label: 'Dates', sortable: true },
+    { id: 'amount', label: 'Amount', sortable: true },
+    { id: 'status', label: 'Status', sortable: true },
+    { id: 'actions', label: 'Actions', sortable: false }
+  ];
 
   return (
-    <Box sx={{ ml: '240px', p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ ml: '240px', p: 3, backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#1E2A47', fontWeight: 'bold' }}>
         Customer Management
       </Typography>
 
-      {/* Tabs for Customer Details and Booking Details */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
+      {/* Tabs */}
+      <Paper sx={{ mb: 3, borderRadius: 2 }}>
+        <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
           <Tab label="Customer Details" />
           <Tab label="Booking Details" />
         </Tabs>
-      </Box>
+      </Paper>
 
       {/* Search and Add Button */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <TextField
           variant="outlined"
-          placeholder="Search customers..."
+          placeholder="Search..."
           size="small"
           InputProps={{
-            startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'action.active' }} />
+              </InputAdornment>
+            ),
           }}
-          sx={{ width: 400 }}
-          onChange={handleSearch}
+          sx={{ 
+            width: 400,
+            backgroundColor: 'white',
+            borderRadius: 1,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 1,
+            }
+          }}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
         />
         <Button
           variant="contained"
-          color="primary"
           startIcon={<AddIcon />}
-          onClick={() => handleDialogOpen()}
+          sx={{
+            backgroundColor: '#1E2A47',
+            '&:hover': { backgroundColor: '#3B4F6B' }
+          }}
+          onClick={() => {
+            setCurrentCustomer(null);
+            setOpenDialog(true);
+          }}
         >
           Add Customer
         </Button>
       </Box>
 
-      {/* Customer Details Table */}
-      {activeTab === 0 && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Customer ID</TableCell>
-                <TableCell>Customer</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredCustomers.map((customer) => (
-                <TableRow key={customer._id}>
-                  <TableCell>{customer._id}</TableCell>
-                  <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                      {customer.name?.charAt(0) || 'C'}
-                    </Avatar>
-                    {customer.name || 'No Name'}
-                  </TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  <TableCell>{customer.phone || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={customer.status || 'Active'} 
-                      color={customer.status === 'Active' ? 'success' : 'default'} 
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleDialogOpen(customer)}>
-                      <EditIcon color="primary" />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(customer._id)}>
-                      <DeleteIcon color="error" />
-                    </IconButton>
-                  </TableCell>
+      {activeTab === 0 ? (
+        <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
+          <TableContainer>
+            <Table>
+              <TableHead sx={{ backgroundColor: '#1E2A47' }}>
+                <TableRow>
+                  {customerHeaders.map((headCell) => (
+                    <TableCell
+                      key={headCell.id}
+                      sortDirection={orderBy === headCell.id ? order : false}
+                      sx={{ color: 'white' }}
+                    >
+                      {headCell.sortable ? (
+                        <TableSortLabel
+                          active={orderBy === headCell.id}
+                          direction={orderBy === headCell.id ? order : 'asc'}
+                          onClick={() => handleRequestSort(headCell.id)}
+                          sx={{ 
+                            color: 'white !important',
+                            '& .MuiTableSortLabel-icon': {
+                              color: 'white !important'
+                            }
+                          }}
+                        >
+                          {headCell.label}
+                        </TableSortLabel>
+                      ) : (
+                        headCell.label
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredCustomers.map((customer) => (
+                  <TableRow key={customer._id} hover>
+                    <TableCell>{customer._id}</TableCell>
+                    <TableCell>{customer.name}</TableCell>
+                    <TableCell>{customer.email}</TableCell>
+                    <TableCell>{customer.phone || 'N/A'}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={customer.status || 'Active'} 
+                        color={customer.status === 'Active' ? 'success' : 'default'} 
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {bookings.filter(b => b.customerId === customer._id).length}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => {
+                        setCurrentCustomer(customer);
+                        setOpenDialog(true);
+                      }}>
+                        <EditIcon color="primary" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(customer._id)}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      ) : (
+        <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
+          <TableContainer>
+            <Table>
+              <TableHead sx={{ backgroundColor: '#1E2A47' }}>
+                <TableRow>
+                  {bookingHeaders.map((headCell) => (
+                    <TableCell
+                      key={headCell.id}
+                      sortDirection={orderBy === headCell.id ? order : false}
+                      sx={{ color: 'white' }}
+                    >
+                      {headCell.sortable ? (
+                        <TableSortLabel
+                          active={orderBy === headCell.id}
+                          direction={orderBy === headCell.id ? order : 'asc'}
+                          onClick={() => handleRequestSort(headCell.id)}
+                          sx={{ 
+                            color: 'white !important',
+                            '& .MuiTableSortLabel-icon': {
+                              color: 'white !important'
+                            }
+                          }}
+                        >
+                          {headCell.label}
+                        </TableSortLabel>
+                      ) : (
+                        headCell.label
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookings.map(booking => {
+                  const customer = customers.find(c => c._id === booking.customerId);
+                  return (
+                    <TableRow key={booking._id} hover>
+                      <TableCell>{booking._id.substring(0, 8)}...</TableCell>
+                      <TableCell>
+                        {customer?.name || 'Unknown Customer'}
+                      </TableCell>
+                      <TableCell>{booking.hoardingType || 'N/A'}</TableCell>
+                      <TableCell>{booking.location || 'N/A'}</TableCell>
+                      <TableCell>
+                        {booking.startDate || 'N/A'} to {booking.endDate || 'N/A'}
+                      </TableCell>
+                      <TableCell>₹{booking.amount || '0'}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={booking.status || 'Pending'}
+                          color={
+                            booking.status === 'Active' ? 'primary' :
+                              booking.status === 'Completed' ? 'success' :
+                                'default'
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => navigate(`/bookings/${booking._id}`)}>
+                          <InfoIcon color="info" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       )}
 
-      {/* Booking Details Table */}
-      {activeTab === 1 && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Booking ID</TableCell>
-                <TableCell>Customer</TableCell>
-                <TableCell>Hoarding Type</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Period</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookings.map(booking => (
-                <TableRow key={booking.bookingId}>
-                  <TableCell>{booking.bookingId}</TableCell>
-                  <TableCell>
-                    {booking.customerName || 
-                     customers.find(c => c._id === booking.customerId)?.name || 
-                     'Unknown Customer'}
-                  </TableCell>
-                  <TableCell>{booking.hoardingType}</TableCell>
-                  <TableCell>{booking.location}</TableCell>
-                  <TableCell>
-                    {booking.startDate} to {booking.endDate}
-                  </TableCell>
-                  <TableCell>${booking.amount}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={booking.status} 
-                      color={
-                        booking.status === 'Active' ? 'primary' : 
-                        booking.status === 'Completed' ? 'success' : 'default'
-                      } 
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => navigate(`/booking/${booking.bookingId}`)}>
-                      <InfoIcon color="info" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      {/* Add/Edit Dialog */}
-      <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-        <DialogTitle>{currentCustomer ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Full Name"
-                defaultValue={currentCustomer?.name || ''}
-                margin="normal"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                defaultValue={currentCustomer?.email || ''}
-                margin="normal"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Phone"
-                defaultValue={currentCustomer?.phone || ''}
-                margin="normal"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Status"
-                select
-                defaultValue={currentCustomer?.status || 'Active'}
-                margin="normal"
-              >
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Inactive">Inactive</MenuItem>
-              </TextField>
-            </Grid>
-          </Grid>
+      {/* Edit Customer Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ backgroundColor: '#1E2A47', color: 'white' }}>
+          {currentCustomer ? 'Edit Customer' : 'Add Customer'}
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Name"
+              defaultValue={currentCustomer?.name || ''}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              defaultValue={currentCustomer?.email || ''}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Phone"
+              defaultValue={currentCustomer?.phone || ''}
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              select
+              label="Status"
+              defaultValue={currentCustomer?.status || 'Active'}
+              margin="normal"
+            >
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Inactive">Inactive</MenuItem>
+              <MenuItem value="Suspended">Suspended</MenuItem>
+            </TextField>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSaveCustomer}>
+          <Button onClick={() => setOpenDialog(false)} sx={{ color: '#1E2A47' }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSaveCustomer}
+            variant="contained"
+            sx={{ 
+              backgroundColor: '#1E2A47',
+              '&:hover': { backgroundColor: '#3B4F6B' }
+            }}
+          >
             {currentCustomer ? 'Update' : 'Save'}
           </Button>
         </DialogActions>

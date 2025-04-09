@@ -23,6 +23,7 @@
     "firebase": "^11.4.0",
     "framer-motion": "^12.5.0",
     "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.483.0",
     "materialize": "^1.0.0",
     "owl.carousel": "^2.3.4",
@@ -35,7 +36,7 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.2",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^6.1.15",
+    "styled-components": "^6.1.17",
     "swiper": "^11.2.6"
   },
   "devDependencies": {
