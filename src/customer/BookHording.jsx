@@ -99,25 +99,40 @@ const BookHording = () => {
     if (!formData.startDate || !formData.endDate || !selectedHording) return 0;
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
-    const diffInDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    const diffInDays = Math.ceil(((end - start)+1) / (1000 * 60 * 60 * 24));
     return diffInDays > 0 ? diffInDays * 24 * selectedHording.hourlyRate : 0;
   };
 
-  const handleBooking = () => {
+  const handleBooking = async() => {
     if (!selectedHording || !formData.startDate || !formData.endDate) { //change as per fields
       alert("Please select valid dates.");
       return;
     }
-    navigate("/customer/bookhording/payment", {
-      state: {
-        adpic:formData.adFileUrl,
-        selectedHording,
-        //need extra fields check??
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        totalCost: calculateTotalCost(),
-      },
-    });
+    try{
+      
+      const availibility=await axios.get(`/booking/check-availibility/${selectedHording._id}/${formData.startDate}/${formData.endDate}`)
+      
+      if(!availibility.data.canBookFullRange){
+        alert(`These dates are unavailable: ${availibility.data.conflictingDates.join(', ')}`);
+        return;
+      }
+      navigate("/customer/bookhording/payment", {
+        state: {
+          adpic:formData.adFileUrl,
+          selectedHording,
+          //need extra fields check??
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          totalCost: calculateTotalCost(),
+          availabilityCheck: availibility.data
+        },
+      });
+    }
+    catch(error){
+      console.error("Availability check failed:", error);
+      alert("Error checking availability. Please try again.");
+    }
+   
   };
 
   return (

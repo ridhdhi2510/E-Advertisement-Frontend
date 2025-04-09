@@ -177,7 +177,7 @@ import { Co2Sharp } from "@mui/icons-material";
 const PaymentPage = () => {
   const location = useLocation();
   const { adpic,selectedHording, startDate, endDate, totalCost} = location.state || {};
-    console.log(location.state)
+    // console.log(location.state)
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryMonth, setExpiryMonth] = useState("");
@@ -187,9 +187,29 @@ const PaymentPage = () => {
   const [otp, setOtp] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handlePayment = () => {
+  const handlePayment = async() => {
+    try {
+      // Final availability verification
+      const response = await axios.get('/booking/check-availibility', {
+        params: {
+          hordingId: selectedHording._id,
+          startDate: startDate,
+          endDate: endDate
+        }
+      });
+  
+      if (!response.data.canBookFullRange) {
+        alert("Dates were booked by someone else. Please select new dates.");
+        navigate('/customer/bookhording');
+        return;
+      }
     setShowOtp(true);
-  };
+  }
+  catch (error) {
+    console.error("Final availability check failed:", error);
+    alert("Payment processing error. Please try again.");
+  }
+}
 
   const handleOtpSubmit = () => {
     setOpenSnackbar(true);

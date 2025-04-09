@@ -64,7 +64,7 @@ export const AddScreen = () => {
       const res = await axios.post("/hording/addWithFile", formData);
       setIsLoading(false);
 
-      if (res.status === 200) {
+      
       if (res.status === 200) {
         alert("Hoarding added successfully!");
         navigate("/agency/myscreens");
