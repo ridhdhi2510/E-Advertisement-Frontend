@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./component/SignIn";
 import SignUp from "./component/SignUp";
 import AppTheme from "./component/AppTheme";
@@ -44,8 +44,8 @@ function App() {
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             {/* <Route path="/admin" element={<AdminDashboard />} /> */}
             <Route path="/admin/*" element={<AdminDashboard />}>
+                <Route index element={<Navigate to="dashboard" />} />
                 <Route path="dashboard" element={<Dashboard />} />
-                {/* Add placeholders for now, replace later */}
                 <Route path="hoardings" element={<HordingsPage/>} />
                 <Route path="agencies" element={<AgenciesPage/>} />
                 <Route path="customers" element={<CustomersPage/>} />
