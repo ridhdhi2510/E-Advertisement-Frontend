@@ -65,6 +65,7 @@ export const AddScreen = () => {
       setIsLoading(false);
 
       if (res.status === 200) {
+      if (res.status === 200) {
         alert("Hoarding added successfully!");
         navigate("/agency/myscreens");
       } else {
@@ -137,9 +138,11 @@ export const AddScreen = () => {
                 ))}
               </TextField>
             </Grid>
-             {/* -------------------- Longitude ---------------------- */}
-             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Longitude" {...register("longitude")} variant="outlined" />
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth placeholder="eg.23.0171" label="Latitude" {...register("latitude")} variant="outlined" />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth label="Longitude" placeholder="eg.23.0171" {...register("longitude")} variant="outlined" />
             </Grid>
             {/* ------------------ select area ------------------ */}
             <Grid item xs={12} md={6}>

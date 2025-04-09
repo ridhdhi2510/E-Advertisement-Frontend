@@ -156,6 +156,7 @@ const HordingCard = ({ data, hordingData, setHordingData, setisLoading  }) => {
   const navigate = useNavigate();
 
   const handleUpdateClick = () => {
+    console.log(data._id)
     navigate(`/agency/updateScreen/${data._id}`);
   };
 
