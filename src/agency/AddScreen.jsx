@@ -162,9 +162,9 @@ export const AddScreen = () => {
               </TextField>
             </Grid>
             {/* ---------------- Latitude ----------------------- */}
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Latitude" {...register("latitude")} variant="outlined" />
-            </Grid>
+            /* <Grid item xs={12} md={6}>
+              <TextField fullWidth placeholder="eg.23.0171" label="Latitude" {...register("latitude")} variant="outlined" />
+            </Grid> */
             {/* ----------------- Hourly Rate ----------------- */}
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Hourly Rate" type="number" {...register("hourlyRate")} variant="outlined" />
