@@ -89,7 +89,7 @@ export const AddScreen = () => {
           <Grid container spacing={4}>
             {/* ----------- Hording Dimension --------- */}
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Hoarding Dimension" {...register("hoardingDimension")} variant="outlined" />
+              <TextField fullWidth placeholder="107*107" label="Hoarding Dimension" {...register("hoardingDimension")} variant="outlined" />
             </Grid>
             {/* --------------------- select state ---------------------- */}
             <Grid item xs={12} md={6}>
@@ -162,9 +162,9 @@ export const AddScreen = () => {
               </TextField>
             </Grid>
             {/* ---------------- Latitude ----------------------- */}
-            /* <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <TextField fullWidth placeholder="eg.23.0171" label="Latitude" {...register("latitude")} variant="outlined" />
-            </Grid> */
+            </Grid>
             {/* ----------------- Hourly Rate ----------------- */}
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Hourly Rate" type="number" {...register("hourlyRate")} variant="outlined" />
