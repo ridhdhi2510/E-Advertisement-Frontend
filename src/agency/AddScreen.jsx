@@ -138,9 +138,11 @@ export const AddScreen = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6}>
+            {/* ------------------------------- Latitude ---------------------------------------- */}
+            {/* <Grid item xs={12} md={6}>
               <TextField fullWidth placeholder="eg.23.0171" label="Latitude" {...register("latitude")} variant="outlined" />
-            </Grid>
+            </Grid> */}
+            {/* ------------------------------ Longitude ------------------------------------------ */}
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Longitude" placeholder="eg.23.0171" {...register("longitude")} variant="outlined" />
             </Grid>
