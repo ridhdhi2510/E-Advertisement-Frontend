@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Receipt as ReceiptIcon } from '@mui/icons-material';
 
-export default function PaymentsPage() {
+export default function PaymentManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);

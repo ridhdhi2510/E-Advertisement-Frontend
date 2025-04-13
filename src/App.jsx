@@ -23,11 +23,11 @@ import PrivateRoute from "./component/PrivateRoute";
 import AdminDashboard from "./admin/adminDashboard";
 import Unauthorized from "./component/Unauthorized";
 import Dashboard from "./admin/Dashboard";
-import HordingsPage from "./admin/HordingsPage";
-import AgenciesPage from "./admin/AgenciesPage";
-import CustomersPage from "./admin/CustomersPage";
-import PaymentsPage from "./admin/PaymentsPage";
 import SettingsPage from "./admin/SettingsPage";
+import AgencyManagement from "./admin/AgencyManagement";
+import HordingManagement from "./admin/HordingManagement";
+import CustomerManagement from "./admin/CustomerManagement";
+import PaymentManagement from "./admin/PaymentManagement";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -46,10 +46,10 @@ function App() {
             <Route path="/admin/*" element={<AdminDashboard />}>
                 <Route index element={<Navigate to="dashboard" />} />
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="hoardings" element={<HordingsPage/>} />
-                <Route path="agencies" element={<AgenciesPage/>} />
-                <Route path="customers" element={<CustomersPage/>} />
-                <Route path="payments" element={<PaymentsPage/>} />
+                <Route path="hoardings" element={<HordingManagement/>} />
+                <Route path="agencies" element={<AgencyManagement/>} />
+                <Route path="customers" element={<CustomerManagement/>} />
+                <Route path="payments" element={<PaymentManagement/>} />
                 <Route path="settings" element={<SettingsPage/>} />
             </Route>
 
