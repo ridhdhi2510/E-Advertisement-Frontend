@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -42,6 +43,8 @@ import TvIcon from "@mui/icons-material/Tv";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
+
+//import takeoutdoor from "../assets/takeoutdoorslogo.png";
 
 const drawerWidth = 240;
 
@@ -180,7 +183,7 @@ export default function AgencyPage() {
           },
         }}
       >
-
+        
         <DrawerHeader
           sx={{
             padding: 0,
@@ -205,6 +208,43 @@ export default function AgencyPage() {
             <MenuIcon />
           </IconButton>
         </DrawerHeader>
+
+        {/* <Toolbar>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%', // Makes sure the icon goes to the right
+            }}
+          >
+            {open && (
+              <img
+                src={takeoutdoor}
+                alt="E-Advertisement Logo"
+                style={{ height: '48px', objectFit: 'contain' }}
+              />
+            )}
+
+            <IconButton
+              onClick={() => setOpen(!open)}
+
+              sx={{
+                color: "white",
+                height: "40px",
+                "&:hover": {
+                  backgroundColor: "#3B4F6B",
+                },
+                // height: "56px",
+                // borderRadius: 0,
+                // marginLeft: open ? "180px" : "10px", // Adjust distance based on state
+                // transition: "margin-left 0.3s ease", // Smooth transition
+              }}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Toolbar> */}
+
         <Divider />
 
         <Box
@@ -218,26 +258,6 @@ export default function AgencyPage() {
             mt: "12px"
           }}
         >
-          {/* <Avatar
-            alt="User Profile"
-            src="/mnt/data/image.png"
-            sx={{
-              width: open ? 64 : 50,
-              height: open ? 64 : 50,
-              mb: 1
-            }}
-          /> */}
-          {/* <Typography key={open} variant="body1" fontWeight="bold" sx={{
-            color: "white",
-            fontSize: open ? "20px" : "30px",
-            textAlign: open ? "center" : "center",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}>
-            {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
-          </Typography> */}
 
           {open ? (
             <Typography
@@ -438,7 +458,7 @@ export default function AgencyPage() {
               />
             </ListItemButton>
           </ListItem>
-        </List>
+        
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* contact page navigation */}
@@ -524,7 +544,7 @@ export default function AgencyPage() {
           </ListItemButton>
         </ListItem>
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
-        {/* </List> */}
+        </List>
       </Drawer>
 
       {/* delete popup */}

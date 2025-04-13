@@ -454,7 +454,7 @@ export default function UserPage() {
               />
             </ListItemButton>
           </ListItem>
-        </List>
+        {/* </List> */}
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* <List> */}
@@ -538,7 +538,7 @@ export default function UserPage() {
         </ListItem>
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
-        {/* </List> */}
+        </List>
       </Drawer>
 
 
