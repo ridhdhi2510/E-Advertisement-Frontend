@@ -34,7 +34,7 @@ import {
   Info as InfoIcon
 } from '@mui/icons-material';
 
-export default function CustomersPage() {
+export default function CustomerManagement() {
   const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [customers, setCustomers] = useState([]);

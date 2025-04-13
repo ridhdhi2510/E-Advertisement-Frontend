@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
-export default function HoardingPage() {
+export default function HordingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [hoardings, setHoardings] = useState([]);
   const [loading, setLoading] = useState(true);
