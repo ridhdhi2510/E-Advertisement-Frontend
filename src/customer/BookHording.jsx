@@ -22,7 +22,9 @@ const BookHording = () => {
     endDate: "",
     adName: "",
     adDescription: "",
-    websiteUrl: ""
+    websiteUrl: "",
+    adFileUrl: ""
+    //why not adFileUrl or file
   });
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -104,8 +106,8 @@ const BookHording = () => {
   };
 
   const handleBooking = async() => {
-    if (!selectedHording || !formData.startDate || !formData.endDate) { //change as per fields
-      alert("Please select valid dates.");
+    if (!selectedHording || !formData.startDate || !formData.endDate || !formData.adName || !formData.adDescription || !formData.adFileUrl) { //change as per fields
+      alert("Please fill all the fields.");
       return;
     }
     try{
@@ -120,7 +122,11 @@ const BookHording = () => {
         state: {
           adpic:formData.adFileUrl,
           selectedHording,
+          //userId ?? here or from localStorage
           //need extra fields check??
+          adName: formData.adName,
+          adDescription: formData.adDescription,
+          websiteProductUrl: formData.websiteUrl,
           startDate: formData.startDate,
           endDate: formData.endDate,
           totalCost: calculateTotalCost(),
