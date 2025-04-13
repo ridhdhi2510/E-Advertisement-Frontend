@@ -146,7 +146,7 @@ export default function AgencyPage() {
     }
 
     setOpen(!isSmallScreen);
-  }, [location.state , isSmallScreen])
+  }, [location.state, isSmallScreen])
 
   const handleDeleteAccount = async () => {
     const storedUserid = localStorage.getItem("id");
@@ -180,7 +180,7 @@ export default function AgencyPage() {
           },
         }}
       >
-       
+
         <DrawerHeader
           sx={{
             padding: 0,
@@ -227,7 +227,7 @@ export default function AgencyPage() {
               mb: 1
             }}
           /> */}
-          <Typography key={open} variant="body1" fontWeight="bold" sx={{
+          {/* <Typography key={open} variant="body1" fontWeight="bold" sx={{
             color: "white",
             fontSize: open ? "20px" : "30px",
             textAlign: open ? "center" : "center",
@@ -237,7 +237,45 @@ export default function AgencyPage() {
             textOverflow: "ellipsis",
           }}>
             {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
-          </Typography>
+          </Typography> */}
+
+          {open ? (
+            <Typography
+              variant="body1"
+              fontWeight="bold"
+              sx={{
+                color: "white",
+                fontSize: "20px",
+                textAlign: "center",
+                width: "100%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Hi, {userName}
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#fff", // Change color as needed
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "navy",
+                fontWeight: "bold",
+                fontSize: "18px",
+                mx: "auto", // to center horizontally if needed
+              }}
+            >
+              {userName.charAt(0).toUpperCase()}
+            </Box>
+          )}
+
+
           {open && (
             <Link
               href="/customer/update"
