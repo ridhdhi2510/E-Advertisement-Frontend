@@ -72,7 +72,7 @@ const ViewBooking = () => {
         
         const response = await axios.get(`/booking/getBookingByUserId/${id}`);
         setBookings(response.data.data);
-        
+        console.log("bookings:",response.data)
         // Fetch all location data
         const [statesRes, citiesRes, areasRes] = await Promise.all([
           axios.get(`/state/getall`),
@@ -95,7 +95,7 @@ const ViewBooking = () => {
 
     fetchBookings();
   }, [id]);
-
+   
   const handleBack = () => navigate(-1);
   const toggleExpand = (id) => setExpandedId(expandedId === id ? null : id);
   const formatDate = (dateString) => dayjs(dateString).format("DD MMM YYYY");
@@ -122,7 +122,33 @@ const ViewBooking = () => {
       bookingArea?.name || 'Unknown Area'
     ].filter(Boolean).join(', ');
   };
+  const handleDeleteBooking = async (bookingId) => {
+    try {
+      // Confirm before deleting
+      if (!window.confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
+        return;
+      }
 
+      // Show loading state
+      setLoading(true);
+
+      // Call the delete API endpoint
+      await axios.delete(`/booking/deleteBooking/${bookingId}`);
+      
+      // Remove the deleted booking from state
+      setBookings(prevBookings => prevBookings.filter(booking => booking._id !== bookingId));
+      
+      // Show success notification
+      alert("Booking deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert(`Failed to delete booking: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+   
   if (loading) {
     return (
       <Container>
@@ -170,6 +196,7 @@ const ViewBooking = () => {
       </Container>
     );
   }
+  
 
   if (!bookings.length) {
     return (
@@ -700,6 +727,7 @@ const ViewBooking = () => {
                           <Button
                             variant="contained"
                             color="primary"
+                            onClick={() => handleDeleteBooking(booking._id)}
                             sx={{
                               borderRadius: 2,
                               fontWeight: 600,
