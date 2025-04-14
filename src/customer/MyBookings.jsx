@@ -139,7 +139,7 @@ const ViewBooking = () => {
       setBookings(prevBookings => prevBookings.filter(booking => booking._id !== bookingId));
       
       // Show success notification
-      alert("Booking deleted successfully!");
+      alert("Booking deleted successfully! Check your mail for Cancellation Refund Information");
     } catch (error) {
       console.error("Error deleting booking:", error);
       alert(`Failed to delete booking: ${error.response?.data?.message || error.message}`);
