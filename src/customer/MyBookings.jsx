@@ -134,6 +134,7 @@ const ViewBooking = () => {
 
       // Call the delete API endpoint
       await axios.delete(`/booking/deleteBooking/${bookingId}`);
+      //loader
       
       // Remove the deleted booking from state
       setBookings(prevBookings => prevBookings.filter(booking => booking._id !== bookingId));
