@@ -36,7 +36,7 @@ export default function PaymentManagement() {
           id: payment._id,
           transactionId: payment.transactionId,
           bookingId: payment.bookingId?._id || 'N/A',
-          userId: payment.userId?._id || 'N/A',
+          userId: payment.userId?.name || 'N/A',
           amount: payment.amount,
           paymentDate: new Date(payment.paymentDate).toLocaleDateString(),
           status: payment.paymentStatus,
@@ -202,7 +202,7 @@ export default function PaymentManagement() {
                       onClick={() => handleRequestSort('userId')}
                       sx={{ color: 'white !important' }}
                     >
-                      User ID
+                      User 
                     </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>
