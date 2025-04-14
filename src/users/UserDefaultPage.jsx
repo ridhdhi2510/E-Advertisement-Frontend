@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
@@ -15,6 +16,7 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
+  
   Container,
   Skeleton,
   Badge,
@@ -33,6 +35,7 @@ import PaidIcon from '@mui/icons-material/Paid';
 import axios from "axios";
 import dayjs from "dayjs";
 
+
 const CustomerDashboard = () => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm')); // < 600px
@@ -47,9 +50,11 @@ const CustomerDashboard = () => {
   ]);
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
+
   const [state, setState] = useState([]);
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
+
   const [carouselKey, setCarouselKey] = useState(0);
   let carouselRef = React.useRef(null);
 
@@ -76,6 +81,7 @@ const CustomerDashboard = () => {
     }
   };
 
+
   const getLocationString = (booking) => {
     const bookingState = state.find(s => s._id === booking.hordingId?.stateId);
     const bookingCity = cities.find(c => c._id === booking.hordingId?.cityId);
@@ -88,6 +94,7 @@ const CustomerDashboard = () => {
     ].filter(Boolean).join(', ');
   };
 
+
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
@@ -97,6 +104,7 @@ const CustomerDashboard = () => {
         const response = await axios.get(`/booking/getBookingByUserId/${userId}`);
         const bookingsData = response.data.data || [];
         setBookings(bookingsData);
+
          const [statesRes, citiesRes, areasRes] = await Promise.all([
                   axios.get(`/state/getall`),
                   axios.get(`/city/getall`),
@@ -145,6 +153,8 @@ const CustomerDashboard = () => {
         background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.05)} 0%, ${alpha(theme.palette.background.default, 0.1)} 100%)`,
         minHeight: '100vh'
       }}
+        // maxWidth: '1080px',
+       
     >
       {/* Welcome Section */}
       <Box sx={{ 
@@ -155,7 +165,12 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "h4", sm: "h3", md: "h2" })}
           gutterBottom
           sx={{
+
             fontWeight: 700,
+
+            fontWeight: 600,
+            fontSize: getResponsiveValue({ xs: '1.5rem', sm: '2rem', md: '2.5rem' }),
+
             background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -169,7 +184,13 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "body1", sm: "h6", md: "h5" })}
           color="text.secondary"
           sx={{ 
-            lineHeight: 1.6
+
+            lineHeight: 1.6,
+
+            lineHeight: 1.6,
+            fontWeight: 600,
+            fontSize: getResponsiveValue({ xs: '0.5rem', sm: '1rem', md: '1.2rem' }),
+
           }}
         >
           {bookings.length > 0 
@@ -187,6 +208,7 @@ const CustomerDashboard = () => {
           justifyContent: getResponsiveValue({ xs: 'center', sm: 'flex-start' })
         }}
       >
+      
         {customerStats.map((stat, index) => (
           <Grid 
             item 
@@ -241,6 +263,9 @@ const CustomerDashboard = () => {
                     <Typography 
                       variant={getResponsiveValue({ xs: "h4", sm: "h3", md: "h2" })}
                       sx={{ 
+
+
+                        fontSize: getResponsiveValue({ xs: '1.5rem', sm: '2rem', md: '2.5rem' }),
                         fontWeight: 700,
                         mt: 0.5
                       }}
@@ -249,6 +274,7 @@ const CustomerDashboard = () => {
                     </Typography>
                   )}
                 </Box>
+                
                 <Avatar 
                   sx={{ 
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -287,6 +313,10 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "h6", sm: "h5", md: "h4" })}
           gutterBottom
           sx={{ 
+
+
+            fontSize: getResponsiveValue({ xs: '0.5rem', sm: '1.1rem', md: '1.8rem' }),
+
             fontWeight: 600,
             mb: getResponsiveValue({ xs: 2, sm: 3 })
           }}
@@ -415,6 +445,10 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "h6", sm: "h5", md: "h4" })}
           gutterBottom 
           sx={{ 
+
+
+            fontSize: getResponsiveValue({ xs: '0.5rem', sm: '1.1rem', md: '1.8rem' }),
+
             mb: getResponsiveValue({ xs: 2, sm: 3 }),
             fontWeight: 600
           }}
@@ -556,8 +590,12 @@ const CustomerDashboard = () => {
                             variant={getResponsiveValue({ xs: "body2", sm: "body1" })}
                             sx={{ color: theme.palette.grey[300] }}
                           >
+
                             {/* {booking.hordingId?.areaId?.name || 'N/A'}, {booking.hordingId?.cityId?.name || 'N/A'} */}
                             {getLocationString(booking)}
+
+                            
+
                           </Typography>
                         </Stack>
                       </Box>

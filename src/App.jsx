@@ -13,7 +13,6 @@ import UserDefaultPage from "./users/UserDefaultPage";
 import Profile from "./customer/Profile";
 import UpdateProfile from "./customer/UpdateProfile";
 import BookHording from "./customer/BookHording";
-import MyBookings from "./customer/MyBookings";
 import PaymentDetails from "./customer/PaymentDetails";
 import PaymentPage from "./customer/PaymentPage";
 import { UpdateMyScreen } from "./agency/UpdateMyScreen";
@@ -28,6 +27,7 @@ import AgencyManagement from "./admin/AgencyManagement";
 import HordingManagement from "./admin/HordingManagement";
 import CustomerManagement from "./admin/CustomerManagement";
 import PaymentManagement from "./admin/PaymentManagement";
+import ViewBooking from "./customer/MyBookings";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -73,7 +73,7 @@ function App() {
               {/* <Route path="bookhording/payment" element={<PaymentPage />} /> */}
               <Route path="bookhording/payment" element={<PaymentPage />} />
               <Route path="paymentdetails" element={<PaymentDetails />} />
-              <Route path="mybookings" element={<MyBookings />} />
+              <Route path="mybookings" element={<ViewBooking/>} />
             </Route>
           </Route>
         </Routes>

@@ -33,8 +33,10 @@ import {
   Star,
   Share,
   Download,
-  ExpandMore,
-  Refresh
+   Refresh
+
+  
+
 } from "@mui/icons-material";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -54,10 +56,11 @@ const pulse = keyframes`
 const ViewBooking = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const id = localStorage.getItem("id");
+  
   const [state, setState] = useState([]);
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
+  const id = localStorage.getItem("id");
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,6 +69,7 @@ const ViewBooking = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        
         const response = await axios.get(`/booking/getBookingByUserId/${id}`);
         setBookings(response.data.data);
         
@@ -137,8 +141,12 @@ const ViewBooking = () => {
     return (
       <Container>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-          <Card sx={{
-            p: 4,
+
+          
+
+          <Card sx={{ 
+            p: 4, 
+
             textAlign: 'center',
             animation: `${fadeIn} 0.5s ease-out`,
             borderLeft: `4px solid ${theme.palette.error.main}`
@@ -147,8 +155,10 @@ const ViewBooking = () => {
               Error Loading Bookings
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>{error}</Typography>
-            <Button
-              variant="contained"
+
+            <Button 
+              variant="contained" 
+
               color="error"
               onClick={() => window.location.reload()}
               startIcon={<Refresh />}
@@ -166,7 +176,9 @@ const ViewBooking = () => {
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Box display="flex" alignItems="center" mb={4}>
           <Tooltip title="Go back">
-            <IconButton
+
+            <IconButton 
+
               onClick={handleBack}
               sx={{
                 mr: 2,
@@ -181,7 +193,9 @@ const ViewBooking = () => {
               <ArrowBack />
             </IconButton>
           </Tooltip>
-          <Typography variant="h4" component="h1" sx={{
+
+          <Typography variant="h4" component="h1" sx={{ 
+
             fontWeight: 800,
             background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
             WebkitBackgroundClip: 'text',
@@ -191,15 +205,19 @@ const ViewBooking = () => {
           </Typography>
         </Box>
 
+        
         <Fade in timeout={800}>
-          <Card sx={{
+          <Card sx={{ 
+
             textAlign: 'center',
             p: 6,
             mt: 4,
             borderRadius: 4,
             maxWidth: 600,
             mx: 'auto',
-            background: theme.palette.mode === 'dark'
+
+            background: theme.palette.mode === 'dark' 
+
               ? 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)'
               : 'linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%)',
             boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
@@ -234,19 +252,24 @@ const ViewBooking = () => {
               <EventNote sx={{ fontSize: 60 }} />
             </Box>
 
-            <Typography variant="h4" gutterBottom sx={{
+            
+            <Typography variant="h4" gutterBottom sx={{ 
+
               fontWeight: 700,
               mb: 2
             }}>
               No Bookings Found
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{
+
+            <Typography variant="body1" color="text.secondary" sx={{ 
+
               mb: 4,
               maxWidth: 400,
               mx: 'auto'
             }}>
               You haven't made any bookings yet. Explore our premium hoardings and start your advertising journey today!
             </Typography>
+            
 
             <Button
               variant="contained"
@@ -278,7 +301,8 @@ const ViewBooking = () => {
     <Container maxWidth="xl" sx={{ py: 6 }}>
       <Box display="flex" alignItems="center" mb={6}>
         <Tooltip title="Go back">
-          <IconButton
+          <IconButton 
+
             onClick={handleBack}
             sx={{
               mr: 3,
@@ -295,7 +319,9 @@ const ViewBooking = () => {
             <ArrowBack />
           </IconButton>
         </Tooltip>
-        <Typography variant="h3" component="h1" sx={{
+
+        <Typography variant="h3" component="h1" sx={{ 
+
           fontWeight: 800,
           letterSpacing: 1,
           position: 'relative',
@@ -318,7 +344,9 @@ const ViewBooking = () => {
         {bookings.map((booking, index) => (
           <Grow in timeout={index * 200 + 500} key={booking._id}>
             <Grid item xs={12}>
-              <Card sx={{
+
+              <Card sx={{ 
+
                 borderRadius: 4,
                 overflow: 'hidden',
                 transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)',
@@ -376,7 +404,9 @@ const ViewBooking = () => {
                         }}>
                           <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
                             <Box>
-                              <Typography variant="h5" sx={{
+
+                              <Typography variant="h5" sx={{ 
+
                                 fontWeight: 700,
                                 textShadow: '0 2px 5px rgba(0,0,0,0.5)'
                               }}>
@@ -413,7 +443,9 @@ const ViewBooking = () => {
                         <Stack spacing={3}>
                           {/* Booking Summary */}
                           <Box>
-                            <Typography variant="h6" sx={{
+
+                            <Typography variant="h6" sx={{ 
+
                               fontWeight: 700,
                               mb: 2,
                               display: 'flex',
@@ -426,7 +458,9 @@ const ViewBooking = () => {
                               <Grid item xs={6} sm={4}>
                                 <Typography variant="caption" color="text.secondary">Booking ID</Typography>
                                 <Tooltip title={booking._id}>
-                                  <Typography variant="body2" sx={{
+
+                                  <Typography variant="body2" sx={{ 
+
                                     fontWeight: 500,
                                     wordBreak: 'break-all',
                                     display: '-webkit-box',
@@ -464,7 +498,9 @@ const ViewBooking = () => {
                               </Grid>
                               <Grid item xs={6} sm={4}>
                                 <Typography variant="caption" color="text.secondary">Total Cost</Typography>
-                                <Typography variant="body2" sx={{
+
+                                <Typography variant="body2" sx={{ 
+
                                   fontWeight: 700,
                                   color: theme.palette.primary.main
                                 }}>
@@ -476,7 +512,9 @@ const ViewBooking = () => {
 
                           {/* Ad Details */}
                           <Box>
-                            <Typography variant="h6" sx={{
+
+                            <Typography variant="h6" sx={{ 
+
                               fontWeight: 700,
                               mb: 2,
                               display: 'flex',
@@ -528,7 +566,9 @@ const ViewBooking = () => {
                           {/* Ad Content */}
                           {booking.adFile && (
                             <Box>
-                              <Typography variant="h6" sx={{
+
+                              <Typography variant="h6" sx={{ 
+
                                 fontWeight: 700,
                                 mb: 2,
                                 display: 'flex',
@@ -552,7 +592,9 @@ const ViewBooking = () => {
                                   <img
                                     src={booking.adFile}
                                     alt="Ad Content"
-                                    style={{
+
+                                    style={{ 
+
                                       width: '100%',
                                       display: 'block'
                                     }}
@@ -577,7 +619,9 @@ const ViewBooking = () => {
 
                           {/* Payment Info */}
                           <Box>
-                            <Typography variant="h6" sx={{
+
+                            <Typography variant="h6" sx={{ 
+
                               fontWeight: 700,
                               mb: 2,
                               display: 'flex',
@@ -594,10 +638,12 @@ const ViewBooking = () => {
                                     label={booking.paymentId.paymentStatus}
                                     color={
                                       booking.paymentId.paymentStatus === 'paid' ? 'success' :
-                                        booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
+
+                                      booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
                                     }
                                     size="small"
-                                    sx={{
+                                    sx={{ 
+
                                       fontWeight: 600,
                                       textTransform: 'capitalize'
                                     }}
@@ -605,7 +651,9 @@ const ViewBooking = () => {
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                   <Typography variant="caption" color="text.secondary">Transaction ID</Typography>
-                                  <Typography variant="body2" sx={{
+
+                                  <Typography variant="body2" sx={{ 
+
                                     fontWeight: 500,
                                     wordBreak: 'break-all'
                                   }}>
@@ -614,7 +662,9 @@ const ViewBooking = () => {
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                   <Typography variant="caption" color="text.secondary">Amount Paid</Typography>
-                                  <Typography variant="body2" sx={{
+
+                                  <Typography variant="body2" sx={{ 
+
                                     fontWeight: 700,
                                     color: theme.palette.success.main
                                   }}>
@@ -637,12 +687,15 @@ const ViewBooking = () => {
                         </Stack>
 
                         {/* Action Buttons */}
-                        <Box sx={{
+                        <Box sx={{ 
+
                           mt: 4,
                           display: 'flex',
                           justifyContent: 'flex-end',
                           gap: 2
                         }}>
+
+                          
 
                           <Button
                             variant="contained"

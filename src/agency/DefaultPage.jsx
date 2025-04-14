@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
@@ -18,7 +15,8 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-  Container
+  Container,
+  Skeleton
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -30,35 +28,62 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HomeIcon from '@mui/icons-material/Home'
 import axios from "axios";
 import CustomLoader from "../component/CustomLoader";
+import dayjs from "dayjs";
 
 const DefaultPage = () => {
   const [hoardings, setHoardings] = useState([]);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [carouselKey, setCarouselKey] = useState(0);
+  const [totalScreens, setTotalScreens] = useState(0);
+  const [activeBookings, setActiveBookings] = useState(0);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   let carouselRef = React.useRef(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setisLoading(true);
-        const res = await axios.get(`/hording/getHordingsbyuserid/${localStorage.getItem("id")}`);
-        setHoardings(res.data?.data || []);
-        setCarouselKey(prev => prev + 1); // Force carousel refresh
+        setIsLoading(true);
+        setStatsLoading(true);
+        const userId = localStorage.getItem("id");
+        
+        // Fetch hoardings data
+        const hoardingsRes = await axios.get(`/hording/getHordingsbyuserid/${userId}`);
+        setHoardings(hoardingsRes.data?.data || []);
+        setTotalScreens(hoardingsRes.data?.data?.length || 0);
+
+        // Fetch bookings data
+        const bookingsRes = await axios.get(`/booking/getBookingByUserId/${userId}`);
+        const bookings = bookingsRes.data?.data || [];
+        
+        // Calculate active bookings (where end date is in the future)
+        const today = new Date();
+        const active = bookings.filter(booking => {
+          const endDate = new Date(booking.endDate);
+          return endDate >= today;
+        }).length;
+        
+        setActiveBookings(active);
       } catch (error) {
-        console.error("Error fetching hoardings:", error);
+        console.error("Error fetching data:", error);
         setHoardings([]);
+        setTotalScreens(0);
+        setActiveBookings(0);
       } finally {
-        setisLoading(false);
+        setIsLoading(false);
+        setStatsLoading(false);
       }
     };
+
     fetchData();
   }, []);
- return (
+
+  return (
     <>
-      {isLoading == true && <CustomLoader />}
+      {isLoading && <CustomLoader />}
       <Container maxWidth="lg" sx={{
         p: isMobile ? 1 : 3,
         overflowX: 'hidden',
@@ -74,8 +99,9 @@ const DefaultPage = () => {
           </Typography>
         </Box>
 
-        {/* Stats Cards - Only Active Bookings and Total Screens */}
+        {/* Stats Cards */}
         <Grid container spacing={isMobile ? 1 : 3} sx={{ mb: isMobile ? 2 : 4 }}>
+          {/* Active Bookings Card */}
           <Grid item xs={12} sm={6}>
             <Paper elevation={3} sx={{
               p: isMobile ? 2 : 3,
@@ -87,10 +113,16 @@ const DefaultPage = () => {
                   <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
                     Active Bookings
                   </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>0</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    No bookings yet
-                  </Typography>
+                  {statsLoading ? (
+                    <Skeleton variant="text" width={100} height={40} />
+                  ) : (
+                    <>
+                      <Typography variant={isMobile ? "h5" : "h4"}>{activeBookings}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {activeBookings === 0 ? 'No bookings yet' : `${activeBookings} active bookings`}
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Avatar sx={{
                   bgcolor: 'action.hover',
@@ -102,6 +134,8 @@ const DefaultPage = () => {
               </Stack>
             </Paper>
           </Grid>
+
+          {/* Total Screens Card */}
           <Grid item xs={12} sm={6}>
             <Paper elevation={3} sx={{
               p: isMobile ? 2 : 3,
@@ -113,10 +147,16 @@ const DefaultPage = () => {
                   <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
                     Total Screens
                   </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>0</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Add your first screen
-                  </Typography>
+                  {statsLoading ? (
+                    <Skeleton variant="text" width={100} height={40} />
+                  ) : (
+                    <>
+                      <Typography variant={isMobile ? "h5" : "h4"}>{totalScreens}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {totalScreens === 0 ? 'Add your first screen' : `${totalScreens} screens registered`}
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Avatar sx={{
                   bgcolor: 'action.hover',
@@ -230,147 +270,150 @@ const DefaultPage = () => {
             maxWidth: '100%'
           }}>
 
-            {hoardings.length===0?(
-            
-              <Box textAlign="center" py={5}>
-              <Typography variant="h6" color="text.secondary">
-                No hoardings available.First Add your screen to get started!
-              </Typography>
-              </Box>):(
-            
-            <OwlCarousel
-              key={`carousel-${carouselKey}`}
-              ref={carouselRef}
-              className="owl-theme"
-              loop
-              margin={isMobile ? 10 : 20}
-              autoplay
-              autoplayTimeout={4000}
-              autoplaySpeed={1000}
-              autoplayHoverPause={true}
-              smartSpeed={1000}
-              nav={false}
-              responsive={{
-                0: { items: 1 },
-                600: { items: 2 },
-                960: { items: 2 }, // Adjusted for medium laptops
-                1280: { items: 2 } // Adjusted for larger screens
-              }}
-            >
-              {hoardings.map((hoarding) => (
-                <Card
-                  key={hoarding._id}
-                  sx={{
-                    height: 350,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    mx: isMobile ? 1 : 2,
-                    maxWidth: '100%',
-                    minHeight: 350
-                  }}
-                >
-                  <Box sx={{
-                    position: 'relative',
-                    height: 230,
-                    width: '100%',
-                    flexShrink: 0
-                  }}>
-                    <img
-                      src={hoarding.hordingURL}
-                      alt={hoarding.hordingType}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        maxWidth: '100%'
-                      }}
-                    />
+            {hoardings.length === 0 ? (
 
-                  </Box>
-                  <Box sx={{ height: 370 }}>
-                    <CardContent sx={{
-                      flexGrow: 1,
-                      p: isMobile ? 1 : 2,
-                      width: '100%'
+              <Box textAlign="center" py={5}>
+                <Typography variant="h6" color="text.secondary">
+                  No hoardings available.First Add your screen to get started!
+                </Typography>
+              </Box>) : (
+
+              <OwlCarousel
+                key={`carousel-${carouselKey}`}
+                ref={carouselRef}
+                className="owl-theme"
+                loop
+                margin={isMobile ? 10 : 20}
+                autoplay
+                autoplayTimeout={4000}
+                autoplaySpeed={1000}
+                autoplayHoverPause={true}
+                smartSpeed={1000}
+                nav={false}
+                responsive={{
+                  0: { items: 1 },
+                  600: { items: 2 },
+                  960: { items: 2 }, // Adjusted for medium laptops
+                  1280: { items: 2 } // Adjusted for larger screens
+                }}
+              >
+                {hoardings.map((hoarding) => (
+                  <Card
+                    key={hoarding._id}
+                    sx={{
+                      height: 350,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      mx: isMobile ? 1 : 2,
+                      maxWidth: '100%',
+                      minHeight: 350
+                    }}
+                  >
+                    <Box sx={{
+                      position: 'relative',
+                      height: 230,
+                      width: '100%',
+                      flexShrink: 0
                     }}>
-                      <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                          <Box sx={{
-                            // position: 'absolute',
-                            // width:'100%',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            bgcolor: 'white',
-                            color: 'black',
-                            p: 0.5,
-                            pl: 1
-                          }}>
-                            <Box sx={{ display: "flex", width: "350"}}>
-                              <Typography variant={isMobile ? "caption" : "body2"} sx={{
-                                color: "common.black",
-                                fontWeight: 600}}>
-                                Type:
-                              </Typography>
-                              <Typography variant={isMobile ? "caption" : "body2"} >
-                                {hoarding.hoardingType || 'N/A'}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", width: "350px" }}>
-                              <Box><Typography variant={isMobile ? "caption" : "body2"} sx={{
-                                color: "common.black",
-                                fontWeight: 600}}>
-                                Place:
-                              </Typography></Box>
-                              <Box sx={{ display: "flex" }}>
-                                <Typography variant={isMobile ? "caption" : "body2"}>
-                                  {hoarding.areaId?.name || 'N/A'},
-                                </Typography>
-                                <Typography variant={isMobile ? "caption" : "body2"}  >
-                                  {hoarding.cityId?.name || 'N/A'},
+                      <img
+                        src={hoarding.hordingURL}
+                        alt={hoarding.hordingType}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          maxWidth: '100%'
+                        }}
+                      />
+
+                    </Box>
+                    <Box sx={{ height: 370 }}>
+                      <CardContent sx={{
+                        flexGrow: 1,
+                        p: isMobile ? 1 : 2,
+                        width: '100%'
+                      }}>
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Box sx={{
+                              // position: 'absolute',
+                              // width:'100%',
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              bgcolor: 'white',
+                              color: 'black',
+                              p: 0.5,
+                              pl: 1
+                            }}>
+                              <Box sx={{ display: "flex", width: "350" }}>
+                                <Typography variant={isMobile ? "caption" : "body2"} sx={{
+                                  color: "common.black",
+                                  fontWeight: 600
+                                }}>
+                                  Type:
                                 </Typography>
                                 <Typography variant={isMobile ? "caption" : "body2"} >
-                                  {hoarding.stateId?.name || 'N/A'}
+                                  {hoarding.hoardingType || 'N/A'}
+                                </Typography>
+                              </Box>
+                              <Box sx={{ display: "flex", width: "350px" }}>
+                                <Box><Typography variant={isMobile ? "caption" : "body2"} sx={{
+                                  color: "common.black",
+                                  fontWeight: 600
+                                }}>
+                                  Place:
+                                </Typography></Box>
+                                <Box sx={{ display: "flex" }}>
+                                  <Typography variant={isMobile ? "caption" : "body2"}>
+                                    {hoarding.areaId?.name || 'N/A'},
+                                  </Typography>
+                                  <Typography variant={isMobile ? "caption" : "body2"}  >
+                                    {hoarding.cityId?.name || 'N/A'},
+                                  </Typography>
+                                  <Typography variant={isMobile ? "caption" : "body2"} >
+                                    {hoarding.stateId?.name || 'N/A'}
+                                  </Typography>
+                                </Box>
+
+                              </Box>
+                              <Box sx={{ display: "flex", width: "350px" }}>
+                                <Typography variant={isMobile ? "caption" : "body2"} sx={{
+                                  color: "common.black",
+                                  fontWeight: 600
+                                }} >
+                                  Price:
+                                </Typography>
+                                <Typography variant={isMobile ? "caption" : "body2"} >
+                                  {hoarding.hourlyRate
+                                  }
+                                </Typography>
+                              </Box>
+                              <Box sx={{ display: "flex", width: "350px" }}>
+                                <Typography variant={isMobile ? "caption" : "body2"} sx={{
+                                  color: "common.black",
+                                  fontWeight: 600
+                                }} >
+                                  Bookings:
+                                </Typography>
+                                <Typography variant={isMobile ? "caption" : "body2"}>
+                                  {hoarding.bookings}
                                 </Typography>
                               </Box>
 
                             </Box>
-                            <Box sx={{ display: "flex", width: "350px" }}>
-                              <Typography variant={isMobile ? "caption" : "body2"} sx={{
-                                color: "common.black",
-                                fontWeight: 600
-                              }} >
-                                Price:
-                              </Typography>
-                              <Typography variant={isMobile ? "caption" : "body2"} >
-                                {hoarding.hourlyRate
-                                }
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", width: "350px" }}>
-                              <Typography variant={isMobile ? "caption" : "body2"} sx={{
-                                color: "common.black",
-                                fontWeight: 600}} >
-                                Bookings:
-                              </Typography>
-                              <Typography variant={isMobile ? "caption" : "body2"}>
-                                {hoarding.bookings}
-                              </Typography>
-                            </Box>
 
-                          </Box>
+                          </Grid>
+
+
 
                         </Grid>
+                      </CardContent>
+                    </Box>
 
-
-
-                      </Grid>
-                    </CardContent>
-                  </Box>
-
-                </Card>
-              ))}
-            </OwlCarousel>)}
+                  </Card>
+                ))}
+              </OwlCarousel>)}
 
             {/* Navigation Arrows */}
             <Box sx={{
