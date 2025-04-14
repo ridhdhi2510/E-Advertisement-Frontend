@@ -6,7 +6,7 @@ import {
   InputAdornment, Divider, useTheme, Fade
 } from "@mui/material";
 import {
-  Close, LocationOn, CalendarToday, Description, Link, 
+  Close, LocationOn, CalendarToday, Description, Link,
   AttachFile, Payment, Star, ArrowForward
 } from "@mui/icons-material";
 import axios from "axios";
@@ -123,33 +123,33 @@ const BookHording = () => {
       [name]: value,
     }));
   };
-  
+
 
   const calculateTotalCost = () => {
     if (!formData.startDate || !formData.endDate || !selectedHording) return 0;
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
-    const diffInDays = Math.ceil(((end - start)+1) / (1000 * 60 * 60 * 24));
+    const diffInDays = Math.ceil(((end - start) + 1) / (1000 * 60 * 60 * 24));
     // console.log(diffInDays * 24 * ((selectedHording.hourlyRate) + 5))
     return diffInDays > 0 ? diffInDays * 24 * ((selectedHording.hourlyRate) + 5) : 0;
   };
 
-  const handleBooking = async() => {
+  const handleBooking = async () => {
     if (!selectedHording || !formData.startDate || !formData.endDate || !formData.adName || !formData.adDescription || !formData.adFileUrl) { //change as per fields
       alert("Please fill all the fields.");
       return;
     }
-    try{
-      
-      const availibility=await axios.get(`/booking/check-availibility/${selectedHording._id}/${formData.startDate}/${formData.endDate}`)
-      
-      if(!availibility.data.canBookFullRange){
+    try {
+
+      const availibility = await axios.get(`/booking/check-availibility/${selectedHording._id}/${formData.startDate}/${formData.endDate}`)
+
+      if (!availibility.data.canBookFullRange) {
         alert(`These dates are unavailable: ${availibility.data.conflictingDates.join(', ')}`);
         return;
       }
       navigate("/customer/bookhording/payment", {
         state: {
-          adpic:formData.adFileUrl,
+          adpic: formData.adFileUrl,
           selectedHording,
           //userId ?? here or from localStorage
           //need extra fields check??
@@ -163,7 +163,7 @@ const BookHording = () => {
         },
       });
     }
-    catch(error){
+    catch (error) {
       console.error("Availability check failed:", error);
       alert("Error checking availability. Please try again.");
     }
@@ -214,12 +214,12 @@ const BookHording = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Location Filter Section */}
-      <Paper elevation={0} sx={{ 
-        p: 3, 
-        mb: 4, 
+      <Paper elevation={0} sx={{
+        p: 3,
+        mb: 4,
         borderRadius: 4,
-        background: theme.palette.mode === 'dark' ? 
-          'linear-gradient(to right, #1a1a1a, #2a2a2a)' : 
+        background: theme.palette.mode === 'dark' ?
+          'linear-gradient(to right, #1a1a1a, #2a2a2a)' :
           'linear-gradient(to right, #f8f9fa, #ffffff)',
         boxShadow: theme.shadows[4]
       }}>
@@ -237,7 +237,7 @@ const BookHording = () => {
               }}
               displayEmpty
             >
-                <MenuItem value="" disabled>Select State</MenuItem>
+              <MenuItem value="" disabled>Select State</MenuItem>
               {states.map((s) => (
                 <MenuItem key={s._id} value={s._id}>{s.name}</MenuItem>
               ))}
@@ -301,7 +301,7 @@ const BookHording = () => {
                   }
                 }}
               >
-                <Box sx={{ 
+                <Box sx={{
                   position: 'relative',
                   height: 200,
                   overflow: 'hidden'
@@ -354,24 +354,24 @@ const BookHording = () => {
           ))}
         </Grid>
       ) : (
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           py: 8,
           textAlign: 'center'
         }}>
-          <img 
-            src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" 
-            alt="No hoardings" 
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png"
+            alt="No hoardings"
             style={{ width: 150, opacity: 0.7, marginBottom: 16 }}
           />
           <Typography variant="h6" color="text.secondary">
             No hoardings available for selected location
           </Typography>
-          <Button 
-            variant="text" 
-            color="primary" 
+          <Button
+            variant="text"
+            color="primary"
             sx={{ mt: 2 }}
             onClick={() => {
               setFormData({ ...formData, state: '', city: '', area: '' });
@@ -427,7 +427,7 @@ const BookHording = () => {
 
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
-                    <Box sx={{ 
+                    <Box sx={{
                       height: 200,
                       borderRadius: 2,
                       overflow: 'hidden',
@@ -458,7 +458,7 @@ const BookHording = () => {
                   </Grid>
 
                   <Grid item xs={12} md={6}>
-                    <EnhancedTextField
+                    <TextField
                       label="Ad Campaign Name"
                       name="adName"
                       value={formData.adName}
@@ -471,18 +471,17 @@ const BookHording = () => {
                         ),
                       }}
                     />
-
-                    
-                    <EnhancedTextField
+                    <TextField
                       label="Ad Description"
                       name="adDescription"
                       value={formData.adDescription}
                       onChange={handleChange}
                       multiline
                       rows={3}
+                      fullWidth
                       sx={{ mt: 2 }}
                     />
-                    
+
                     <Box sx={{ mt: 2 }}>
                       <Button
                         component="label"
@@ -503,8 +502,8 @@ const BookHording = () => {
                             const file = e.target.files[0];
                             if (file) {
                               const fileUrl = URL.createObjectURL(file);
-                              setFormData({ 
-                                ...formData, 
+                              setFormData({
+                                ...formData,
                                 adFile: file,
                                 adFileUrl: file.type.startsWith('image/') ? fileUrl : null
                               });
@@ -519,7 +518,7 @@ const BookHording = () => {
                       )}
                     </Box>
 
-                    <EnhancedTextField
+                    <TextField
                       label="Website/Product URL (Optional)"
                       name="websiteUrl"
                       value={formData.websiteUrl}
@@ -565,9 +564,9 @@ const BookHording = () => {
                       </Grid>
                     </Grid>
 
-                    <Paper elevation={0} sx={{ 
-                      p: 2, 
-                      mt: 3, 
+                    <Paper elevation={0} sx={{
+                      p: 2,
+                      mt: 3,
                       borderRadius: 2,
                       bgcolor: 'primary.light',
                       color: 'primary.contrastText'
@@ -586,7 +585,7 @@ const BookHording = () => {
                       size="large"
                       endIcon={<ArrowForward />}
                       onClick={handleBooking}
-                      sx={{ 
+                      sx={{
                         mt: 3,
                         py: 1.5,
                         borderRadius: 2,
