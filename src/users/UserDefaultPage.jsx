@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
@@ -15,7 +15,8 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-  Container
+  Container,
+  Skeleton
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -24,12 +25,56 @@ import TvIcon from '@mui/icons-material/Tv';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import axios from "axios";
 
 const CustomerDashboard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  const [customerStats, setCustomerStats] = useState([
+    { title: "Active Bookings", value: "0", icon: <EventAvailableIcon color="info" /> },
+    { title: "Total Spent", value: "₹0", icon: <TrendingUpIcon color="success" /> }
+  ]);
+  const [loading, setLoading] = useState(true);
   let carouselRef = React.useRef(null);
+
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        const userId = localStorage.getItem("id");
+        if (!userId) return;
+
+        // Fetch user's bookings
+        const response = await axios.get(`/booking/getBookingByUserId/${userId}`);
+        const bookings = response.data.data || [];
+
+        // Calculate active bookings (bookings that haven't ended yet)
+        const today = new Date();
+        const activeBookings = bookings.filter(booking => {
+          const endDate = new Date(booking.endDate);
+          return endDate >= today;
+        });
+
+        // Calculate total spent
+        const totalSpent = bookings.reduce((sum, booking) => {
+          return sum + (booking.totalCost || 0);
+        }, 0);
+
+        // Update stats
+        setCustomerStats([
+          { title: "Active Bookings", value: activeBookings.length.toString(), icon: <EventAvailableIcon color="info" /> },
+          { title: "Total Spent", value: `₹${totalSpent.toLocaleString()}`, icon: <TrendingUpIcon color="success" /> }
+        ]);
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user stats:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserStats();
+  }, []);
 
   // Sample featured hoardings data
   const featuredHoardings = [
@@ -62,12 +107,6 @@ const CustomerDashboard = () => {
     }
   ];
 
-  // Sample customer stats
-  const customerStats = [
-    { title: "Active Bookings", value: "2", icon: <EventAvailableIcon color="info" /> },
-    { title: "Total Spent", value: "$8,400", icon: <TrendingUpIcon color="success" /> }
-  ];
-
   return (
     <Container 
       sx={{
@@ -79,10 +118,8 @@ const CustomerDashboard = () => {
         lg:900,
         xl:1000
       },
-      marginLeft: 0 // Remove any fixed margins
-  }}
-    
-    >
+      marginLeft: 0
+    }}>
       {/* Welcome Section */}
       <Box sx={{ mb: isMobile ? 2 : 4 }}>
         <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
@@ -107,7 +144,11 @@ const CustomerDashboard = () => {
                   <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
                     {stat.title}
                   </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>{stat.value}</Typography>
+                  {loading ? (
+                    <Skeleton variant="text" width={100} height={40} />
+                  ) : (
+                    <Typography variant={isMobile ? "h5" : "h4"}>{stat.value}</Typography>
+                  )}
                 </Box>
                 <Avatar sx={{ 
                   bgcolor: 'action.hover', 
@@ -376,7 +417,3 @@ const CustomerDashboard = () => {
 };
 
 export default CustomerDashboard;
-
-
-
-
