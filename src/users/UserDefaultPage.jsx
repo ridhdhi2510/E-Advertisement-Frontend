@@ -167,8 +167,6 @@ const CustomerDashboard = () => {
           sx={{
 
             fontWeight: 700,
-
-            fontWeight: 600,
             fontSize: getResponsiveValue({ xs: '1.5rem', sm: '2rem', md: '2.5rem' }),
 
             background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -184,8 +182,6 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "body1", sm: "h6", md: "h5" })}
           color="text.secondary"
           sx={{ 
-
-            lineHeight: 1.6,
 
             lineHeight: 1.6,
             fontWeight: 600,
@@ -593,8 +589,6 @@ const CustomerDashboard = () => {
 
                             {/* {booking.hordingId?.areaId?.name || 'N/A'}, {booking.hordingId?.cityId?.name || 'N/A'} */}
                             {getLocationString(booking)}
-
-                            
 
                           </Typography>
                         </Stack>
