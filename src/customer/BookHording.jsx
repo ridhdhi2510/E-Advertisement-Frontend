@@ -130,7 +130,8 @@ const BookHording = () => {
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
     const diffInDays = Math.ceil(((end - start)+1) / (1000 * 60 * 60 * 24));
-    return diffInDays > 0 ? diffInDays * 24 * selectedHording.hourlyRate : 0;
+    // console.log(diffInDays * 24 * ((selectedHording.hourlyRate) + 5))
+    return diffInDays > 0 ? diffInDays * 24 * ((selectedHording.hourlyRate) + 5) : 0;
   };
 
   const handleBooking = async() => {
@@ -166,7 +167,7 @@ const BookHording = () => {
       console.error("Availability check failed:", error);
       alert("Error checking availability. Please try again.");
     }
-   
+    // console.log({calculateTotalCost})
   };
 
 
