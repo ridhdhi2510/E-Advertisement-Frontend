@@ -1,229 +1,158 @@
-// import {Box, Button,Card,CardContent, CardMedia,Grid,Typography,} from "@mui/material";
-// import axios from "axios";
-// import React, { useEffect, useState } from "react";
-
-// const HordingCard = ({ data }) => {
-//   return (
-//     <Card sx={{width: 280,boxShadow: 2,borderRadius: 2,border: "1px solid #ddd",}}>
-//       <CardMedia component="img" height="150"
-//         image={data?.hordingURL || "https://via.placeholder.com/200x150"}
-//         alt="Hording"
-//       />
-//       <CardContent>
-//         <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
-//           {data?.hoardingType
-//             ? `${data.hoardingType} - ${data.hoardingDimension}`
-//             : "Unknown Type"}
-//         </Typography>
-//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//           Rate: {data?.hourlyRate || "N/A"}
-//         </Typography>
-//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//           Location:{" "}
-//           {data?.latitude && data?.longitude
-//             ? `${data.latitude}, ${data.longitude}`
-//             : "Location not available"}
-//         </Typography>
-//         {/* <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//              Address: {data?.cityId || "N/A"}
-//            </Typography>
-//            <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//              Posted by: {data?.userId || "Unknown"}
-//            </Typography> */}
-//         <Button 
-//           variant="contained"
-//           sx={{
-//             mt: 2,
-//             backgroundColor: "blue.500",
-//             "&:hover": { backgroundColor: "blue.700" },
-//             fontWeight: "bold",
-//             width: "100%",
-//           }}
-//         >
-//           Update
-//         </Button>
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
-// const ViewMyScreen = () => {
-//   //hooks
-//   const [hordingData, sethordingData] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   const getAllScreens = async () => {
-//     try {
-//       const res = await axios.get(
-//         "/hording/getHordingsbyuserid/" + localStorage.getItem("id")
-//       );
-
-//       console.log("Full API Response:", res);
-//       console.log("Fetched Data:", res.data?.data);
-
-//       if (res.data && Array.isArray(res.data.data)) {
-//         sethordingData(res.data.data);
-//       } else {
-//         console.error("Invalid API response:", res.data);
-//       }
-//     } catch (error) {
-//       console.error("Error fetching hoardings:", error);
-//     } finally {
-//       setLoading(false); // ✅ Set loading to false after fetching
-//     }
-//   };
-
-//   useEffect(() => {
-//     getAllScreens();
-//   }, []);
-
-//   useEffect(() => {
-//     console.log("Updated hoardingData length:", hordingData.length);
-//   }, [hordingData]);
-
-//   if (loading) {
-//     return (
-//       <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-//         <Typography variant="h6">Loading...</Typography>
-//       </Box>
-//     );
-//   }
-
-//   return (
-//     <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-//       <Grid container spacing={4} justifyContent="center">
-//         {hordingData.length > 0 ? (
-//           hordingData.map((item, index) => (
-//             <Grid item key={index} xs={12} sm={6} md={4}>
-//               <HordingCard data={item} />
-//             </Grid>
-//           ))
-//         ) : (
-//           <Typography>No hoardings available</Typography>
-//         )}
-//       </Grid>
-//     </Box>
-//   );
-// };
-// export default ViewMyScreen;
-
-import { Box, Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { 
+  Box, Button, Card, CardContent, CardMedia, Grid, Typography, 
+  Container, Paper, Chip, Avatar, Stack, useTheme, useMediaQuery,
+  IconButton, Divider, CircularProgress
+} from "@mui/material";
+import {
+  LocationOn, CalendarToday, Edit, Delete, 
+  Star, Payment, ArrowForward
+} from "@mui/icons-material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CustomLoader from "../component/CustomLoader";
+import { keyframes } from "@emotion/react";
 
-// const HordingCard = ({ data }) => {
-//   const navigate = useNavigate(); // React Router navigation hook
+// Animation keyframes
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+`;
 
-//   const handleUpdateClick = () => {
-//     navigate(`/agency/updateScreen/${data._id}`); // 🔥 Instant redirect
-//   };
+const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+`;
 
-//   return (
-//     <Card sx={{ width: 280, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd" }}>
-//       <CardMedia
-//         component="img"
-//         height="150"
-//         image={data?.hordingURL || "https://via.placeholder.com/200x150"}
-//         alt="Hording"
-//       />
-//       <CardContent>
-//         <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
-//           {data?.hoardingType
-//             ? `${data.hoardingType} - ${data.hoardingDimension}`
-//             : "Unknown Type"}
-//         </Typography>
-//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//           Rate: {data?.hourlyRate || "N/A"}
-//         </Typography>
-//         <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-//           Location: {data?.latitude && data?.longitude ? `${data.latitude}, ${data.longitude}` : "Location not available"}
-//         </Typography>
-//         <Button
-//           variant="contained"
-//           onClick={handleUpdateClick} // ✅ Single click to navigate
-//           sx={{ mt: 2, backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "100%" }}
-//         >
-//           Update
-//         </Button>
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
-const HordingCard = ({ data, hordingData, setHordingData, setisLoading  }) => {
+const HordingCard = ({ data, hordingData, setHordingData, setisLoading }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleUpdateClick = () => {
-    console.log(data._id)
     navigate(`/agency/updateScreen/${data._id}`);
   };
 
   const handleRemoveClick = async (id) => {
     try {
-      setisLoading(true); // Show Loader
-      const res = await axios.delete(`http://localhost:3000/hording/delete/${id}`);
-      setisLoading(false); 
+      setisLoading(true);
+      const res = await axios.delete(`/hording/delete/${id}`);
+      setisLoading(false);
 
       if (res.status === 200) {
-        console.log("Deleted successfully:", res);
-        // Remove the deleted item from the state
         setHordingData(hordingData.filter(h => h._id !== id));
         alert("Hoarding deleted successfully! ✅");
       } else {
         console.error("Failed to delete hoarding:", res);
       }
     } catch (error) {
-      setisLoading(false); // Hide Loader on Error
+      setisLoading(false);
       console.error("Error deleting hoarding:", error);
       alert("Failed to delete hoarding ❌");
     }
   }
 
   return (
-    <Card sx={{ width: 280, height: 330, boxShadow: 2, borderRadius: 2, border: "1px solid #ddd", overflow: "hidden" }}>
-      {/* ✅ Image inside a fixed container */}
-      <Box sx={{ height: 170, width: "100%", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <Card sx={{ 
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      borderRadius: 3,
+      overflow: 'hidden',
+      boxShadow: theme.shadows[4],
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        transform: 'translateY(-5px)',
+        boxShadow: theme.shadows[8],
+        animation: `${float} 3s ease-in-out infinite`
+      }
+    }}>
+      <Box sx={{ 
+        position: 'relative',
+        height: 200,
+        width: "100%",
+        overflow: "hidden"
+      }}>
         <CardMedia
           component="img"
           image={data?.hordingURL || "https://via.placeholder.com/200x150"}
           alt="Hoarding"
-          sx={{ height: "100%", width: "100%", objectFit: "cover" }} // ✅ Ensures full image is visible
+          sx={{ 
+            height: "100%", 
+            width: "100%", 
+            objectFit: "cover",
+            transition: 'transform 0.5s ease',
+            ':hover': {
+              transform: 'scale(1.1)'
+            }
+          }}
+        />
+        <Chip
+          label={`₹${data.hourlyRate}/hr`}
+          color="primary"
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            fontWeight: 700
+          }}
         />
       </Box>
 
-      <CardContent>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "gray.800" }}>
-          {data?.hoardingType ? `${data.hoardingType} - ${data.hoardingDimension}` : "Unknown Type"}
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" fontWeight="700" gutterBottom>
+          {data.hoardingType} - {data.hoardingDimension}
         </Typography>
-        <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-          Rate: {data?.hourlyRate || "N/A"}
-        </Typography>
-        {/* <Typography sx={{ fontSize: 14, color: "gray.600" }}>
-          Location: {data?.latitude && data?.longitude ? `${data.latitude}, ${data.longitude}` : "Location not available"}
-        </Typography> */}
+        
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+          <LocationOn color="primary" fontSize="small" />
+          <Typography variant="body2" color="text.secondary">
+            {data.areaId?.name}, {data.cityId?.name}, {data.stateId?.name}
+          </Typography>
+        </Stack>
 
-        <Typography variant="body2" >
-          {data.areaId?.name}, {data.cityId?.name}, {data.stateId?.name}
-        </Typography>
-
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          mt: 3,
+          gap: 2
+        }}>
           <Button
             variant="contained"
             onClick={handleUpdateClick}
-            sx={{ backgroundColor: "blue.500", "&:hover": { backgroundColor: "blue.700" }, fontWeight: "bold", width: "48%" }}
+            //startIcon={<Edit />}
+            sx={{ 
+              flex: 1,
+              borderRadius: 2,
+              fontWeight: 600,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+              '&:hover': {
+                animation: `${pulse} 1s infinite`
+              }
+            }}
           >
-            Update
+            {!isMobile ? 'Update' : ''}
           </Button>
 
           <Button
             variant="contained"
             color="error"
             onClick={() => handleRemoveClick(data._id)}
-            sx={{ backgroundColor: "red.500", "&:hover": { backgroundColor: "red.700" }, fontWeight: "bold", width: "48%" }}
+            //startIcon={<Delete />}
+            sx={{ 
+              flex: 1,
+              borderRadius: 2,
+              fontWeight: 600,
+              background: `linear-gradient(135deg, ${theme.palette.error.main}, ${theme.palette.error.dark})`,
+              '&:hover': {
+                animation: `${pulse} 1s infinite`
+              }
+            }}
           >
-            Remove
+            {!isMobile ? 'Remove' : ''}
           </Button>
         </Box>
       </CardContent>
@@ -231,21 +160,17 @@ const HordingCard = ({ data, hordingData, setHordingData, setisLoading  }) => {
   );
 };
 
-
 const ViewMyScreen = () => {
-  // State Hooks
+  const theme = useTheme();
   const [hordingData, setHordingData] = useState([]);
   const [isLoading, setisLoading] = useState(false);
 
-  // Fetch all hoardings
   const getAllScreens = async () => {
     try {
       setisLoading(true);
       const res = await axios.get("/hording/getHordingsbyuserid/" + localStorage.getItem("id"));
       setisLoading(false);
-      console.log("Full API Response:", res);
-      console.log("Fetched Data:", res.data?.data);
-
+      
       if (res.data && Array.isArray(res.data.data)) {
         setHordingData(res.data.data);
       } else {
@@ -261,22 +186,31 @@ const ViewMyScreen = () => {
     getAllScreens();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-  //       <Typography variant="h6">Loading...</Typography>
-  //     </Box>
-  //   );
-  // }
-
   return (
     <>
-      {isLoading == true && <CustomLoader />}
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <Grid container spacing={4} justifyContent="center">
-          {hordingData.length > 0 ? (
-            hordingData.map((item, index) => (
-              <Grid item key={index} xs={12} sm={6} md={4}>
+      {isLoading && <CustomLoader />}
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Paper elevation={0} sx={{ 
+          p: 3, 
+          mb: 4, 
+          borderRadius: 4,
+          background: theme.palette.mode === 'dark' ? 
+            'linear-gradient(to right, #1a1a1a, #2a2a2a)' : 
+            'linear-gradient(to right, #f8f9fa, #ffffff)',
+          boxShadow: theme.shadows[4]
+        }}>
+          <Typography variant="h4" fontWeight="700" gutterBottom sx={{ mb: 2 }}>
+            My Advertising Screens
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage your existing hoardings or add new ones
+          </Typography>
+        </Paper>
+
+        {hordingData.length > 0 ? (
+          <Grid container spacing={3}>
+            {hordingData.map((item, index) => (
+              <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
                 <HordingCard
                   data={item}
                   hordingData={hordingData}
@@ -284,13 +218,35 @@ const ViewMyScreen = () => {
                   setisLoading={setisLoading}
                 />
               </Grid>
-
-            ))
-          ) : (
-            <Typography>No hoardings available</Typography>
-          )}
-        </Grid>
-      </Box>
+            ))}
+          </Grid>
+        ) : (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            py: 8,
+            textAlign: 'center'
+          }}>
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" 
+              alt="No hoardings" 
+              style={{ width: 150, opacity: 0.7, marginBottom: 16 }}
+            />
+            <Typography variant="h6" color="text.secondary">
+              You haven't added any hoardings yet
+            </Typography>
+            <Button 
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, borderRadius: 2, fontWeight: 600 }}
+              onClick={() => navigate('/agency/addscreen')}
+            >
+              Add New Hoarding
+            </Button>
+          </Box>
+        )}
+      </Container>
     </>
   );
 };

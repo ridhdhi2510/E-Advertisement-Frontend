@@ -615,17 +615,7 @@ const ViewBooking = () => {
                           justifyContent: 'flex-end',
                           gap: 2
                         }}>
-                          {/* <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<Share />}
-                            sx={{
-                              borderRadius: 2,
-                              fontWeight: 600
-                            }}
-                          >
-                            Share Booking
-                          </Button> */}
+                          
                           <Button
                             variant="contained"
                             color="primary"
@@ -635,7 +625,7 @@ const ViewBooking = () => {
                               boxShadow: `0 4px 12px ${theme.palette.primary.light}`
                             }}
                           >
-                            Download Invoice
+                            Delete booking
                           </Button>
                         </Box>
                       </Box>
