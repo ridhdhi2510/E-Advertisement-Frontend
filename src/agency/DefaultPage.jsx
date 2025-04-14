@@ -15,7 +15,8 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-  Container
+  Container,
+  Skeleton
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -27,59 +28,62 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HomeIcon from '@mui/icons-material/Home'
 import axios from "axios";
 import CustomLoader from "../component/CustomLoader";
+import dayjs from "dayjs";
 
 const DefaultPage = () => {
   const [hoardings, setHoardings] = useState([]);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [carouselKey, setCarouselKey] = useState(0);
-  const [totalScreens, setTotalScreens] = useState(0); // New state for total screens count
+  const [totalScreens, setTotalScreens] = useState(0);
+  const [activeBookings, setActiveBookings] = useState(0);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   let carouselRef = React.useRef(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setisLoading(true);
-  //       const res = await axios.get(`/hording/getHordingsbyuserid/${localStorage.getItem("id")}`);
-  //       setHoardings(res.data?.data || []);
-  //       setCarouselKey(prev => prev + 1); // Force carousel refresh
-  //     } catch (error) {
-  //       console.error("Error fetching hoardings:", error);
-  //       setHoardings([]);
-  //     } finally {
-  //       setisLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setisLoading(true);
+        setIsLoading(true);
+        setStatsLoading(true);
+        const userId = localStorage.getItem("id");
+        
         // Fetch hoardings data
-        const res = await axios.get(`/hording/getHordingsbyuserid/${localStorage.getItem("id")}`);
-        setHoardings(res.data?.data || []);
-        setTotalScreens(res.data?.data?.length || 0); // Update total screens count
-        setCarouselKey(prev => prev + 1);
+        const hoardingsRes = await axios.get(`/hording/getHordingsbyuserid/${userId}`);
+        setHoardings(hoardingsRes.data?.data || []);
+        setTotalScreens(hoardingsRes.data?.data?.length || 0);
+
+        // Fetch bookings data
+        const bookingsRes = await axios.get(`/booking/getBookingByUserId/${userId}`);
+        const bookings = bookingsRes.data?.data || [];
+        
+        // Calculate active bookings (where end date is in the future)
+        const today = new Date();
+        const active = bookings.filter(booking => {
+          const endDate = new Date(booking.endDate);
+          return endDate >= today;
+        }).length;
+        
+        setActiveBookings(active);
       } catch (error) {
-        console.error("Error fetching hoardings:", error);
+        console.error("Error fetching data:", error);
         setHoardings([]);
         setTotalScreens(0);
+        setActiveBookings(0);
       } finally {
-        setisLoading(false);
+        setIsLoading(false);
+        setStatsLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
-
   return (
     <>
-      {isLoading == true && <CustomLoader />}
+      {isLoading && <CustomLoader />}
       <Container maxWidth="lg" sx={{
         p: isMobile ? 1 : 3,
         overflowX: 'hidden',
@@ -95,8 +99,9 @@ const DefaultPage = () => {
           </Typography>
         </Box>
 
-        {/* Stats Cards - Only Active Bookings and Total Screens */}
+        {/* Stats Cards */}
         <Grid container spacing={isMobile ? 1 : 3} sx={{ mb: isMobile ? 2 : 4 }}>
+          {/* Active Bookings Card */}
           <Grid item xs={12} sm={6}>
             <Paper elevation={3} sx={{
               p: isMobile ? 2 : 3,
@@ -108,10 +113,16 @@ const DefaultPage = () => {
                   <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
                     Active Bookings
                   </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>0</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    No bookings yet
-                  </Typography>
+                  {statsLoading ? (
+                    <Skeleton variant="text" width={100} height={40} />
+                  ) : (
+                    <>
+                      <Typography variant={isMobile ? "h5" : "h4"}>{activeBookings}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {activeBookings === 0 ? 'No bookings yet' : `${activeBookings} active bookings`}
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Avatar sx={{
                   bgcolor: 'action.hover',
@@ -123,40 +134,29 @@ const DefaultPage = () => {
               </Stack>
             </Paper>
           </Grid>
+
+          {/* Total Screens Card */}
           <Grid item xs={12} sm={6}>
             <Paper elevation={3} sx={{
               p: isMobile ? 2 : 3,
               borderRadius: 2,
               height: '100%'
             }}>
-              {/* <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Box>
-                  <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
-                    Total Screens
-                  </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>0</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Add your first screen
-                  </Typography>
-                </Box>
-                <Avatar sx={{
-                  bgcolor: 'action.hover',
-                  width: isMobile ? 40 : 56,
-                  height: isMobile ? 40 : 56
-                }}>
-                  <TvIcon fontSize={isMobile ? "medium" : "large"} color="primary" />
-                </Avatar>
-              </Stack> */}
-
               <Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Box>
                   <Typography variant={isMobile ? "caption" : "subtitle2"} color="text.secondary">
                     Total Screens
                   </Typography>
-                  <Typography variant={isMobile ? "h5" : "h4"}>{totalScreens}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {totalScreens === 0 ? 'Add your first screen' : `${totalScreens} screens registered`}
-                  </Typography>
+                  {statsLoading ? (
+                    <Skeleton variant="text" width={100} height={40} />
+                  ) : (
+                    <>
+                      <Typography variant={isMobile ? "h5" : "h4"}>{totalScreens}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {totalScreens === 0 ? 'Add your first screen' : `${totalScreens} screens registered`}
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Avatar sx={{
                   bgcolor: 'action.hover',

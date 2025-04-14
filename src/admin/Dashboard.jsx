@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -13,30 +13,9 @@ import {
   Divider
 } from "@mui/material";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-// Dummy Data – Replace with backend data via API calls
-const hoardings = 120;
-const bookings = 305;
-const revenue = 12345;
-const pendingApprovals = 2;
-const bookingsThisMonth = 10;
-const revenueThisMonth = 3000;
-
-const bookingStatusData = [
-  { name: "Completed", value: 65 },
-  { name: "Pending", value: 25 },
-  { name: "Cancelled", value: 10 },
-];
+import axios from "axios";
 
 const COLORS = ["#007bff", "#64b5f6", "#cfd8dc"];
-
-const agencyComparison = [
-  { name: "Agency A", value: 30 },
-  { name: "Agency B", value: 25 },
-  { name: "Agency C", value: 20 },
-  { name: "Agency D", value: 15 },
-  { name: "Agency E", value: 25 },
-];
 
 const recentActivities = [
   { id: 1, text: "New booking by Alice Smith", time: "10 mins ago" },
@@ -50,6 +29,101 @@ export default function Dashboard() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalHoardings: 0,
+    totalBookings: 0,
+    bookingsThisMonth: 0,
+    topAgencies: [],
+    topCustomers: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch all hoardings count
+        const hoardingsRes = await axios.get('http://localhost:3000/hording/getall');
+        const totalHoardings = hoardingsRes.data.data.length;
+        
+        // Fetch all bookings count
+        const bookingsRes = await axios.get('http://localhost:3000/booking/getall');
+        const totalBookings = bookingsRes.data.data.length;
+        
+        // Calculate bookings this month
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const bookingsThisMonth = bookingsRes.data.data.filter(booking => {
+          const bookingDate = new Date(booking.startDate);
+          return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+        }).length;
+        
+        // Get top agencies (users with most hoardings)
+        const agenciesData = hoardingsRes.data.data.reduce((acc, hoarding) => {
+          const userId = hoarding.userId?._id || 'unknown';
+          if (!acc[userId]) {
+            acc[userId] = {
+              name: hoarding.userId?.name || `Agency ${userId.slice(0, 5)}`,
+              value: 0
+            };
+          }
+          acc[userId].value++;
+          return acc;
+        }, {});
+        const topAgencies = Object.values(agenciesData)
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5);
+        
+        // Get top customers (users with most bookings)
+        const customersData = bookingsRes.data.data.reduce((acc, booking) => {
+          const userId = booking.userId?._id || 'unknown';
+          if (!acc[userId]) {
+            acc[userId] = {
+              name: booking.userId?.name || `Customer ${userId.slice(0, 5)}`,
+              value: 0
+            };
+          }
+          acc[userId].value++;
+          return acc;
+        }, {});
+        const topCustomers = Object.values(customersData)
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5);
+        
+        setStats({
+          totalHoardings,
+          totalBookings,
+          bookingsThisMonth,
+          topAgencies,
+          topCustomers
+        });
+        
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        p: 3, 
+        ml: { xs: '90px', sm: '220px' },
+        backgroundColor: '#f5f7fa',
+        minHeight: '100vh'
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ 
@@ -61,10 +135,10 @@ export default function Dashboard() {
       {/* Top Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { title: "Total Hoardings", value: hoardings, color: "#1E2A47" },
-          { title: "Total Bookings", value: bookings, color: "#2E7D32" },
-          { title: "Total Revenue", value: `$${revenue}`, color: "#D32F2F" },
-          { title: "Pending Approvals", value: pendingApprovals, color: "#ED6C02" }
+          { title: "Total Hoardings", value: stats.totalHoardings, color: "#1E2A47" },
+          { title: "Total Bookings", value: stats.totalBookings, color: "#2E7D32" },
+          { title: "Total Revenue", value: "$0", color: "#D32F2F" },
+          { title: "Pending Approvals", value: 0, color: "#ED6C02" }
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Paper elevation={3} sx={{ 
@@ -129,10 +203,11 @@ export default function Dashboard() {
                   Bookings This Month
                 </Typography>
                 <Typography variant="h3" fontWeight="bold" sx={{ flexGrow: 1 }}>
-                  {bookingsThisMonth}
+                  {stats.bookingsThisMonth}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  +12% from last month
+                  {/* You can add comparison logic here later */}
+                  Loading comparison...
                 </Typography>
               </Paper>
             </Grid>
@@ -150,10 +225,11 @@ export default function Dashboard() {
                   Revenue This Month
                 </Typography>
                 <Typography variant="h3" fontWeight="bold" sx={{ flexGrow: 1 }}>
-                  ${revenueThisMonth}
+                  $0
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  +8% from last month
+                  {/* You can add comparison logic here later */}
+                  Loading comparison...
                 </Typography>
               </Paper>
             </Grid>
@@ -171,7 +247,11 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={bookingStatusData}
+                      data={[
+                        { name: "Completed", value: 100 }, // Placeholder - you can implement real status tracking later
+                        { name: "Pending", value: 0 },
+                        { name: "Cancelled", value: 0 }
+                      ]}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -181,8 +261,8 @@ export default function Dashboard() {
                       dataKey="value"
                       label
                     >
-                      {bookingStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {COLORS.map((color, index) => (
+                        <Cell key={`cell-${index}`} fill={color} />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -204,7 +284,7 @@ export default function Dashboard() {
               Top Agencies
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={agencyComparison}>
+              <BarChart data={stats.topAgencies}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -224,7 +304,7 @@ export default function Dashboard() {
               Top Customers
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={agencyComparison}>
+              <BarChart data={stats.topCustomers}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
