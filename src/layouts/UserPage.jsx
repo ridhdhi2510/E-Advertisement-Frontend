@@ -26,7 +26,7 @@ import {
   Button,
 } from "@mui/material";
 // eslint-disable-next-line no-unused-vars
-import { styled} from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import {
   Menu as MenuIcon,
   MoveToInbox as InboxIcon,
@@ -122,8 +122,8 @@ const Drawer = styled(MuiDrawer, {
 export default function UserPage() {
   const [userName, setUserName] = useState("");
   const theme = useTheme();
-const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-const [open, setOpen] = React.useState(!isSmallScreen);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [open, setOpen] = React.useState(!isSmallScreen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
   const fetchUserData = async () => {
@@ -141,7 +141,7 @@ const [open, setOpen] = React.useState(!isSmallScreen);
       window.history.replaceState({}, ""); // Reload the page when refresh is true
     }
     setOpen(!isSmallScreen);
-  }, [location.state , isSmallScreen])
+  }, [location.state, isSmallScreen])
 
 
   const handleDeleteAccount = async () => {
@@ -214,20 +214,41 @@ const [open, setOpen] = React.useState(!isSmallScreen);
             mt: "12px"
           }}
         >
-          <Typography variant="body1" fontWeight="bold" sx={{
-            color: "white",
-            fontSize: open ? "20px" : "30px",
-            //textAlign: open ? "center" : "center",
-            textAlign: "center",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}>
-
-            {/* Hi, {userName} */}
-            {open ? `Hi, ${userName}` : userName.charAt(0).toUpperCase()}
-          </Typography>
+          {open ? (
+            <Typography
+              variant="body1"
+              fontWeight="bold"
+              sx={{
+                color: "white",
+                fontSize: "20px",
+                textAlign: "center",
+                width: "100%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Hi, {userName}
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#fff", // Change color as needed
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "navy",
+                fontWeight: "bold",
+                fontSize: "18px",
+                mx: "auto", // to center horizontally if needed
+              }}
+            >
+              {userName.charAt(0).toUpperCase()}
+            </Box>
+          )}
 
           {open && (
             <Link
@@ -433,7 +454,7 @@ const [open, setOpen] = React.useState(!isSmallScreen);
               />
             </ListItemButton>
           </ListItem>
-        </List>
+        {/* </List> */}
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* <List> */}
@@ -517,7 +538,7 @@ const [open, setOpen] = React.useState(!isSmallScreen);
         </ListItem>
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
-        {/* </List> */}
+        </List>
       </Drawer>
 
 

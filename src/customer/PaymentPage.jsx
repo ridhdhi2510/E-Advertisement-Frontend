@@ -1,217 +1,203 @@
-// import React, { useState } from "react";
-// import { Container, TextField, Button, Card, CardContent, Typography, MenuItem, Select, Grid, Box, Snackbar } from "@mui/material";
-// import MuiAlert from "@mui/material/Alert";
-
-// const PaymentPage = () => {
-//   const [cardholderName, setCardholderName] = useState("");
-//   const [cardNumber, setCardNumber] = useState("");
-//   const [expiryMonth, setExpiryMonth] = useState("");
-//   const [expiryYear, setExpiryYear] = useState("");
-//   const [cvv, setCvv] = useState("");
-//   const [showOtp, setShowOtp] = useState(false);
-//   const [otp, setOtp] = useState("");
-//   const [openSnackbar, setOpenSnackbar] = useState(false);
-
-//   const handlePayment = () => {
-//     setShowOtp(true);
-//   };
-
-//   const handleOtpSubmit = () => {
-//     setOpenSnackbar(true);
-//   };
-
-//   return (
-//     <Container maxWidth="md" style={{ marginTop: "50px" }}>
-//       <Card>
-//         <CardContent>
-//           <Grid container spacing={4}>
-//             {/* Ad Slot Details */}
-//             <Grid item xs={12} md={4}>
-//               <Box component="img" src="/ad-slot.jpg" alt="Ad Slot" width="100%" borderRadius={2} />
-//               <Typography variant="h6" fontWeight="bold" mt={2}>
-//                 Ad Slot Premium
-//               </Typography>
-//               <Typography variant="body2" color="textSecondary">
-//                 Ref. AD-2025/001
-//               </Typography>
-//               <Typography variant="h6" mt={1}>
-//                 $50.00 USD
-//               </Typography>
-//             </Grid>
-
-//             {/* Payment Form */}
-//             <Grid item xs={12} md={8}>
-//               <Typography variant="h5" fontWeight="bold">
-//                 Payment Details
-//               </Typography>
-//               <Typography variant="body2" color="textSecondary" gutterBottom>
-//                 Fill in the info below to continue.
-//               </Typography>
-
-//               <TextField
-//                 label="Cardholder Name"
-//                 variant="standard"
-//                 fullWidth
-//                 margin="normal"
-//                 value={cardholderName}
-//                 onChange={(e) => setCardholderName(e.target.value)}
-//               />
-//               <TextField
-//                 label="Card Number"
-//                 variant="standard"
-//                 fullWidth
-//                 margin="normal"
-//                 value={cardNumber}
-//                 onChange={(e) => setCardNumber(e.target.value)}
-//               />
-
-//               <Grid container spacing={2} mt={1}>
-//                 <Grid item xs={6}>
-//                   <Typography variant="body2" color="textSecondary">Expiry Month</Typography>
-//                   <Select
-//                     value={expiryMonth}
-//                     onChange={(e) => setExpiryMonth(e.target.value)}
-//                     displayEmpty
-//                     fullWidth
-//                     variant="standard"
-//                   >
-//                     <MenuItem value="" disabled>Month</MenuItem>
-//                     <MenuItem value="January">January</MenuItem>
-//                     <MenuItem value="February">February</MenuItem>
-//                     <MenuItem value="March">March</MenuItem>
-//                     <MenuItem value="April">April</MenuItem>
-//                     <MenuItem value="May">May</MenuItem>
-//                     <MenuItem value="June">June</MenuItem>
-//                     <MenuItem value="July">July</MenuItem>
-//                     <MenuItem value="August">August</MenuItem>
-//                     <MenuItem value="September">September</MenuItem>
-//                     <MenuItem value="October">October</MenuItem>
-//                     <MenuItem value="November">November</MenuItem>
-//                     <MenuItem value="December">December</MenuItem>
-//                   </Select>
-//                 </Grid>
-//                 <Grid item xs={3}>
-//                   <Typography variant="body2" color="textSecondary">Expiry Year</Typography>
-//                   <Select
-//                     value={expiryYear}
-//                     onChange={(e) => setExpiryYear(e.target.value)}
-//                     displayEmpty
-//                     fullWidth
-//                     variant="standard"
-//                   >
-//                     <MenuItem value="" disabled>Year</MenuItem>
-//                     {Array.from({ length: 10 }, (_, i) => (
-//                       <MenuItem key={i} value={2025 + i}>{2025 + i}</MenuItem>
-//                     ))}
-//                   </Select>
-//                 </Grid>
-//                 <Grid item xs={3}>
-//                   <TextField
-//                     label="CVV"
-//                     type="password"
-//                     variant="standard"
-//                     fullWidth
-//                     value={cvv}
-//                     onChange={(e) => setCvv(e.target.value)}
-//                   />
-//                 </Grid>
-//               </Grid>
-
-//               <Box mt={3} display="flex" justifyContent="space-between">
-//                 <Button variant="outlined" color="primary" style={{ minWidth: "120px" }}>
-//                   Back
-//                 </Button>
-//                 <Button variant="contained" color="primary" style={{ minWidth: "120px" }} onClick={handlePayment}>
-//                   Continue
-//                 </Button>
-//               </Box>
-
-//               {showOtp && (
-//                 <Box mt={3}>
-//                   <Typography variant="h6" fontWeight="bold">Enter OTP</Typography>
-//                   <TextField
-//                     label="One Time Password"
-//                     variant="standard"
-//                     fullWidth
-//                     margin="normal"
-//                     value={otp}
-//                     onChange={(e) => setOtp(e.target.value)}
-//                   />
-//                   <Button
-//                     variant="contained"
-//                     color="primary"
-//                     style={{ marginTop: "10px", minWidth: "120px" }}
-//                     onClick={handleOtpSubmit}
-//                   >
-//                     Submit OTP
-//                   </Button>
-//                 </Box>
-//               )}
-//             </Grid>
-//           </Grid>
-//         </CardContent>
-//       </Card>
-
-//       <Snackbar
-//         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-//         open={openSnackbar}
-//         autoHideDuration={5000}
-//         onClose={() => setOpenSnackbar(false)}
-//       >
-//         <MuiAlert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
-//           Payment Done!
-//         </MuiAlert>
-//       </Snackbar>
-//     </Container>
-//   );
-// };
-
-// export default PaymentPage;
-
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Container, TextField, Button, Card, CardContent, Typography, MenuItem, Select, Grid, Box, Snackbar } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Box,
+  Paper,
+  Button,
+  Snackbar,
+  CircularProgress
+} from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Co2Sharp } from "@mui/icons-material";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements
+} from "@stripe/react-stripe-js";
+import { styled } from "@mui/material/styles";
+import axios from "axios";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.spacing(2),
+  boxShadow: theme.shadows[4],
+  overflow: 'hidden',
+  marginTop: theme.spacing(4)
+}));
+
+const StripePaymentForm = ({ clientSecret, amount, adpic, selectedHording, adName, adDescription, websiteProductUrl, startDate, endDate, totalCost, navigate, onSuccess, onError }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const formData = new FormData();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+
+    if (!stripe || !elements) return;
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.href,
+        },
+        redirect: "if_required"
+      });
+
+      if (error) {
+        onError(error.message);
+      } else if (paymentIntent.status === "succeeded") {
+        const verification = await axios.post("http://localhost:3000/stripe/confirm-booking-payment", {
+          paymentIntentId: paymentIntent.id
+        });
+
+        if (verification.data.status === "success") {
+          const id = localStorage.getItem("id");
+
+          if (!id) {
+            alert("User not authenticated. Please login again.");
+            navigate("/login");
+            return;
+          }
+
+          // Check availability
+          const availibility = await axios.get(`/booking/check-availibility/${selectedHording._id}/${startDate}/${endDate}`);
+
+          if (!availibility.data.canBookFullRange) {
+            alert("Dates were booked by someone else. Please select new dates.");
+            navigate("/customer/bookhording");
+            return;
+          }
+
+          // Record payment
+          const paymentRes = await axios.post("/payment/add", {
+            amount: totalCost,
+            paymentStatus: paymentIntent.status,
+            transactionId: paymentIntent.id,
+            userId: id,
+            bookingId: null
+          });
+
+          if (paymentRes.data?.data && paymentRes.status === 201) {
+            const paymentId = paymentRes.data.data._id;
+
+            const response = await fetch(adpic);
+            const blob = await response.blob();
+            const file = new File([blob], "adContent.jpg", { type: blob.type });
+
+            formData.append("hordingId", selectedHording._id);
+            formData.append("userId", id);
+            formData.append("adName", adName);
+            formData.append("adDescription", adDescription);
+            formData.append("adFile", file);
+            formData.append("websiteProductUrl", websiteProductUrl);
+            formData.append("startDate", startDate);
+            formData.append("endDate", endDate);
+            formData.append("totalCost", totalCost);
+            formData.append("paymentId", paymentId);
+
+            const bookingRes = await axios.post("/booking/addwithfile", formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            const bookingId = bookingRes.data.data._id;
+
+            await axios.put(`/payment/update/${paymentId}`, {
+              bookingId: bookingId
+            });
+
+            onSuccess(paymentIntent);
+            setTimeout(() => navigate("/customer/mybookings"), 2000);
+          } else {
+            onError("Payment failed. Please try again.");
+          }
+        } else {
+          onError("Payment verification failed");
+        }
+      }
+    } catch (err) {
+      onError(err.response?.data?.error || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Paper elevation={0} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+        <PaymentElement />
+      </Paper>
+      <Box mt={3}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={!stripe || loading}
+          fullWidth
+          size="large"
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : `Pay ₹${amount}`}
+        </Button>
+      </Box>
+    </form>
+  );
+};
 
 const PaymentPage = () => {
   const location = useLocation();
-  const { adpic,selectedHording, startDate, endDate, totalCost} = location.state || {};
-    // console.log(location.state)
-  const [cardholderName, setCardholderName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryMonth, setExpiryMonth] = useState("");
-  const [expiryYear, setExpiryYear] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [showOtp, setShowOtp] = useState(false);
-  const [otp, setOtp] = useState("");
+  const navigate = useNavigate();
+
+  const {
+    adpic,
+    selectedHording,
+    adName,
+    adDescription,
+    websiteProductUrl,
+    startDate,
+    endDate,
+    totalCost
+  } = location.state || {};
+
+  const [clientSecret, setClientSecret] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const handlePayment = async() => {
-    try {
-      // Final availability verification
-      const response = await axios.get('/booking/check-availibility', {
-        params: {
-          hordingId: selectedHording._id,
-          startDate: startDate,
-          endDate: endDate
-        }
-      });
-  
-      if (!response.data.canBookFullRange) {
-        alert("Dates were booked by someone else. Please select new dates.");
-        navigate('/customer/bookhording');
-        return;
+  useEffect(() => {
+    const createIntent = async () => {
+      try {
+        const { data } = await axios.post("http://localhost:3000/stripe/create-booking-payment", {
+          amount: totalCost,
+          currency: "inr",
+          metadata: { description: "Hoarding booking payment" },
+          payment_method_types: ['card', 'upi']
+        });
+        setClientSecret(data.clientSecret);
+      } catch (err) {
+        console.error("Failed to create payment intent", err);
       }
-    setShowOtp(true);
-  }
-  catch (error) {
-    console.error("Final availability check failed:", error);
-    alert("Payment processing error. Please try again.");
-  }
-}
+    };
+    createIntent();
+  }, [totalCost]);
 
-  const handleOtpSubmit = () => {
+  const handlePaymentSuccess = (paymentIntent) => {
+    setSnackbarMessage("Payment successful! Booking confirmed.");
+    setSnackbarSeverity("success");
+    setOpenSnackbar(true);
+  };
+
+  const handlePaymentError = (error) => {
+    setSnackbarMessage(`Payment failed: ${error}`);
+    setSnackbarSeverity("error");
     setOpenSnackbar(true);
   };
 
@@ -220,7 +206,6 @@ const PaymentPage = () => {
       <Card>
         <CardContent>
           <Grid container spacing={4}>
-            {/* Hoarding Details */}
             <Grid item xs={12} md={4}>
               <Box component="img" src={adpic} alt="Hoarding" width="100%" borderRadius={2} />
               <Typography variant="h6" fontWeight="bold" mt={2}>
@@ -230,111 +215,62 @@ const PaymentPage = () => {
                 {startDate} - {endDate}
               </Typography>
               <Typography variant="h6" mt={1}>
-                Total: ${totalCost}
+                Total: ₹{totalCost}
               </Typography>
             </Grid>
-
-            {/* Payment Form */}
-            <Grid item xs={12} md={8}>
-              <Typography variant="h5" fontWeight="bold">
-                Payment Details
+            <Grid item xs={12} md={7}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Payment Method
               </Typography>
-              <Typography variant="body2" color="textSecondary" gutterBottom>
-                Fill in the info below to continue.
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 3 }}>
+                Secure payment processed by Stripe
               </Typography>
 
-              <TextField
-                label="Cardholder Name"
-                variant="standard"
-                fullWidth
-                margin="normal"
-                value={cardholderName}
-                onChange={(e) => setCardholderName(e.target.value)}
-              />
-              <TextField
-                label="Card Number"
-                variant="standard"
-                fullWidth
-                margin="normal"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-              />
-
-              <Grid container spacing={2} mt={1}>
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">Expiry Month</Typography>
-                  <Select
-                    value={expiryMonth}
-                    onChange={(e) => setExpiryMonth(e.target.value)}
-                    displayEmpty
-                    fullWidth
-                    variant="standard"
-                  >
-                    <MenuItem value="" disabled>Month</MenuItem>
-                    {[
-                      "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-                    ].map((month, index) => (
-                      <MenuItem key={index} value={month}>{month}</MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body2" color="textSecondary">Expiry Year</Typography>
-                  <Select
-                    value={expiryYear}
-                    onChange={(e) => setExpiryYear(e.target.value)}
-                    displayEmpty
-                    fullWidth
-                    variant="standard"
-                  >
-                    <MenuItem value="" disabled>Year</MenuItem>
-                    {Array.from({ length: 10 }, (_, i) => (
-                      <MenuItem key={i} value={2025 + i}>{2025 + i}</MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="CVV"
-                    type="password"
-                    variant="standard"
-                    fullWidth
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
+              {clientSecret ? (
+                <Elements options={{ clientSecret }} stripe={stripePromise}>
+                  <StripePaymentForm
+                    clientSecret={clientSecret}
+                    amount={totalCost}
+                    adpic={adpic}
+                    selectedHording={selectedHording}
+                    adName={adName}
+                    adDescription={adDescription}
+                    websiteProductUrl={websiteProductUrl}
+                    startDate={startDate}
+                    endDate={endDate}
+                    totalCost={totalCost}
+                    navigate={navigate}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
                   />
-                </Grid>
-              </Grid>
+                </Elements>
+              ) : (
+                <Box display="flex" justifyContent="center" py={4}>
+                  <CircularProgress />
+                </Box>
+              )}
 
-              <Box mt={3} display="flex" justifyContent="space-between">
-                <Button variant="outlined" color="primary" style={{ minWidth: "120px" }}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" style={{ minWidth: "120px" }} onClick={handlePayment}>
-                  Continue
+              <Box mt={3}>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate(-1)}
+                  fullWidth
+                  size="large"
+                >
+                  Back to Booking
                 </Button>
               </Box>
 
-              {showOtp && (
-                <Box mt={3}>
-                  <Typography variant="h6" fontWeight="bold">Enter OTP</Typography>
-                  <TextField
-                    label="One Time Password"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ marginTop: "10px", minWidth: "120px" }}
-                    onClick={handleOtpSubmit}
-                  >
-                    Submit OTP
-                  </Button>
-                </Box>
-              )}
+              <Box mt={3} sx={{
+                backgroundColor: '#f5f5f5',
+                p: 2,
+                borderRadius: 1,
+                textAlign: 'center'
+              }}>
+                <Typography variant="caption" color="text.secondary">
+                  Your payment is secure and encrypted. We don't store your credit card details.
+                </Typography>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
@@ -343,11 +279,17 @@ const PaymentPage = () => {
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={openSnackbar}
-        autoHideDuration={5000}
+        autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
       >
-        <MuiAlert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
-          Payment Done!
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
         </MuiAlert>
       </Snackbar>
     </Container>
@@ -355,5 +297,3 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
-
-

@@ -30,7 +30,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 
-export default function AgenciesPage() {
+export default function AgencyManagement() {
   const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [agencies, setAgencies] = useState([]);

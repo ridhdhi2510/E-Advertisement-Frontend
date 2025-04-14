@@ -19,77 +19,31 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Receipt as ReceiptIcon } from '@mui/icons-material';
 
-export default function PaymentsPage() {
+export default function PaymentManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('paymentDate');
 
-  // Hardcoded data for now
-  const hardcodedPayments = [
-    {
-      id: 'pay_001',
-      bookingId: 'book_123',
-      hoardingId: 'hoard_456',
-      userId: 'user_789',
-      amount: 1500.00,
-      paymentDate: '2023-05-15',
-      status: 'Completed',
-      receiptUrl: '#'
-    },
-    {
-      id: 'pay_002',
-      bookingId: 'book_124',
-      hoardingId: 'hoard_457',
-      userId: 'user_790',
-      amount: 2000.00,
-      paymentDate: '2023-05-16',
-      status: 'Pending',
-      receiptUrl: '#'
-    },
-    {
-      id: 'pay_003',
-      bookingId: 'book_125',
-      hoardingId: 'hoard_458',
-      userId: 'user_791',
-      amount: 1750.50,
-      paymentDate: '2023-05-17',
-      status: 'Failed',
-      receiptUrl: '#'
-    },
-    {
-      id: 'pay_004',
-      bookingId: 'book_126',
-      hoardingId: 'hoard_459',
-      userId: 'user_792',
-      amount: 2200.00,
-      paymentDate: '2023-05-18',
-      status: 'Completed',
-      receiptUrl: '#'
-    },
-    {
-      id: 'pay_005',
-      bookingId: 'book_127',
-      hoardingId: 'hoard_460',
-      userId: 'user_793',
-      amount: 1800.75,
-      paymentDate: '2023-05-19',
-      status: 'Refunded',
-      receiptUrl: '#'
-    },
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // In a real app, you would fetch from your API:
-        // const response = await axios.get('http://localhost:3000/payments/getall');
-        // setPayments(response.data.data);
-        
-        // Using hardcoded data for now
-        setPayments(hardcodedPayments);
+        const response = await axios.get('http://localhost:3000/payment/getall');
+        // Transform the data to match the table structure
+        const transformedPayments = response.data.data.map(payment => ({
+          id: payment._id,
+          transactionId: payment.transactionId,
+          bookingId: payment.bookingId?._id || 'N/A',
+          userId: payment.userId?._id || 'N/A',
+          amount: payment.amount,
+          paymentDate: new Date(payment.paymentDate).toLocaleDateString(),
+          status: payment.paymentStatus,
+          refundStatus: payment.refundStatus,
+          receiptUrl: payment.receiptURL || '#'
+        }));
+        setPayments(transformedPayments);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -118,8 +72,8 @@ export default function PaymentsPage() {
   
   const getComparator = () => {
     return (a, b) => {
-      if (orderBy === 'status' || orderBy === 'id' || orderBy === 'bookingId' || 
-          orderBy === 'hoardingId' || orderBy === 'userId') {
+      if (orderBy === 'status' || orderBy === 'id' || orderBy === 'transactionId' || 
+          orderBy === 'bookingId' || orderBy === 'userId' || orderBy === 'refundStatus') {
         return order === 'desc' 
           ? b[orderBy].localeCompare(a[orderBy])
           : a[orderBy].localeCompare(b[orderBy]);
@@ -155,14 +109,27 @@ export default function PaymentsPage() {
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'Completed':
+      case 'succeeded':
         return 'green';
       case 'Pending':
         return 'orange';
-      case 'Failed':
+      case 'failed':
         return 'red';
       case 'Refunded':
         return 'blue';
+      default:
+        return 'black';
+    }
+  };
+
+  const getRefundStatusColor = (status) => {
+    switch(status) {
+      case 'Completed':
+        return 'green';
+      case 'Processing':
+        return 'orange';
+      case 'Not Requested':
+        return 'gray';
       default:
         return 'black';
     }
@@ -210,12 +177,12 @@ export default function PaymentsPage() {
                 <TableRow>
                   <TableCell sx={{ color: 'white' }}>
                     <TableSortLabel
-                      active={orderBy === 'id'}
-                      direction={orderBy === 'id' ? order : 'asc'}
-                      onClick={() => handleRequestSort('id')}
+                      active={orderBy === 'transactionId'}
+                      direction={orderBy === 'transactionId' ? order : 'asc'}
+                      onClick={() => handleRequestSort('transactionId')}
                       sx={{ color: 'white !important' }}
                     >
-                      Payment ID
+                      Transaction ID
                     </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>
@@ -226,16 +193,6 @@ export default function PaymentsPage() {
                       sx={{ color: 'white !important' }}
                     >
                       Booking ID
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sx={{ color: 'white' }}>
-                    <TableSortLabel
-                      active={orderBy === 'hoardingId'}
-                      direction={orderBy === 'hoardingId' ? order : 'asc'}
-                      onClick={() => handleRequestSort('hoardingId')}
-                      sx={{ color: 'white !important' }}
-                    >
-                      Hoarding ID
                     </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>
@@ -275,7 +232,17 @@ export default function PaymentsPage() {
                       onClick={() => handleRequestSort('status')}
                       sx={{ color: 'white !important' }}
                     >
-                      Status
+                      Payment Status
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ color: 'white' }}>
+                    <TableSortLabel
+                      active={orderBy === 'refundStatus'}
+                      direction={orderBy === 'refundStatus' ? order : 'asc'}
+                      onClick={() => handleRequestSort('refundStatus')}
+                      sx={{ color: 'white !important' }}
+                    >
+                      Refund Status
                     </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>Receipt</TableCell>
@@ -285,9 +252,8 @@ export default function PaymentsPage() {
               <TableBody>
                 {filteredPayments.map((payment) => (
                   <TableRow key={payment.id} hover>
-                    <TableCell>{payment.id}</TableCell>
+                    <TableCell>{payment.transactionId}</TableCell>
                     <TableCell>{payment.bookingId}</TableCell>
-                    <TableCell>{payment.hoardingId}</TableCell>
                     <TableCell>{payment.userId}</TableCell>
                     <TableCell>${payment.amount.toFixed(2)}</TableCell>
                     <TableCell>{payment.paymentDate}</TableCell>
@@ -297,12 +263,19 @@ export default function PaymentsPage() {
                     }}>
                       {payment.status}
                     </TableCell>
+                    <TableCell sx={{ 
+                      color: getRefundStatusColor(payment.refundStatus),
+                      fontWeight: 'bold'
+                    }}>
+                      {payment.refundStatus}
+                    </TableCell>
                     <TableCell>
                       <Button 
                         variant="outlined" 
                         size="small" 
                         startIcon={<ReceiptIcon />}
                         onClick={() => window.open(payment.receiptUrl, '_blank')}
+                        disabled={!payment.receiptUrl || payment.receiptUrl === '#'}
                       >
                         View
                       </Button>
