@@ -218,15 +218,7 @@ export default function AgencyPage() {
             mt: "12px"
           }}
         >
-          {/* <Avatar
-            alt="User Profile"
-            src="/mnt/data/image.png"
-            sx={{
-              width: open ? 64 : 50,
-              height: open ? 64 : 50,
-              mb: 1
-            }}
-          /> */}
+        
           <Typography key={open} variant="body1" fontWeight="bold" sx={{
             color: "white",
             fontSize: open ? "20px" : "30px",
