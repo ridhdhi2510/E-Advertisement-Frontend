@@ -164,6 +164,7 @@ const ViewMyScreen = () => {
   const theme = useTheme();
   const [hordingData, setHordingData] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const navigate = useNavigate();
 
   const getAllScreens = async () => {
     try {
