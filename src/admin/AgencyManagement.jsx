@@ -164,7 +164,7 @@ export default function AgencyManagement() {
     { id: 'phone', label: 'Phone', sortable: true },
     { id: 'totalHoardings', label: 'Total Hoardings', sortable: true },
     { id: 'activeHoardings', label: 'Active Hoardings', sortable: true },
-    { id: 'actions', label: 'Actions', sortable: false }
+    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   const bankHeaders = [
@@ -174,7 +174,7 @@ export default function AgencyManagement() {
     { id: 'accountNumber', label: 'Account Number', sortable: true },
     { id: 'accountHolderName', label: 'Account Holder', sortable: true },
     { id: 'iban', label: 'IBAN/SWIFT', sortable: true },
-    { id: 'actions', label: 'Actions', sortable: false }
+    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   return (
@@ -270,14 +270,14 @@ export default function AgencyManagement() {
                         <TableCell>{agency.phone || 'N/A'}</TableCell>
                         <TableCell>{agency.totalHoardings}</TableCell>
                         <TableCell>{agency.activeHoardings}</TableCell>
-                        <TableCell>
+                        {/* <TableCell>
                           <IconButton onClick={() => console.log('Edit', agency.id)}>
                             <EditIcon color="primary" />
                           </IconButton>
                           <IconButton onClick={() => console.log('Delete', agency.id)}>
                             <DeleteIcon color="error" />
                           </IconButton>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>
