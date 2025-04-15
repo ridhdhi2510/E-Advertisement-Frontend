@@ -10,62 +10,69 @@ import {
   List,
   ListItem,
   ListItemText,
-  Divider
+  Divider,
 } from "@mui/material";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import axios from "axios";
 
 const COLORS = ["#007bff", "#64b5f6", "#cfd8dc"];
 
-const recentActivities = [
-  { id: 1, text: "New booking by Alice Smith", time: "10 mins ago" },
-  { id: 2, text: "Hoarding updated by Billboard Co", time: "25 mins ago" },
-  { id: 3, text: "Payout processed to Ad Agency", time: "1 hour ago" },
-  { id: 4, text: "New customer John Doe registered", time: "2 hours ago" },
-  { id: 5, text: "Booking cancelled by Jane Doe", time: "5 hours ago" },
-];
-
 export default function Dashboard() {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const [loading, setLoading] = useState(true);
+  const [recentActivities, setRecentActivities] = useState([]);
   const [stats, setStats] = useState({
     totalHoardings: 0,
     totalBookings: 0,
     bookingsThisMonth: 0,
     topAgencies: [],
-    topCustomers: []
+    topCustomers: [],
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
-        // Fetch all hoardings count
-        const hoardingsRes = await axios.get('http://localhost:3000/hording/getall');
+
+        const [hoardingsRes, bookingsRes, activitiesRes] = await Promise.all([
+          axios.get("http://localhost:3000/hording/getall"),
+          axios.get("http://localhost:3000/booking/getall"),
+          axios.get("http://localhost:3000/activity/recent"),
+        ]);
+
         const totalHoardings = hoardingsRes.data.data.length;
-        
-        // Fetch all bookings count
-        const bookingsRes = await axios.get('http://localhost:3000/booking/getall');
         const totalBookings = bookingsRes.data.data.length;
-        
-        // Calculate bookings this month
+
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        const bookingsThisMonth = bookingsRes.data.data.filter(booking => {
+
+        const bookingsThisMonth = bookingsRes.data.data.filter((booking) => {
           const bookingDate = new Date(booking.startDate);
-          return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+          return (
+            bookingDate.getMonth() === currentMonth &&
+            bookingDate.getFullYear() === currentYear
+          );
         }).length;
-        
-        // Get top agencies (users with most hoardings)
+
         const agenciesData = hoardingsRes.data.data.reduce((acc, hoarding) => {
-          const userId = hoarding.userId?._id || 'unknown';
+          const userId = hoarding.userId?._id || "unknown";
           if (!acc[userId]) {
             acc[userId] = {
               name: hoarding.userId?.name || `Agency ${userId.slice(0, 5)}`,
-              value: 0
+              value: 0,
             };
           }
           acc[userId].value++;
@@ -74,14 +81,13 @@ export default function Dashboard() {
         const topAgencies = Object.values(agenciesData)
           .sort((a, b) => b.value - a.value)
           .slice(0, 5);
-        
-        // Get top customers (users with most bookings)
+
         const customersData = bookingsRes.data.data.reduce((acc, booking) => {
-          const userId = booking.userId?._id || 'unknown';
+          const userId = booking.userId?._id || "unknown";
           if (!acc[userId]) {
             acc[userId] = {
               name: booking.userId?.name || `Customer ${userId.slice(0, 5)}`,
-              value: 0
+              value: 0,
             };
           }
           acc[userId].value++;
@@ -90,15 +96,22 @@ export default function Dashboard() {
         const topCustomers = Object.values(customersData)
           .sort((a, b) => b.value - a.value)
           .slice(0, 5);
-        
+
+        setRecentActivities(
+          activitiesRes.data.data.map((activity) => ({
+            id: activity._id,
+            text: activity.description,
+            time: new Date(activity.createdAt).toLocaleString(),
+          }))
+        );
+
         setStats({
           totalHoardings,
           totalBookings,
           bookingsThisMonth,
           topAgencies,
-          topCustomers
+          topCustomers,
         });
-        
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -111,44 +124,64 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        p: 3, 
-        ml: { xs: '90px', sm: '220px' },
-        backgroundColor: '#f5f7fa',
-        minHeight: '100vh'
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 3,
+          ml: { xs: "90px", sm: "220px" },
+          backgroundColor: "#f5f7fa",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ 
-      p: 3, 
-      ml: { xs: '90px', sm: '220px' },
-      backgroundColor: '#f5f7fa',
-      minHeight: '100vh'
-    }}>
+    <Box
+      sx={{
+        p: 3,
+        ml: { xs: "90px", sm: "220px" },
+        backgroundColor: "#f5f7fa",
+        minHeight: "100vh",
+      }}
+    >
       {/* Top Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { title: "Total Hoardings", value: stats.totalHoardings, color: "#1E2A47" },
-          { title: "Total Bookings", value: stats.totalBookings, color: "#2E7D32" },
+          {
+            title: "Total Hoardings",
+            value: stats.totalHoardings,
+            color: "#1E2A47",
+          },
+          {
+            title: "Total Bookings",
+            value: stats.totalBookings,
+            color: "#2E7D32",
+          },
           { title: "Total Revenue", value: "$0", color: "#D32F2F" },
-          { title: "Pending Approvals", value: 0, color: "#ED6C02" }
         ].map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Paper elevation={3} sx={{ 
-              p: 2, 
-              borderRadius: 2,
-              borderLeft: `4px solid ${stat.color}`,
-              height: '100%'
-            }}>
-              <Typography variant="subtitle1" color="textSecondary">{stat.title}</Typography>
-              <Typography variant="h4" fontWeight="bold" sx={{ color: stat.color }}>
+          <Grid item xs={12} sm={4} key={index}>
+            <Paper
+              elevation={3}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                borderLeft: `4px solid ${stat.color}`,
+                height: "100%",
+              }}
+            >
+              <Typography variant="subtitle1" color="textSecondary">
+                {stat.title}
+              </Typography>
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                sx={{ color: stat.color }}
+              >
                 {stat.value}
               </Typography>
             </Paper>
@@ -156,17 +189,20 @@ export default function Dashboard() {
         ))}
       </Grid>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Left Column - Recent Activities */}
+        {/* Left - Recent Activities */}
         <Grid item xs={12} md={8} lg={6}>
-          <Paper elevation={3} sx={{ 
-            p: 2, 
-            height: '100%',
-            borderRadius: 2,
-            minHeight: isMediumScreen ? 'auto' : 400
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 2,
+              height: "100%",
+              borderRadius: 2,
+              minHeight: isMediumScreen ? "auto" : 400,
+            }}
+          >
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
               Recent Activities
             </Typography>
             <List sx={{ p: 0 }}>
@@ -176,8 +212,11 @@ export default function Dashboard() {
                     <ListItemText
                       primary={activity.text}
                       secondary={activity.time}
-                      primaryTypographyProps={{ fontWeight: 'medium' }}
-                      secondaryTypographyProps={{ variant: 'caption', color: 'text.secondary' }}
+                      primaryTypographyProps={{ fontWeight: "medium" }}
+                      secondaryTypographyProps={{
+                        variant: "caption",
+                        color: "text.secondary",
+                      }}
                     />
                   </ListItem>
                   <Divider component="li" />
@@ -187,70 +226,46 @@ export default function Dashboard() {
           </Paper>
         </Grid>
 
-        {/* Right Column - Monthly Stats */}
+        {/* Right - Monthly Info */}
         <Grid item xs={12} md={4} lg={6}>
           <Grid container spacing={3}>
-            {/* Monthly Bookings */}
+            {/* Bookings This Month */}
             <Grid item xs={12} sm={6}>
-              <Paper elevation={3} sx={{ 
-                p: 2, 
-                borderRadius: 2,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
+              <Paper elevation={3} sx={{ p: 2, borderRadius: 2 }}>
                 <Typography variant="subtitle1" color="textSecondary">
                   Bookings This Month
                 </Typography>
-                <Typography variant="h3" fontWeight="bold" sx={{ flexGrow: 1 }}>
+                <Typography variant="h3" fontWeight="bold">
                   {stats.bookingsThisMonth}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {/* You can add comparison logic here later */}
-                  Loading comparison...
                 </Typography>
               </Paper>
             </Grid>
 
             {/* Monthly Revenue */}
             <Grid item xs={12} sm={6}>
-              <Paper elevation={3} sx={{ 
-                p: 2, 
-                borderRadius: 2,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
+              <Paper elevation={3} sx={{ p: 2, borderRadius: 2 }}>
                 <Typography variant="subtitle1" color="textSecondary">
                   Revenue This Month
                 </Typography>
-                <Typography variant="h3" fontWeight="bold" sx={{ flexGrow: 1 }}>
+                <Typography variant="h3" fontWeight="bold">
                   $0
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                  {/* You can add comparison logic here later */}
-                  Loading comparison...
                 </Typography>
               </Paper>
             </Grid>
 
-            {/* Booking Status Chart */}
+            {/* Booking Status Pie Chart */}
             <Grid item xs={12}>
-              <Paper elevation={3} sx={{ 
-                p: 2, 
-                borderRadius: 2,
-                height: '100%'
-              }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Paper elevation={3} sx={{ p: 2, borderRadius: 2 }}>
+                <Typography variant="h6" gutterBottom fontWeight="bold">
                   Booking Status
                 </Typography>
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
                       data={[
-                        { name: "Completed", value: 100 }, // Placeholder - you can implement real status tracking later
+                        { name: "Completed", value: 100 },
                         { name: "Pending", value: 0 },
-                        { name: "Cancelled", value: 0 }
+                        { name: "Cancelled", value: 0 },
                       ]}
                       cx="50%"
                       cy="50%"
@@ -275,12 +290,8 @@ export default function Dashboard() {
 
         {/* Bottom Row - Charts */}
         <Grid item xs={12} lg={6}>
-          <Paper elevation={3} sx={{ 
-            p: 2, 
-            borderRadius: 2,
-            height: '100%'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Paper elevation={3} sx={{ p: 2, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom fontWeight="bold">
               Top Agencies
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
@@ -295,12 +306,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid item xs={12} lg={6}>
-          <Paper elevation={3} sx={{ 
-            p: 2, 
-            borderRadius: 2,
-            height: '100%'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Paper elevation={3} sx={{ p: 2, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom fontWeight="bold">
               Top Customers
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
