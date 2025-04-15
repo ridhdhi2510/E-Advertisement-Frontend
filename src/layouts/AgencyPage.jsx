@@ -393,7 +393,7 @@ export default function AgencyPage() {
           <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
           {/*  add bank details page  Navigation */}
-          <ListItem
+          {/* <ListItem
             disablePadding
             sx={{
               display: "block", p: 0.7, "&:hover": {
@@ -432,7 +432,8 @@ export default function AgencyPage() {
               />
             </ListItemButton>
           </ListItem>
-          <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
+          <Divider sx={{ backgroundColor: 'grey' }} />  */}
+          {/* Divider line */}
 
           {/* view my screen  page navigation */}
           <ListItem

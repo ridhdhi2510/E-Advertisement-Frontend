@@ -63,7 +63,7 @@ function App() {
               <Route path="update" element={<UpdateAgencyProfile />} />
               <Route path="myscreens" element={<ViewMyScreen />} />
               <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
-              <Route path="add-bank-details" element={<AddBankDetails />} />
+              {/* <Route path="add-bank-details" element={<AddBankDetails />} /> */}
             </Route>
           </Route>
 
