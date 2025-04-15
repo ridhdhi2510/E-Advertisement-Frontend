@@ -166,8 +166,6 @@ const CustomerDashboard = () => {
           gutterBottom
           sx={{
 
-            fontWeight: 700,
-
             fontWeight: 600,
             fontSize: getResponsiveValue({ xs: '1.5rem', sm: '2rem', md: '2.5rem' }),
 
@@ -184,8 +182,6 @@ const CustomerDashboard = () => {
           variant={getResponsiveValue({ xs: "body1", sm: "h6", md: "h5" })}
           color="text.secondary"
           sx={{ 
-
-            lineHeight: 1.6,
 
             lineHeight: 1.6,
             fontWeight: 600,
