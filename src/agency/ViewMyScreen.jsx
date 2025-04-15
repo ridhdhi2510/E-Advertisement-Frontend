@@ -43,7 +43,7 @@ const HordingCard = ({ data, hordingData, setHordingData, setisLoading }) => {
 
       if (res.status === 200) {
         setHordingData(hordingData.filter(h => h._id !== id));
-        alert("Hoarding deleted successfully! ✅");
+        alert("Hoarding deleted successfully! please check your email");
       } else {
         console.error("Failed to delete hoarding:", res);
       }
@@ -136,7 +136,7 @@ const HordingCard = ({ data, hordingData, setHordingData, setisLoading }) => {
           >
             {!isMobile ? 'Update' : ''}
           </Button>
-
+            
           <Button
             variant="contained"
             color="error"

@@ -645,73 +645,7 @@ const ViewBooking = () => {
                             </Box>
                           )}
 
-                          {/* Payment Info */}
-                          <Box>
-
-                            <Typography variant="h6" sx={{ 
-
-                              fontWeight: 700,
-                              mb: 2,
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              <Paid color="primary" sx={{ mr: 1 }} />
-                              Payment Information
-                            </Typography>
-                            {booking.paymentId ? (
-                              <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
-                                  <Typography variant="caption" color="text.secondary">Payment Status</Typography>
-                                  <Chip
-                                    label={booking.paymentId.paymentStatus}
-                                    color={
-                                      booking.paymentId.paymentStatus === 'paid' ? 'success' :
-
-                                      booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
-                                    }
-                                    size="small"
-                                    sx={{ 
-
-                                      fontWeight: 600,
-                                      textTransform: 'capitalize'
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                  <Typography variant="caption" color="text.secondary">Transaction ID</Typography>
-
-                                  <Typography variant="body2" sx={{ 
-
-                                    fontWeight: 500,
-                                    wordBreak: 'break-all'
-                                  }}>
-                                    {booking.paymentId.transactionId}
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                  <Typography variant="caption" color="text.secondary">Amount Paid</Typography>
-
-                                  <Typography variant="body2" sx={{ 
-
-                                    fontWeight: 700,
-                                    color: theme.palette.success.main
-                                  }}>
-                                    ₹{booking.paymentId.amount?.toLocaleString()}
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                  <Typography variant="caption" color="text.secondary">Payment Date</Typography>
-                                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                    {formatDate(booking.paymentId.createdAt)}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            ) : (
-                              <Typography variant="body2" color="text.secondary">
-                                Payment information not available
-                              </Typography>
-                            )}
-                          </Box>
+                          
                         </Stack>
 
                         {/* Action Buttons */}
