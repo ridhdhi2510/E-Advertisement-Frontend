@@ -392,6 +392,49 @@ export default function AgencyPage() {
           </ListItem>
           <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
+          {/*  add bank details page  Navigation */}
+          {/* <ListItem
+            disablePadding
+            sx={{
+              display: "block", p: 0.7, "&:hover": {
+                backgroundColor: "#3B4F6B", // Hover background
+              },
+            }}
+            onClick={() => {
+              navigate("/agency/add-bank-details");
+            }}
+          >
+            <ListItemButton
+              sx={[
+                {
+                  height: "40px",
+                  minHeight: 32,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                },
+              ]}
+            >
+              <ListItemIcon
+                sx={[
+                  {
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: '#E0E7FF'
+                  },
+                ]}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Add Bank Details"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <Divider sx={{ backgroundColor: 'grey' }} />  */}
+          {/* Divider line */}
+
           {/* view my screen  page navigation */}
           <ListItem
             disablePadding
@@ -435,8 +478,8 @@ export default function AgencyPage() {
         
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
-        {/* contact page navigation */}
-        <ListItem
+        {/* Delete Account */}
+        {/* <ListItem
           disablePadding
           sx={{
             display: "block", p: 0.8, "&:hover": {
@@ -475,7 +518,7 @@ export default function AgencyPage() {
               sx={{ opacity: open ? 1 : 0 }}
             />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/*  Logout functionality */}
