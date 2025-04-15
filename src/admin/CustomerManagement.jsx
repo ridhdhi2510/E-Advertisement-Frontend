@@ -167,7 +167,7 @@ export default function CustomerManagement() {
     { id: 'phone', label: 'Phone', sortable: true },
     { id: 'status', label: 'Status', sortable: true },
     { id: 'bookings', label: 'Bookings', sortable: true },
-    { id: 'actions', label: 'Actions', sortable: false }
+    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   const bookingHeaders = [
@@ -178,7 +178,7 @@ export default function CustomerManagement() {
     { id: 'dates', label: 'Dates', sortable: true },
     { id: 'amount', label: 'Amount', sortable: true },
     { id: 'status', label: 'Status', sortable: true },
-    { id: 'actions', label: 'Actions', sortable: false }
+    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   return (
@@ -219,7 +219,7 @@ export default function CustomerManagement() {
           onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm}
         />
-        <Button
+        {/* <Button
           variant="contained"
           startIcon={<AddIcon />}
           sx={{
@@ -232,7 +232,7 @@ export default function CustomerManagement() {
           }}
         >
           Add Customer
-        </Button>
+        </Button> */}
       </Box>
 
       {activeTab === 0 ? (
@@ -285,7 +285,7 @@ export default function CustomerManagement() {
                     <TableCell>
                       {bookings.filter(b => b.customerId === customer._id).length}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <IconButton onClick={() => {
                         setCurrentCustomer(customer);
                         setOpenDialog(true);
@@ -295,7 +295,7 @@ export default function CustomerManagement() {
                       <IconButton onClick={() => handleDelete(customer._id)}>
                         <DeleteIcon color="error" />
                       </IconButton>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
