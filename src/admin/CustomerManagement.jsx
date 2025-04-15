@@ -24,21 +24,28 @@ import {
   CircularProgress,
   InputAdornment,
   TableSortLabel,
-  MenuItem
+  MenuItem,
+  Tooltip,
+  Badge
 } from '@mui/material';
 import {
   Search as SearchIcon,
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  ArrowBack
 } from '@mui/icons-material';
+import dayjs from 'dayjs';
 
 export default function CustomerManagement() {
   const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [customers, setCustomers] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,40 +54,65 @@ export default function CustomerManagement() {
   const [orderBy, setOrderBy] = useState('id');
   const navigate = useNavigate();
 
+  
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/user/getall")
-      .then((response) => {
-        console.log("Customer API Response:", response.data);
-        setCustomers(response.data.data);
+    const fetchData = async () => {
+      try {
+        // Fetch all data in parallel
+        const [customersRes, bookingsRes, statesRes, citiesRes, areasRes] = await Promise.all([
+          axios.get("/user/getall"),
+          axios.get("/booking/getall"),
+          axios.get("/state/getall"),
+          axios.get("/city/getall"),
+          axios.get("/area/getall")
+        ]);
+
+        setCustomers(customersRes.data.data);
+        setBookings(bookingsRes.data.data);
+        setStates(statesRes.data.data);
+        setCities(citiesRes.data.data);
+        setAreas(areasRes.data.data);
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching customers:", error);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error.message);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (customers.length > 0) {
-      const fetchBookings = async () => {
-        try {
-          const response = await fetch("http://localhost:3000/bookings/getall");
-          const data = await response.json();
 
-          if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch bookings');
-          }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // Fetch all data in parallel
+  //       const [customersRes, bookingsRes, statesRes, citiesRes, areasRes] = await Promise.all([
+  //         axios.get("http://localhost:3000/user/getall"),
+  //         axios.get("http://localhost:3000/bookings/getall"),
+  //         axios.get("http://localhost:3000/state/getall"),
+  //         axios.get("http://localhost:3000/city/getall"),
+  //         axios.get("http://localhost:3000/area/getall")
+  //       ]);
 
-          setBookings(Array.isArray(data.data) ? data.data : []);
-        } catch (err) {
-          console.error('Error fetching bookings:', err);
-        }
-      };
+  //       setCustomers(customersRes.data.data);
+  //       setBookings(bookingsRes.data.data);
+  //       setStates(statesRes.data.data);
+  //       setCities(citiesRes.data.data);
+  //       setAreas(areasRes.data.data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setError(error.message);
+  //       setLoading(false);
+  //     }
+  //   };
 
-      fetchBookings();
-    }
-  }, [customers]);
+  //   fetchData();
+  // }, []);
+
+
 
   // Sorting functions
   const handleRequestSort = (property) => {
@@ -143,6 +175,32 @@ export default function CustomerManagement() {
     );
   });
 
+  const getStatusColor = (status) => {
+    const statusString = status?.toString()?.toLowerCase() || "unknown";
+    switch (statusString) {
+      case "approved": return "success";
+      case "pending": return "warning";
+      case "rejected": return "error";
+      case "completed": return "success";
+      case "cancelled": return "error";
+      default: return "default";
+    }
+  };
+
+  const getLocationString = (booking) => {
+    const bookingState = states.find(s => s._id === booking.hordingId?.stateId);
+    const bookingCity = cities.find(c => c._id === booking.hordingId?.cityId);
+    const bookingArea = areas.find(a => a._id === booking.hordingId?.areaId);
+    
+    return [
+      bookingState?.name || 'Unknown State',
+      bookingCity?.name || 'Unknown City',
+      bookingArea?.name || 'Unknown Area'
+    ].filter(Boolean).join(', ');
+  };
+
+  const formatDate = (dateString) => dayjs(dateString).format("DD MMM YYYY");
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -167,18 +225,18 @@ export default function CustomerManagement() {
     { id: 'phone', label: 'Phone', sortable: true },
     { id: 'status', label: 'Status', sortable: true },
     { id: 'bookings', label: 'Bookings', sortable: true },
-    // { id: 'actions', label: 'Actions', sortable: false }
+    { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   const bookingHeaders = [
-    { id: '_id', label: 'Booking ID', sortable: true },
     { id: 'customer', label: 'Customer', sortable: true },
     { id: 'type', label: 'Type', sortable: true },
     { id: 'location', label: 'Location', sortable: true },
     { id: 'dates', label: 'Dates', sortable: true },
     { id: 'amount', label: 'Amount', sortable: true },
     { id: 'status', label: 'Status', sortable: true },
-    // { id: 'actions', label: 'Actions', sortable: false }
+    { id: 'payment', label: 'Payment', sortable: true },
+    { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   return (
@@ -219,7 +277,7 @@ export default function CustomerManagement() {
           onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm}
         />
-        {/* <Button
+        <Button
           variant="contained"
           startIcon={<AddIcon />}
           sx={{
@@ -232,7 +290,7 @@ export default function CustomerManagement() {
           }}
         >
           Add Customer
-        </Button> */}
+        </Button>
       </Box>
 
       {activeTab === 0 ? (
@@ -271,7 +329,7 @@ export default function CustomerManagement() {
               <TableBody>
                 {filteredCustomers.map((customer) => (
                   <TableRow key={customer._id} hover>
-                    <TableCell>{customer._id}</TableCell>
+                    <TableCell>{customer._id.substring(0, 8)}...</TableCell>
                     <TableCell>{customer.name}</TableCell>
                     <TableCell>{customer.email}</TableCell>
                     <TableCell>{customer.phone || 'N/A'}</TableCell>
@@ -285,7 +343,7 @@ export default function CustomerManagement() {
                     <TableCell>
                       {bookings.filter(b => b.customerId === customer._id).length}
                     </TableCell>
-                    {/* <TableCell>
+                    <TableCell>
                       <IconButton onClick={() => {
                         setCurrentCustomer(customer);
                         setOpenDialog(true);
@@ -295,7 +353,7 @@ export default function CustomerManagement() {
                       <IconButton onClick={() => handleDelete(customer._id)}>
                         <DeleteIcon color="error" />
                       </IconButton>
-                    </TableCell> */}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -338,28 +396,58 @@ export default function CustomerManagement() {
               <TableBody>
                 {bookings.map(booking => {
                   const customer = customers.find(c => c._id === booking.customerId);
+                  const duration = dayjs(booking.endDate).diff(dayjs(booking.startDate), 'day');
+                  
                   return (
                     <TableRow key={booking._id} hover>
-                      <TableCell>{booking._id.substring(0, 8)}...</TableCell>
                       <TableCell>
-                        {customer?.name || 'Unknown Customer'}
+                        <Tooltip title={customer?._id || 'Unknown'}>
+                          <Typography variant="body2">
+                            {customer?.name || 'Unknown Customer'}
+                          </Typography>
+                        </Tooltip>
                       </TableCell>
-                      <TableCell>{booking.hoardingType || 'N/A'}</TableCell>
-                      <TableCell>{booking.location || 'N/A'}</TableCell>
+                      <TableCell>{booking.hordingId?.hoardingType || 'N/A'}</TableCell>
                       <TableCell>
-                        {booking.startDate || 'N/A'} to {booking.endDate || 'N/A'}
+                        <Tooltip title={getLocationString(booking)}>
+                          <Typography variant="body2" noWrap>
+                            {getLocationString(booking).substring(0, 20)}...
+                          </Typography>
+                        </Tooltip>
                       </TableCell>
-                      <TableCell>₹{booking.amount || '0'}</TableCell>
                       <TableCell>
-                        <Chip
-                          label={booking.status || 'Pending'}
-                          color={
-                            booking.status === 'Active' ? 'primary' :
-                              booking.status === 'Completed' ? 'success' :
-                                'default'
-                          }
-                          size="small"
+                        {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
+                        <Typography variant="caption" display="block">{duration} days</Typography>
+                      </TableCell>
+                      <TableCell>₹{booking.totalCost?.toLocaleString() || '0'}</TableCell>
+                      <TableCell>
+                        <Badge
+                          color={getStatusColor(booking.status)}
+                          badgeContent={booking.status}
+                          sx={{
+                            '& .MuiBadge-badge': {
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              padding: '4px 8px',
+                              borderRadius: 12,
+                              textTransform: 'uppercase'
+                            }
+                          }}
                         />
+                      </TableCell>
+                      <TableCell>
+                        {booking.paymentId ? (
+                          <Chip
+                            label={booking.paymentId.paymentStatus}
+                            color={
+                              booking.paymentId.paymentStatus === 'paid' ? 'success' :
+                              booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
+                            }
+                            size="small"
+                          />
+                        ) : (
+                          <Chip label="No Payment" color="default" size="small" />
+                        )}
                       </TableCell>
                       <TableCell>
                         <IconButton onClick={() => navigate(`/bookings/${booking._id}`)}>

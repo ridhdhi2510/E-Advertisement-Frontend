@@ -459,7 +459,7 @@ export default function UserPage() {
 
         {/* <List> */}
         {/* for delete */}
-        <ListItem
+        {/* <ListItem
           disablePadding
           sx={{
             display: "block", p: 0.5, "&:hover": {
@@ -495,7 +495,7 @@ export default function UserPage() {
               sx={{ opacity: open ? 1 : 0 }}
             />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/* for Logout */}
