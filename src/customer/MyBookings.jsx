@@ -302,7 +302,7 @@ const ViewBooking = () => {
             <Button
               variant="contained"
               size="large"
-              onClick={() => navigate('/hoardings')}
+              onClick={() => navigate('/customer/bookhording')}
               sx={{
                 px: 6,
                 py: 1.5,

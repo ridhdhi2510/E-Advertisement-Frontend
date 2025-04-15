@@ -166,7 +166,7 @@ const CustomerDashboard = () => {
           gutterBottom
           sx={{
 
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: getResponsiveValue({ xs: '1.5rem', sm: '2rem', md: '2.5rem' }),
 
             background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -589,8 +589,6 @@ const CustomerDashboard = () => {
 
                             {/* {booking.hordingId?.areaId?.name || 'N/A'}, {booking.hordingId?.cityId?.name || 'N/A'} */}
                             {getLocationString(booking)}
-
-                            
 
                           </Typography>
                         </Stack>
