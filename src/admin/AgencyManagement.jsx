@@ -287,131 +287,228 @@ export default function AgencyManagement() {
           )}
 
           {/* Bank Details Table */}
-          {activeTab === 1 && (
-            <>
-              <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                <TableContainer>
-                  <Table>
-                    <TableHead sx={{ backgroundColor: '#1E2A47' }}>
-                      <TableRow>
-                        {bankHeaders.map((headCell) => (
-                          <TableCell
-                            key={headCell.id}
-                            sortDirection={orderBy === headCell.id ? order : false}
-                            sx={{ color: 'white' }}
-                          >
-                            {headCell.sortable ? (
-                              <TableSortLabel
-                                active={orderBy === headCell.id}
-                                direction={orderBy === headCell.id ? order : 'asc'}
-                                onClick={() => handleRequestSort(headCell.id)}
-                                sx={{ color: 'white !important' }}
-                              >
-                                {headCell.label}
-                              </TableSortLabel>
-                            ) : (
-                              headCell.label
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {filteredBankDetails.map((agency) => (
-                        <TableRow key={agency.id} hover>
-                          <TableCell>{agency.id}</TableCell>
-                          <TableCell>{agency.name}</TableCell>
-                          <TableCell>{agency.bankName}</TableCell>
-                          <TableCell>{agency.accountNumber}</TableCell>
-                          <TableCell>{agency.accountHolderName}</TableCell>
-                          <TableCell>{agency.iban}</TableCell>
-                          <TableCell>
-                            <IconButton onClick={() => handleDialogOpen(agency)}>
-                              <EditIcon color="primary" />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Paper>
+          {/* Bank Details Table */}
+{activeTab === 1 && (
+  <>
+    <Paper sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
+      <TableContainer>
+        <Table>
+          <TableHead sx={{ backgroundColor: '#1E2A47' }}>
+            <TableRow>
+              {bankHeaders.map((headCell) => (
+                <TableCell
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
+                  sx={{ 
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  {headCell.sortable ? (
+                    <TableSortLabel
+                      active={orderBy === headCell.id}
+                      direction={orderBy === headCell.id ? order : 'asc'}
+                      onClick={() => handleRequestSort(headCell.id)}
+                      sx={{ 
+                        color: 'white !important',
+                        '&:hover': { color: 'white !important' },
+                        '& .MuiTableSortLabel-icon': {
+                          color: 'white !important'
+                        }
+                      }}
+                    >
+                      {headCell.label}
+                    </TableSortLabel>
+                  ) : (
+                    headCell.label
+                  )}
+                </TableCell>
+              ))}
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredBankDetails.length > 0 ? (
+              filteredBankDetails.map((agency) => (
+                <TableRow 
+                  key={agency.id} 
+                  hover
+                  sx={{ 
+                    '&:nth-of-type(odd)': {
+                      backgroundColor: 'action.hover'
+                    }
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: 500 }}>{agency.id}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>{agency.name}</TableCell>
+                  <TableCell>
+                    {agency.bankName || (
+                      <Typography variant="body2" color="textSecondary">
+                        Not provided
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {agency.accountNumber ? (
+                      <Box component="span" sx={{ fontFamily: 'monospace' }}>
+                        •••• •••• {agency.accountNumber.slice(-4)}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="textSecondary">
+                        Not provided
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {agency.accountHolderName || (
+                      <Typography variant="body2" color="textSecondary">
+                        Not provided
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {agency.iban ? (
+                      <Box component="span" sx={{ fontFamily: 'monospace' }}>
+                        {agency.iban}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="textSecondary">
+                        Not provided
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton 
+                      onClick={() => handleDialogOpen(agency)}
+                      size="small"
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: 'primary.light',
+                          color: 'primary.contrastText'
+                        }
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={bankHeaders.length + 1} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    No bank details found
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
 
-              {/* Edit Bank Details Dialog */}
-              <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="md" fullWidth>
-                <DialogTitle sx={{ backgroundColor: '#1E2A47', color: 'white' }}>
-                  Edit Bank Details
-                </DialogTitle>
-                <DialogContent sx={{ pt: 3 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Bank Name"
-                        value={currentAgency?.bankName || ''}
-                        margin="normal"
-                        onChange={(e) => setCurrentAgency({
-                          ...currentAgency,
-                          bankName: e.target.value
-                        })}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Account Holder Name"
-                        value={currentAgency?.accountHolderName || ''}
-                        margin="normal"
-                        onChange={(e) => setCurrentAgency({
-                          ...currentAgency,
-                          accountHolderName: e.target.value
-                        })}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Account Number"
-                        value={currentAgency?.accountNumber || ''}
-                        margin="normal"
-                        onChange={(e) => setCurrentAgency({
-                          ...currentAgency,
-                          accountNumber: e.target.value
-                        })}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="IBAN/SWIFT"
-                        value={currentAgency?.iban || ''}
-                        margin="normal"
-                        onChange={(e) => setCurrentAgency({
-                          ...currentAgency,
-                          iban: e.target.value
-                        })}
-                      />
-                    </Grid>
-                  </Grid>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleDialogClose} sx={{ color: '#1E2A47' }}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="contained" 
-                    onClick={handleSaveBankDetails}
-                    sx={{ 
-                      backgroundColor: '#1E2A47',
-                      '&:hover': { backgroundColor: '#3B4F6B' }
-                    }}
-                  >
-                    Update
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </>
-          )}
+    {/* Edit Bank Details Dialog */}
+    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ 
+        backgroundColor: '#1E2A47', 
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <span>Edit Bank Details</span>
+        <Typography variant="subtitle2">
+          Agency: {currentAgency?.name || 'N/A'}
+        </Typography>
+      </DialogTitle>
+      <DialogContent sx={{ pt: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Bank Name"
+              value={currentAgency?.bankName || ''}
+              margin="normal"
+              onChange={(e) => setCurrentAgency({
+                ...currentAgency,
+                bankName: e.target.value
+              })}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Account Holder Name"
+              value={currentAgency?.accountHolderName || ''}
+              margin="normal"
+              onChange={(e) => setCurrentAgency({
+                ...currentAgency,
+                accountHolderName: e.target.value
+              })}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Account Number"
+              value={currentAgency?.accountNumber || ''}
+              margin="normal"
+              onChange={(e) => setCurrentAgency({
+                ...currentAgency,
+                accountNumber: e.target.value
+              })}
+              inputProps={{
+                inputMode: 'numeric',
+                pattern: '[0-9]*'
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="IBAN/SWIFT Code"
+              value={currentAgency?.iban || ''}
+              margin="normal"
+              onChange={(e) => setCurrentAgency({
+                ...currentAgency,
+                iban: e.target.value
+              })}
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button 
+          onClick={handleDialogClose} 
+          variant="outlined"
+          sx={{ 
+            color: '#1E2A47',
+            borderColor: '#1E2A47',
+            '&:hover': {
+              borderColor: '#3B4F6B'
+            }
+          }}
+        >
+          Cancel
+        </Button>
+        <Button 
+          variant="contained" 
+          onClick={handleSaveBankDetails}
+          sx={{ 
+            backgroundColor: '#1E2A47',
+            '&:hover': { 
+              backgroundColor: '#3B4F6B',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            }
+          }}
+        >
+          Update Details
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </>
+)}
         </>
       )}
     </Box>

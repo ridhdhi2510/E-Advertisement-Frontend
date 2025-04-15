@@ -28,6 +28,7 @@ import HordingManagement from "./admin/HordingManagement";
 import CustomerManagement from "./admin/CustomerManagement";
 import PaymentManagement from "./admin/PaymentManagement";
 import ViewBooking from "./customer/MyBookings";
+import AddBankDetails from "./agency/AddBankDetails";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -62,6 +63,7 @@ function App() {
               <Route path="update" element={<UpdateAgencyProfile />} />
               <Route path="myscreens" element={<ViewMyScreen />} />
               <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>
+              <Route path="add-bank-details" element={<AddBankDetails />} />
             </Route>
           </Route>
 
