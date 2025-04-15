@@ -435,8 +435,8 @@ export default function AgencyPage() {
         
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
-        {/* contact page navigation */}
-        <ListItem
+        {/* Delete Account */}
+        {/* <ListItem
           disablePadding
           sx={{
             display: "block", p: 0.8, "&:hover": {
@@ -475,7 +475,7 @@ export default function AgencyPage() {
               sx={{ opacity: open ? 1 : 0 }}
             />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
         <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
         {/*  Logout functionality */}
