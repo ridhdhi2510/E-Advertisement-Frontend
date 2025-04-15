@@ -60,6 +60,7 @@ function App() {
             <Route path="/agency/*" element={<AgencyPage />}>
               <Route index element={<DefaultPage />} />
               <Route path="addscreen" element={<AddScreen />} />
+              <Route path="addbankdetais" element={<AddBankDetails />} />
               <Route path="update" element={<UpdateAgencyProfile />} />
               <Route path="myscreens" element={<ViewMyScreen />} />
               <Route path ="updateScreen/:id"element = {<UpdateMyScreen/>}></Route>

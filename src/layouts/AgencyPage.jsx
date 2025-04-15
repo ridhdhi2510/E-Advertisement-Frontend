@@ -392,7 +392,7 @@ export default function AgencyPage() {
           </ListItem>
           <Divider sx={{ backgroundColor: 'grey' }} /> {/* Divider line */}
 
-          {/*  add bank details page  Navigation */}
+           {/* add bank details page  Navigation */}
           {/* <ListItem
             disablePadding
             sx={{
@@ -401,7 +401,7 @@ export default function AgencyPage() {
               },
             }}
             onClick={() => {
-              navigate("/agency/add-bank-details");
+              navigate("/agency/addbankdetais");
             }}
           >
             <ListItemButton
