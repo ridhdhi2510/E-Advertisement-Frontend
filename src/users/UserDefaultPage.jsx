@@ -611,7 +611,7 @@ const CustomerDashboard = () => {
                     }}>
                       <Grid container spacing={getResponsiveValue({ xs: 1, sm: 1.5 })}>
                         <Grid item xs={12}>
-                          <Chip
+                          {/* <Chip
                             label={booking.status}
                             color={getStatusColor(booking.status)}
                             sx={{
@@ -622,7 +622,7 @@ const CustomerDashboard = () => {
                               height: getResponsiveValue({ xs: 28, sm: 32 }),
                               fontSize: getResponsiveValue({ xs: '0.7rem', sm: '0.8rem' })
                             }}
-                          />
+                          /> */}
                         </Grid>
                         <Grid item xs={6}>
                           <Typography 
