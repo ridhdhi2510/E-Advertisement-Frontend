@@ -67,6 +67,14 @@ const CustomerDashboard = () => {
     return values.xl || values.lg || values.md || values.sm || values.xs;
   };
 
+  const getValue = (values) => {
+    if (isXs) return values.xs;
+    if (isSm) return values.sm || values.xs;
+    if (isMd) return values.md || values.sm || values.xs;
+    if (isLg) return values.lg || values.md || values.sm || values.xs;
+    return values.xl || values.lg || values.md || values.sm || values.xs;
+  };
+
   const formatDate = (dateString) => dayjs(dateString).format("DD MMM YYYY");
 
   const getStatusColor = (status) => {
@@ -143,18 +151,19 @@ const CustomerDashboard = () => {
 
   return (
     <Container 
-      maxWidth="lg"
-      disableGutters
-      sx={{
-        // maxWidth: '1080px',
-        mx: 'auto',
-        // px: getResponsiveValue({ xs: 2, sm: 3, md: 4, lg: 6, xl: 8 }),
-        // py: getResponsiveValue({ xs: 2, sm: 3, md: 4 }),
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.05)} 0%, ${alpha(theme.palette.background.default, 0.1)} 100%)`,
-        minHeight: '100vh'
-      }}
-        // maxWidth: '1080px',
-       
+      maxWidth={false}
+       disableGutters
+       sx={{
+         boxSizing: 'border-box',
+         width: '75vw',
+         maxWidth: '75vw',
+         mr: 0,
+         px: getValue({ xs: 2, sm: 3, md: 4 }),
+         overflowX: 'hidden',
+         minHeight: '100vh',
+         mx: 'auto', // this centers the layout
+         background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.05)} 0%, ${alpha(theme.palette.background.default, 0.1)} 100%)`
+       }}
     >
       {/* Welcome Section */}
       <Box sx={{ 
