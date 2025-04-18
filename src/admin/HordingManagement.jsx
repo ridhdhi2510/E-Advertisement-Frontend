@@ -128,10 +128,10 @@ export default function HordingManagement() {
       if (!confirmDelete) return;
       await axios.delete(`/hording/delete/${hordingId}`);
       
-    setHoardings(prev => prev.filter(h => h.id !== hoardingId));
+    setHoardings(prev => prev.filter(h => h.id !== hordingId));
 
     } catch (err) {
-      console.error('Error deleting customer:', err);
+      console.error('Error deleting hording:', err);
       setError(err.message);
     }
   };
