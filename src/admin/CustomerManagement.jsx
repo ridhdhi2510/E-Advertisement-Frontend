@@ -54,13 +54,13 @@ export default function CustomerManagement() {
   const [orderBy, setOrderBy] = useState('id');
   const navigate = useNavigate();
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch all data in parallel
         const [customersRes, bookingsRes, statesRes, citiesRes, areasRes] = await Promise.all([
-          axios.get("/user/getall"),
+          axios.get("/customer/customers"),
           axios.get("/booking/getall"),
           axios.get("/state/getall"),
           axios.get("/city/getall"),
@@ -191,7 +191,7 @@ export default function CustomerManagement() {
     const bookingState = states.find(s => s._id === booking.hordingId?.stateId);
     const bookingCity = cities.find(c => c._id === booking.hordingId?.cityId);
     const bookingArea = areas.find(a => a._id === booking.hordingId?.areaId);
-    
+
     return [
       bookingState?.name || 'Unknown State',
       bookingCity?.name || 'Unknown City',
@@ -266,7 +266,7 @@ export default function CustomerManagement() {
               </InputAdornment>
             ),
           }}
-          sx={{ 
+          sx={{
             width: 400,
             backgroundColor: 'white',
             borderRadius: 1,
@@ -310,7 +310,7 @@ export default function CustomerManagement() {
                           active={orderBy === headCell.id}
                           direction={orderBy === headCell.id ? order : 'asc'}
                           onClick={() => handleRequestSort(headCell.id)}
-                          sx={{ 
+                          sx={{
                             color: 'white !important',
                             '& .MuiTableSortLabel-icon': {
                               color: 'white !important'
@@ -329,20 +329,20 @@ export default function CustomerManagement() {
               <TableBody>
                 {filteredCustomers.map((customer) => (
                   <TableRow key={customer._id} hover>
-                    <TableCell>{customer._id.substring(0, 8)}...</TableCell>
+                    {/* <TableCell>{customer._id.substring(0, 8)}...</TableCell> */}
+                    <TableCell>{customer._id?.substring(0, 8) || 'N/A'}...</TableCell>
                     <TableCell>{customer.name}</TableCell>
                     <TableCell>{customer.email}</TableCell>
                     <TableCell>{customer.phone || 'N/A'}</TableCell>
                     <TableCell>
-                      <Chip 
-                        label={customer.status || 'Active'} 
-                        color={customer.status === 'Active' ? 'success' : 'default'} 
+                      <Chip
+                        label={customer.status || 'Active'}
+                        color={customer.status === 'Active' ? 'success' : 'default'}
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>
-                      {bookings.filter(b => b.customerId === customer._id).length}
-                    </TableCell>
+                    <TableCell>{customer.bookings?.length || 0}</TableCell>
+
                     <TableCell>
                       <IconButton onClick={() => {
                         setCurrentCustomer(customer);
@@ -377,7 +377,7 @@ export default function CustomerManagement() {
                           active={orderBy === headCell.id}
                           direction={orderBy === headCell.id ? order : 'asc'}
                           onClick={() => handleRequestSort(headCell.id)}
-                          sx={{ 
+                          sx={{
                             color: 'white !important',
                             '& .MuiTableSortLabel-icon': {
                               color: 'white !important'
@@ -395,16 +395,17 @@ export default function CustomerManagement() {
               </TableHead>
               <TableBody>
                 {bookings.map(booking => {
-                  const customer = customers.find(c => c._id === booking.customerId);
+                  const customer = customers.find(c => c._id === booking.userId);
                   const duration = dayjs(booking.endDate).diff(dayjs(booking.startDate), 'day');
-                  
+
                   return (
                     <TableRow key={booking._id} hover>
                       <TableCell>
                         <Tooltip title={customer?._id || 'Unknown'}>
                           <Typography variant="body2">
-                            {customer?.name || 'Unknown Customer'}
+                            {booking.userId?.name || 'Unknown Customer'}
                           </Typography>
+
                         </Tooltip>
                       </TableCell>
                       <TableCell>{booking.hordingId?.hoardingType || 'N/A'}</TableCell>
@@ -441,7 +442,7 @@ export default function CustomerManagement() {
                             label={booking.paymentId.paymentStatus}
                             color={
                               booking.paymentId.paymentStatus === 'paid' ? 'success' :
-                              booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
+                                booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
                             }
                             size="small"
                           />
@@ -506,10 +507,10 @@ export default function CustomerManagement() {
           <Button onClick={() => setOpenDialog(false)} sx={{ color: '#1E2A47' }}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleSaveCustomer}
             variant="contained"
-            sx={{ 
+            sx={{
               backgroundColor: '#1E2A47',
               '&:hover': { backgroundColor: '#3B4F6B' }
             }}
