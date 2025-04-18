@@ -32,10 +32,11 @@ export default function PaymentManagement() {
         setLoading(true);
         const response = await axios.get('http://localhost:3000/payment/getall');
         // Transform the data to match the table structure
+        
         const transformedPayments = response.data.data.map(payment => ({
           id: payment._id,
           transactionId: payment.transactionId,
-          bookingId: payment.bookingId?._id || 'N/A',
+          bookingId: payment.bookingId?._id|| 'N/A',
           userId: payment.userId?.name || 'N/A',
           amount: payment.amount,
           paymentDate: new Date(payment.paymentDate).toLocaleDateString(),

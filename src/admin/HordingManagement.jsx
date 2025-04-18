@@ -16,7 +16,7 @@ import {
   CircularProgress,
   InputAdornment
 } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 export default function HordingManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,7 +31,7 @@ export default function HordingManagement() {
         setLoading(true);
         // Fetch hoardings with populated data
         const response = await axios.get('http://localhost:3000/hording/getall');
-        
+
         // Transform the data to match the table structure
         const transformedData = response.data.data.map(hoarding => ({
           id: hoarding._id,
@@ -41,14 +41,14 @@ export default function HordingManagement() {
           city: hoarding.cityId?.name || 'N/A',
           area: hoarding.areaId?.name || 'N/A',
           agencyName: hoarding.userId?.name || 'N/A', // Assuming agency name is stored in user document
-          availableStatus: hoarding.Availablity_Status ? 'Available' : 'Not Available',
+          hourlyRate: hoarding.hourlyRate,
           customerName: 'N/A' // Will be updated if booking exists
         }));
-        
+
         // Fetch bookings to update availability status and customer names
         const bookingsResponse = await axios.get('http://localhost:3000/booking/getall');
         const bookings = bookingsResponse.data.data;
-        
+
         // Update availability and customer name based on bookings
         const finalData = transformedData.map(hoarding => {
           const booking = bookings.find(b => b.hordingId?._id === hoarding.id);
@@ -61,7 +61,7 @@ export default function HordingManagement() {
           }
           return hoarding;
         });
-        
+
         setHoardings(finalData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -88,17 +88,17 @@ export default function HordingManagement() {
     });
     return stabilizedThis.map((el) => el[0]);
   };
-  
+
   const getComparator = () => {
     return (a, b) => {
-      if (orderBy === 'state' || orderBy === 'city' || orderBy === 'area' || 
-          orderBy === 'agencyName' || orderBy === 'customerName' || 
-          orderBy === 'type' || orderBy === 'availableStatus') {
-        return order === 'desc' 
+      if (orderBy === 'state' || orderBy === 'city' || orderBy === 'area' ||
+        orderBy === 'agencyName' || orderBy === 'customerName' ||
+        orderBy === 'type' || orderBy === 'availableStatus') {
+        return order === 'desc'
           ? b[orderBy].localeCompare(a[orderBy])
           : a[orderBy].localeCompare(b[orderBy]);
       }
-      
+
       if (b[orderBy] < a[orderBy]) {
         return order === 'desc' ? -1 : 1;
       }
@@ -116,12 +116,25 @@ export default function HordingManagement() {
   const filteredHoardings = stableSort(
     hoardings.filter(hoarding =>
       Object.values(hoarding).some(
-        value => value !== null && 
-                typeof value === 'string' && 
-                value.toLowerCase().includes(searchTerm.toLowerCase())
+        value => value !== null &&
+          typeof value === 'string' &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
       )
     )
   );
+  const handleDelete = async (hordingId) => {
+    try {
+      const confirmDelete = window.confirm("Are you sure you want to delete this Hoarding Information?");
+      if (!confirmDelete) return;
+      await axios.delete(`/hording/delete/${hordingId}`);
+      
+    setHoardings(prev => prev.filter(h => h.id !== hordingId));
+
+    } catch (err) {
+      console.error('Error deleting hording:', err);
+      setError(err.message);
+    }
+  };
 
   return (
     <Box sx={{ ml: '240px', p: 3, backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
@@ -141,7 +154,7 @@ export default function HordingManagement() {
               </InputAdornment>
             ),
           }}
-          sx={{ 
+          sx={{
             width: 400,
             backgroundColor: 'white',
             borderRadius: 1,
@@ -167,10 +180,10 @@ export default function HordingManagement() {
                   <TableCell sx={{ color: 'white' }}>Hoarding ID</TableCell>
                   <TableCell sx={{ color: 'white' }}>Hoarding Type</TableCell>
                   <TableCell sx={{ color: 'white' }}>Hoarding Size</TableCell>
-                  <TableCell 
-                    colSpan={3} 
-                    align="center" 
-                    sx={{ 
+                  <TableCell
+                    colSpan={3}
+                    align="center"
+                    sx={{
                       color: 'white',
                       borderRight: '1px solid rgba(255, 255, 255, 0.12)',
                       borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
@@ -179,10 +192,11 @@ export default function HordingManagement() {
                     Location
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>Agency Name</TableCell>
-                  <TableCell sx={{ color: 'white' }}>Available Status</TableCell>
+                  <TableCell sx={{ color: 'white' }}>HourlyRate</TableCell>
                   <TableCell sx={{ color: 'white' }}>Booking Customer</TableCell>
+                  <TableCell sx={{ color: 'white' }}>Action</TableCell>
                 </TableRow>
-                
+
                 {/* Second row - Sub headers under Location */}
                 <TableRow>
                   <TableCell sx={{ color: 'white' }}>
@@ -215,9 +229,9 @@ export default function HordingManagement() {
                       Size
                     </TableSortLabel>
                   </TableCell>
-                  
+
                   {/* Location sub-headers */}
-                  <TableCell sx={{ 
+                  <TableCell sx={{
                     color: 'white',
                     borderRight: '1px solid rgba(255, 255, 255, 0.12)'
                   }}>
@@ -240,7 +254,7 @@ export default function HordingManagement() {
                       City
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ 
+                  <TableCell sx={{
                     color: 'white',
                     borderLeft: '1px solid rgba(255, 255, 255, 0.12)'
                   }}>
@@ -253,7 +267,7 @@ export default function HordingManagement() {
                       Area
                     </TableSortLabel>
                   </TableCell>
-                  
+
                   <TableCell sx={{ color: 'white' }}>
                     <TableSortLabel
                       active={orderBy === 'agencyName'}
@@ -266,12 +280,12 @@ export default function HordingManagement() {
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>
                     <TableSortLabel
-                      active={orderBy === 'availableStatus'}
-                      direction={orderBy === 'availableStatus' ? order : 'asc'}
-                      onClick={() => handleRequestSort('availableStatus')}
+                      active={orderBy === 'hourlyRate'}
+                      direction={orderBy === 'hourlyRate' ? order : 'asc'}
+                      onClick={() => handleRequestSort('hourlyRate')}
                       sx={{ color: 'white !important' }}
                     >
-                      Status
+                      HourlyRate
                     </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ color: 'white' }}>
@@ -284,9 +298,20 @@ export default function HordingManagement() {
                       Customer
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell sx={{ color: 'white' }}>
+                    <TableSortLabel
+                      // active={orderBy === 'customerName'}
+                      // direction={orderBy === 'customerName' ? order : 'asc'}
+                      // onClick={() => handleRequestSort(')}
+                      sx={{ color: 'white !important' }}
+                    >
+                      Delete
+                    </TableSortLabel>
+                  </TableCell>
+
                 </TableRow>
               </TableHead>
-              
+
               <TableBody>
                 {filteredHoardings.map((hoarding) => (
                   <TableRow key={hoarding.id} hover>
@@ -297,16 +322,18 @@ export default function HordingManagement() {
                     <TableCell>{hoarding.city}</TableCell>
                     <TableCell>{hoarding.area}</TableCell>
                     <TableCell>{hoarding.agencyName}</TableCell>
-                    <TableCell sx={{ 
-                      color: hoarding.availableStatus === 'Available' ? 'green' : 'red',
-                      fontWeight: 'bold'
-                    }}>
-                      {hoarding.availableStatus}
+                    <TableCell>
+                      {hoarding.hourlyRate}
                     </TableCell>
                     <TableCell>{hoarding.customerName}</TableCell>
+                    <IconButton onClick={() => handleDelete(hoarding.id)}>
+                    <DeleteIcon color="error" />
+                  </IconButton>
                   </TableRow>
                 ))}
+
               </TableBody>
+
             </Table>
           </TableContainer>
         </Paper>

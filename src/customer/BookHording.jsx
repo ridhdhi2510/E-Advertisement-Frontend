@@ -131,7 +131,7 @@ const BookHording = () => {
     const end = new Date(formData.endDate);
     const diffInDays = Math.ceil(((end - start) + 1) / (1000 * 60 * 60 * 24));
     // console.log(diffInDays * 24 * ((selectedHording.hourlyRate) + 5))
-    return diffInDays > 0 ? diffInDays * 24 * ((selectedHording.hourlyRate) + 5) : 0;
+    return diffInDays > 0 ? diffInDays * 24 * ((selectedHording.hourlyRate)+5) : 0;
   };
 
   const handleBooking = async () => {
@@ -320,7 +320,7 @@ const BookHording = () => {
                     }}
                   />
                   <Chip
-                    label={`₹${hording.hourlyRate}/hr`}
+                    label={`₹${(hording.hourlyRate)+5}/hr`}
                     color="primary"
                     size="small"
                     sx={{
@@ -451,7 +451,7 @@ const BookHording = () => {
                       />
                       <Chip
                         icon={<CalendarToday />}
-                        label={`₹${selectedHording.hourlyRate}/hr`}
+                        label={`₹${(selectedHording.hourlyRate)+5}/hr`}
                         color="primary"
                       />
                     </Stack>
