@@ -245,7 +245,6 @@ export default function PaymentManagement() {
                       Refund Status
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ color: 'white' }}>Receipt</TableCell>
                 </TableRow>
               </TableHead>
               
@@ -268,17 +267,6 @@ export default function PaymentManagement() {
                       fontWeight: 'bold'
                     }}>
                       {payment.refundStatus}
-                    </TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="outlined" 
-                        size="small" 
-                        startIcon={<ReceiptIcon />}
-                        onClick={() => window.open(payment.receiptUrl, '_blank')}
-                        disabled={!payment.receiptUrl || payment.receiptUrl === '#'}
-                      >
-                        View
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

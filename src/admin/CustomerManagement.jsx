@@ -43,6 +43,7 @@ export default function CustomerManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [customers, setCustomers] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [bookingCounts, setBookingCounts] = useState({});
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -58,9 +59,14 @@ export default function CustomerManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+
+        // Get roleId for 'customer' first
+        const rolesResponse = await axios.get('/role/getall');
+        const customerRole = rolesResponse.data.data.find(role => role.name === 'customer');
+
         // Fetch all data in parallel
         const [customersRes, bookingsRes, statesRes, citiesRes, areasRes] = await Promise.all([
-          axios.get("/user/getall"),
+          axios.get(`/user/getbyrole/${customerRole._id}`),
           axios.get("/booking/getall"),
           axios.get("/state/getall"),
           axios.get("/city/getall"),
@@ -83,36 +89,53 @@ export default function CustomerManagement() {
     fetchData();
   }, []);
 
+  const filteredCustomers = customers.filter(customer => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (customer.name && customer.name.toLowerCase().includes(searchLower)) ||
+      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
+      (customer.phone && customer.phone.toString().toLowerCase().includes(searchLower))
+    );
+  });
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Fetch all data in parallel
-  //       const [customersRes, bookingsRes, statesRes, citiesRes, areasRes] = await Promise.all([
-  //         axios.get("http://localhost:3000/user/getall"),
-  //         axios.get("http://localhost:3000/bookings/getall"),
-  //         axios.get("http://localhost:3000/state/getall"),
-  //         axios.get("http://localhost:3000/city/getall"),
-  //         axios.get("http://localhost:3000/area/getall")
-  //       ]);
-
-  //       setCustomers(customersRes.data.data);
-  //       setBookings(bookingsRes.data.data);
-  //       setStates(statesRes.data.data);
-  //       setCities(citiesRes.data.data);
-  //       setAreas(areasRes.data.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setError(error.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-
+  useEffect(() => {
+    const fetchBookingCounts = async () => {
+      const counts = {};
+  
+      await Promise.all(
+        filteredCustomers.map(async (customer) => {
+          try {
+            const res = await axios.get(`/booking/getBookingByUserId/${customer._id}`);
+            counts[customer._id] = res.data.data.length;
+          } catch (e) {
+            console.error("Error fetching bookings for", customer._id, e);
+            counts[customer._id] = 0;
+          }
+        })
+      );
+  
+      setBookingCounts(counts);
+    };
+  
+    if (filteredCustomers.length > 0) {
+      fetchBookingCounts();
+    }
+  }, [filteredCustomers]);
+  
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'succeeded':
+        return 'green';
+      case 'Pending':
+        return 'orange';
+      case 'failed':
+        return 'red';
+      case 'Refunded':
+        return 'blue';
+      default:
+        return 'black';
+    }
+  };
 
   // Sorting functions
   const handleRequestSort = (property) => {
@@ -157,33 +180,15 @@ export default function CustomerManagement() {
     }
   };
 
-  const handleDelete = async (customerId) => {
+  const handleDelete = async (bookingId) => {
     try {
-      console.log(`Would delete customer with ID: ${customerId}`);
+      const confirmDelete = window.confirm("Are you sure you want to delete this booking information");
+      if(!confirmDelete) return;
+      await axios.delete(`/booking/deleteBooking/${bookingId}`);
+      setBookings(prev => prev.filter(b => b.id !== bookingId))
     } catch (err) {
-      console.error('Error deleting customer:', err);
+      console.error('Error deleting booking:', err);
       setError(err.message);
-    }
-  };
-
-  const filteredCustomers = customers.filter(customer => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      (customer.name && customer.name.toLowerCase().includes(searchLower)) ||
-      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
-      (customer.phone && customer.phone.toString().toLowerCase().includes(searchLower))
-    );
-  });
-
-  const getStatusColor = (status) => {
-    const statusString = status?.toString()?.toLowerCase() || "unknown";
-    switch (statusString) {
-      case "approved": return "success";
-      case "pending": return "warning";
-      case "rejected": return "error";
-      case "completed": return "success";
-      case "cancelled": return "error";
-      default: return "default";
     }
   };
 
@@ -222,10 +227,7 @@ export default function CustomerManagement() {
     { id: '_id', label: 'ID', sortable: true },
     { id: 'name', label: 'Customer', sortable: true },
     { id: 'email', label: 'Email', sortable: true },
-    { id: 'phone', label: 'Phone', sortable: true },
-    { id: 'status', label: 'Status', sortable: true },
     { id: 'bookings', label: 'Bookings', sortable: true },
-    { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   const bookingHeaders = [
@@ -234,7 +236,6 @@ export default function CustomerManagement() {
     { id: 'location', label: 'Location', sortable: true },
     { id: 'dates', label: 'Dates', sortable: true },
     { id: 'amount', label: 'Amount', sortable: true },
-    { id: 'status', label: 'Status', sortable: true },
     { id: 'payment', label: 'Payment', sortable: true },
     { id: 'actions', label: 'Actions', sortable: false }
   ];
@@ -329,30 +330,13 @@ export default function CustomerManagement() {
               <TableBody>
                 {filteredCustomers.map((customer) => (
                   <TableRow key={customer._id} hover>
-                    <TableCell>{customer._id.substring(0, 8)}...</TableCell>
+                    <TableCell>{customer._id}</TableCell>
                     <TableCell>{customer.name}</TableCell>
                     <TableCell>{customer.email}</TableCell>
-                    <TableCell>{customer.phone || 'N/A'}</TableCell>
                     <TableCell>
-                      <Chip 
-                        label={customer.status || 'Active'} 
-                        color={customer.status === 'Active' ? 'success' : 'default'} 
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {bookings.filter(b => b.customerId === customer._id).length}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => {
-                        setCurrentCustomer(customer);
-                        setOpenDialog(true);
-                      }}>
-                        <EditIcon color="primary" />
-                      </IconButton>
-                      <IconButton onClick={() => handleDelete(customer._id)}>
-                        <DeleteIcon color="error" />
-                      </IconButton>
+                      {bookingCounts[customer._id] !== undefined
+                        ? bookingCounts[customer._id]
+                        : "Loading..."}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -395,15 +379,14 @@ export default function CustomerManagement() {
               </TableHead>
               <TableBody>
                 {bookings.map(booking => {
-                  const customer = customers.find(c => c._id === booking.customerId);
                   const duration = dayjs(booking.endDate).diff(dayjs(booking.startDate), 'day');
                   
                   return (
                     <TableRow key={booking._id} hover>
                       <TableCell>
-                        <Tooltip title={customer?._id || 'Unknown'}>
+                        <Tooltip title={booking.userId._id || 'Unknown'}>
                           <Typography variant="body2">
-                            {customer?.name || 'Unknown Customer'}
+                            {booking.userId.name || 'Unknown Customer'}
                           </Typography>
                         </Tooltip>
                       </TableCell>
@@ -417,43 +400,18 @@ export default function CustomerManagement() {
                       </TableCell>
                       <TableCell>
                         {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
-                        <Typography variant="caption" display="block">{duration} days</Typography>
+                        <Typography variant="caption" display="block">{duration+1} days</Typography>
                       </TableCell>
                       <TableCell>₹{booking.totalCost?.toLocaleString() || '0'}</TableCell>
-                      <TableCell>
-                        <Badge
-                          color={getStatusColor(booking.status)}
-                          badgeContent={booking.status}
-                          sx={{
-                            '& .MuiBadge-badge': {
-                              fontSize: '0.7rem',
-                              fontWeight: 700,
-                              padding: '4px 8px',
-                              borderRadius: 12,
-                              textTransform: 'uppercase'
-                            }
-                          }}
-                        />
+                      <TableCell sx={{ 
+                        color: getStatusColor(booking.paymentId?.paymentStatus),
+                        fontWeight: 'bold'
+                      }}>
+                        {booking.paymentId?.paymentStatus}
                       </TableCell>
-                      <TableCell>
-                        {booking.paymentId ? (
-                          <Chip
-                            label={booking.paymentId.paymentStatus}
-                            color={
-                              booking.paymentId.paymentStatus === 'paid' ? 'success' :
-                              booking.paymentId.paymentStatus === 'pending' ? 'warning' : 'error'
-                            }
-                            size="small"
-                          />
-                        ) : (
-                          <Chip label="No Payment" color="default" size="small" />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => navigate(`/bookings/${booking._id}`)}>
-                          <InfoIcon color="info" />
-                        </IconButton>
-                      </TableCell>
+                      <IconButton onClick={()=>handleDelete(booking._id)}>
+                        <DeleteIcon color="error"></DeleteIcon>
+                      </IconButton>
                     </TableRow>
                   );
                 })}

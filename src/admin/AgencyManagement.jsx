@@ -40,19 +40,24 @@ export default function AgencyManagement() {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('id');
+  const [hoardingCounts, setHoardingCounts] = useState({});
 
-  // Fetch agencies data using Axios
   useEffect(() => {
     const fetchData = async () => {
       try {
+
+        // Get roleId for 'agency' first
+        const rolesResponse = await axios.get('/role/getall');
+        const agencyRole = rolesResponse.data.data.find(role => role.name === 'agency');
+                
         setLoading(true);
         // Fetch agencies details
-        const agenciesRes = await axios.get('http://localhost:3000/agency/agencies');
-        setAgencies(agenciesRes.data.data);
+        const agenciesRes = await axios.get(`http://localhost:3000/user/getbyrole/${agencyRole._id}`);
+        setAgencies(agenciesRes.data.data || []);
 
         // Fetch bank details
-        const bankRes = await axios.get('http://localhost:3000/agency/agency-bank-details');
-        setBankDetails(bankRes.data.data);
+        const bankRes = await axios.get('http://localhost:3000/bankdetailsagency/getall');
+        setBankDetails(bankRes.data.data || []);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -64,13 +69,6 @@ export default function AgencyManagement() {
     fetchData();
   }, []);
 
-  // Sorting functions
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
   const stableSort = (array, comparator) => {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
@@ -81,12 +79,6 @@ export default function AgencyManagement() {
     return stabilizedThis.map((el) => el[0]);
   };
 
-  const getComparator = (order, orderBy) => {
-    return order === 'desc'
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy);
-  };
-
   const descendingComparator = (a, b, orderBy) => {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -95,6 +87,59 @@ export default function AgencyManagement() {
       return 1;
     }
     return 0;
+  };
+
+  const getComparator = (order, orderBy) => {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  };
+
+
+  // Filter and sort data
+  const filteredAgencies = stableSort(
+    agencies.filter(agency => {
+      if (!agency) return false;
+      return (
+        (agency.name && agency.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (agency.email && agency.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (agency._id && agency._id.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }),
+    getComparator(order, orderBy)
+  );
+
+  useEffect(() => {
+      const fetchHordingCounts = async () => {
+        const counts = {};
+    
+        await Promise.all(
+          filteredAgencies.map(async (agency) => {
+            try {
+              const res = await axios.get(`/hording/getHordingsbyuserid/${agency._id}`);
+              counts[agency._id] = res.data.data.length;
+            } catch (e) {
+              console.error("Error fetching hording for", agency._id, e);
+              counts[agency._id] = 0;
+            }
+          })
+        );
+    
+        setHoardingCounts(counts);
+      };
+    
+      if (filteredAgencies.length > 0) {
+        fetchHordingCounts();
+      }
+    }, [filteredAgencies]);
+    
+
+
+  // Sorting functions
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
   const handleTabChange = (event, newValue) => {
@@ -118,8 +163,8 @@ export default function AgencyManagement() {
   const handleSaveBankDetails = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/agency/update-bank-details/${currentAgency.id}`,
-        currentAgency.bankDetails,
+        `http://localhost:3000/bankdetailsagency/update/${currentAgency._id}`,
+        currentAgency,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -127,9 +172,8 @@ export default function AgencyManagement() {
         }
       );
       
-      // Update local state
       setBankDetails(bankDetails.map(agency => 
-        agency.id === currentAgency.id ? response.data.data : agency
+        agency._id === currentAgency._id ? response.data.data : agency
       ));
       handleDialogClose();
     } catch (error) {
@@ -137,44 +181,34 @@ export default function AgencyManagement() {
     }
   };
 
-  // Filter and sort data
-  const filteredAgencies = stableSort(
-    agencies.filter(agency =>
-      Object.values(agency).some(
-        value => typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    ),
-    getComparator(order, orderBy)
-  );
-
   const filteredBankDetails = stableSort(
-    bankDetails.filter(agency =>
-      Object.values(agency).some(
-        value => typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    ),
+    bankDetails.filter(bank => {
+      if (!bank) return false;
+      const agency = agencies.find(a => a._id === bank.userId);
+      return (
+        (bank.bankName && bank.bankName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (bank.branchName && bank.branchName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (bank.userId && bank.userId.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (agency && agency.name && agency.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }),
     getComparator(order, orderBy)
   );
 
   // Table headers with sorting
   const agencyHeaders = [
-    { id: 'id', label: 'Agency ID', sortable: true },
+    { id: '_id', label: 'Agency ID', sortable: true },
     { id: 'name', label: 'Agency Name', sortable: true },
     { id: 'email', label: 'Email', sortable: true },
-    { id: 'phone', label: 'Phone', sortable: true },
     { id: 'totalHoardings', label: 'Total Hoardings', sortable: true },
-    { id: 'activeHoardings', label: 'Active Hoardings', sortable: true },
-    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   const bankHeaders = [
-    { id: 'id', label: 'Agency ID', sortable: true },
-    { id: 'name', label: 'Agency Name', sortable: true },
+    { id: 'userId', label: 'Agency ID', sortable: true },
+    { id: 'agencyName', label: 'Agency Name', sortable: true },
     { id: 'bankName', label: 'Bank Name', sortable: true },
+    { id: 'branchName', label: 'Branch Name', sortable: true },
     { id: 'accountNumber', label: 'Account Number', sortable: true },
-    { id: 'accountHolderName', label: 'Account Holder', sortable: true },
-    { id: 'iban', label: 'IBAN/SWIFT', sortable: true },
-    // { id: 'actions', label: 'Actions', sortable: false }
   ];
 
   return (
@@ -253,7 +287,7 @@ export default function AgencyManagement() {
                               }}
                             >
                               {headCell.label}
-                          </TableSortLabel>                          
+                            </TableSortLabel>                          
                           ) : (
                             headCell.label
                           )}
@@ -263,21 +297,15 @@ export default function AgencyManagement() {
                   </TableHead>
                   <TableBody>
                     {filteredAgencies.map((agency) => (
-                      <TableRow key={agency.id} hover>
-                        <TableCell>{agency.id}</TableCell>
-                        <TableCell>{agency.name}</TableCell>
-                        <TableCell>{agency.email}</TableCell>
-                        <TableCell>{agency.phone || 'N/A'}</TableCell>
-                        <TableCell>{agency.totalHoardings}</TableCell>
-                        <TableCell>{agency.activeHoardings}</TableCell>
-                        {/* <TableCell>
-                          <IconButton onClick={() => console.log('Edit', agency.id)}>
-                            <EditIcon color="primary" />
-                          </IconButton>
-                          <IconButton onClick={() => console.log('Delete', agency.id)}>
-                            <DeleteIcon color="error" />
-                          </IconButton>
-                        </TableCell> */}
+                      <TableRow key={agency._id} hover>
+                        <TableCell>{agency._id || 'N/A'}</TableCell>
+                        <TableCell>{agency.name || 'N/A'}</TableCell>
+                        <TableCell>{agency.email || 'N/A'}</TableCell>
+                        <TableCell>
+                        {hoardingCounts[agency._id] !== undefined
+                        ? hoardingCounts[agency._id]
+                        : "Loading..."}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -287,230 +315,137 @@ export default function AgencyManagement() {
           )}
 
           {/* Bank Details Table */}
-          {/* Bank Details Table */}
-{activeTab === 1 && (
-  <>
-    <Paper sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
-      <TableContainer>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#1E2A47' }}>
-            <TableRow>
-              {bankHeaders.map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                  sx={{ 
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  {headCell.sortable ? (
-                    <TableSortLabel
-                      active={orderBy === headCell.id}
-                      direction={orderBy === headCell.id ? order : 'asc'}
-                      onClick={() => handleRequestSort(headCell.id)}
-                      sx={{ 
-                        color: 'white !important',
-                        '&:hover': { color: 'white !important' },
-                        '& .MuiTableSortLabel-icon': {
-                          color: 'white !important'
-                        }
-                      }}
-                    >
-                      {headCell.label}
-                    </TableSortLabel>
-                  ) : (
-                    headCell.label
-                  )}
-                </TableCell>
-              ))}
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredBankDetails.length > 0 ? (
-              filteredBankDetails.map((agency) => (
-                <TableRow 
-                  key={agency.id} 
-                  hover
-                  sx={{ 
-                    '&:nth-of-type(odd)': {
-                      backgroundColor: 'action.hover'
-                    }
-                  }}
-                >
-                  <TableCell sx={{ fontWeight: 500 }}>{agency.id}</TableCell>
-                  <TableCell sx={{ fontWeight: 500 }}>{agency.name}</TableCell>
-                  <TableCell>
-                    {agency.bankName || (
-                      <Typography variant="body2" color="textSecondary">
-                        Not provided
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {agency.accountNumber ? (
-                      <Box component="span" sx={{ fontFamily: 'monospace' }}>
-                        •••• •••• {agency.accountNumber.slice(-4)}
-                      </Box>
+          {activeTab === 1 && (
+            <Paper sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
+              <TableContainer>
+                <Table>
+                  <TableHead sx={{ backgroundColor: '#1E2A47' }}>
+                    <TableRow>
+                      {bankHeaders.map((headCell) => (
+                        <TableCell
+                          key={headCell.id}
+                          sortDirection={orderBy === headCell.id ? order : false}
+                          sx={{ color: 'white', fontWeight: 'bold' }}
+                        >
+                          {headCell.sortable ? (
+                            <TableSortLabel
+                              active={orderBy === headCell.id}
+                              direction={orderBy === headCell.id ? order : 'asc'}
+                              onClick={() => handleRequestSort(headCell.id)}
+                              sx={{ 
+                                color: 'white !important',
+                                '& .MuiTableSortLabel-icon': {
+                                  color: 'white !important'
+                                }
+                              }}
+                            >
+                              {headCell.label}
+                            </TableSortLabel>
+                          ) : (
+                            headCell.label
+                          )}
+                        </TableCell>
+                      ))}
+                      <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredBankDetails.length > 0 ? (
+                      filteredBankDetails.map((bankDetail) => {
+                        const agency = agencies.find(a => a._id === bankDetail.userId);
+                        return (
+                          <TableRow 
+                            key={bankDetail._id} 
+                            hover
+                            sx={{ 
+                              '&:nth-of-type(odd)': {
+                                backgroundColor: 'action.hover'
+                              }
+                            }}
+                          >
+                            <TableCell sx={{ fontWeight: 500 }}>
+                              {bankDetail.userId?._id || 'N/A'}
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 500 }}>
+                              {bankDetail.userId?.name || 'N/A'}
+                            </TableCell>
+                            <TableCell>
+                              {bankDetail.bankName || 'Not provided'}
+                            </TableCell>
+                            <TableCell>
+                              {bankDetail.branchName || 'Not provided'}
+                            </TableCell>
+                            <TableCell>
+                              {bankDetail.accountNumber || 'Not provided'}
+                            </TableCell>
+                            <TableCell>
+                              <IconButton 
+                                onClick={() => handleDialogOpen(bankDetail)}
+                                size="small"
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
                     ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Not provided
-                      </Typography>
+                      <TableRow>
+                        <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                          <Typography variant="body1" color="textSecondary">
+                            No bank details found
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    {agency.accountHolderName || (
-                      <Typography variant="body2" color="textSecondary">
-                        Not provided
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {agency.iban ? (
-                      <Box component="span" sx={{ fontFamily: 'monospace' }}>
-                        {agency.iban}
-                      </Box>
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Not provided
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton 
-                      onClick={() => handleDialogOpen(agency)}
-                      size="small"
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: 'primary.light',
-                          color: 'primary.contrastText'
-                        }
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={bankHeaders.length + 1} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body1" color="textSecondary">
-                    No bank details found
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-
-    {/* Edit Bank Details Dialog */}
-    <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ 
-        backgroundColor: '#1E2A47', 
-        color: 'white',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <span>Edit Bank Details</span>
-        <Typography variant="subtitle2">
-          Agency: {currentAgency?.name || 'N/A'}
-        </Typography>
-      </DialogTitle>
-      <DialogContent sx={{ pt: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Bank Name"
-              value={currentAgency?.bankName || ''}
-              margin="normal"
-              onChange={(e) => setCurrentAgency({
-                ...currentAgency,
-                bankName: e.target.value
-              })}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Account Holder Name"
-              value={currentAgency?.accountHolderName || ''}
-              margin="normal"
-              onChange={(e) => setCurrentAgency({
-                ...currentAgency,
-                accountHolderName: e.target.value
-              })}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Account Number"
-              value={currentAgency?.accountNumber || ''}
-              margin="normal"
-              onChange={(e) => setCurrentAgency({
-                ...currentAgency,
-                accountNumber: e.target.value
-              })}
-              inputProps={{
-                inputMode: 'numeric',
-                pattern: '[0-9]*'
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="IBAN/SWIFT Code"
-              value={currentAgency?.iban || ''}
-              margin="normal"
-              onChange={(e) => setCurrentAgency({
-                ...currentAgency,
-                iban: e.target.value
-              })}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button 
-          onClick={handleDialogClose} 
-          variant="outlined"
-          sx={{ 
-            color: '#1E2A47',
-            borderColor: '#1E2A47',
-            '&:hover': {
-              borderColor: '#3B4F6B'
-            }
-          }}
-        >
-          Cancel
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={handleSaveBankDetails}
-          sx={{ 
-            backgroundColor: '#1E2A47',
-            '&:hover': { 
-              backgroundColor: '#3B4F6B',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-            }
-          }}
-        >
-          Update Details
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </>
-)}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )}
         </>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Bank Details</DialogTitle>
+        <DialogContent>
+          {currentAgency && (
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Bank Name"
+                  value={currentAgency.bankName || ''}
+                  onChange={(e) => setCurrentAgency({...currentAgency, bankName: e.target.value})}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Branch Name"
+                  value={currentAgency.branchName || ''}
+                  onChange={(e) => setCurrentAgency({...currentAgency, branchName: e.target.value})}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Account Number"
+                  value={currentAgency.accountNumber || ''}
+                  onChange={(e) => setCurrentAgency({...currentAgency, accountNumber: e.target.value})}
+                />
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button onClick={handleSaveBankDetails} variant="contained" color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
